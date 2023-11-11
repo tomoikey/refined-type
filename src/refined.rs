@@ -34,16 +34,22 @@ where
         })
     }
 
-    fn add_rule(self, rule: &RULE) -> Result<Self> {
-        Self::new(self.value, rule)
+    fn add_rule<NewRule>(self, rule: &NewRule) -> Result<Refined<NewRule, T>>
+    where
+        NewRule: Rule<TARGET = T>,
+    {
+        Refined::new(self.value, rule)
     }
 
-    fn add_rules(self, rules: &Vec<RULE>) -> Result<Self> {
+    fn add_rules<NewRule>(self, rules: &Vec<NewRule>) -> Result<Self>
+    where
+        NewRule: Rule<TARGET = T>,
+    {
         let mut result = self.value;
         for rule in rules {
-            result = RULE::validate(rule, result)?;
+            result = NewRule::validate(rule, result)?;
         }
-        Ok(Self {
+        Ok(Refined {
             value: result,
             _rule: Default::default(),
         })
@@ -92,6 +98,7 @@ mod test {
     use crate::error::Result;
     use crate::refined::Refined;
     use crate::rule::NonEmptyStringRule;
+    use crate::AlphabetRule;
     use std::collections::HashSet;
 
     #[test]
@@ -155,6 +162,22 @@ mod test {
     fn test_refined_display() -> Result<()> {
         let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule)?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_add_rule_ok() -> Result<()> {
+        let non_empty_string =
+            Refined::new("Hello".to_string(), &NonEmptyStringRule)?.add_rule(&AlphabetRule)?;
+        assert_eq!(non_empty_string.value, "Hello");
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_add_rule_err() -> Result<()> {
+        let non_empty_string =
+            Refined::new("Hello1".to_string(), &NonEmptyStringRule)?.add_rule(&AlphabetRule);
+        assert!(non_empty_string.is_err());
         Ok(())
     }
 }

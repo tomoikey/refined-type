@@ -1,5 +1,7 @@
-use crate::{Error, Result, Rule};
+use crate::{Error, Refined, Result, Rule};
 use regex::Regex;
+
+pub type Alphabet = Refined<AlphabetRule, String>;
 
 /// A string consisting entirely of alphabetic characters
 pub struct AlphabetRule;
