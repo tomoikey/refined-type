@@ -22,18 +22,18 @@ pub trait Rule {
 ///  let actual = non_empty_alphabet_rule.validate("Hello".to_string())?;
 ///  assert_eq!(actual, "Hello");
 /// ```
-pub struct RuleBinder<'a, T, Rule1, Rule2> {
+pub struct RuleBinder<'a, T, RULE1, RULE2> {
     bounden_rule: Box<dyn Fn(T) -> Result<T> + 'a>,
-    _rule1: PhantomData<Rule1>,
-    _rule2: PhantomData<Rule2>,
+    _rule1: PhantomData<RULE1>,
+    _rule2: PhantomData<RULE2>,
 }
 
-impl<'a, T, Rule1, Rule2> RuleBinder<'a, T, Rule1, Rule2>
+impl<'a, T, RULE1, RULE2> RuleBinder<'a, T, RULE1, RULE2>
 where
-    Rule1: Rule<Item = T> + 'a,
-    Rule2: Rule<Item = T> + 'a,
+    RULE1: Rule<Item = T> + 'a,
+    RULE2: Rule<Item = T> + 'a,
 {
-    pub fn bind(rule1: Rule1, rule2: Rule2) -> Self {
+    pub fn bind(rule1: RULE1, rule2: RULE2) -> Self {
         let bounded_rule = move |t: T| rule1.validate(t).and_then(|t| rule2.validate(t));
         Self {
             bounden_rule: Box::new(bounded_rule),
@@ -43,7 +43,7 @@ where
     }
 }
 
-impl<T, Rule1, Rule2> Rule for RuleBinder<'_, T, Rule1, Rule2> {
+impl<T, RULE1, RULE2> Rule for RuleBinder<'_, T, RULE1, RULE2> {
     type Item = T;
 
     fn validate(&self, target: Self::Item) -> Result<Self::Item> {
