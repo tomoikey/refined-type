@@ -13,7 +13,7 @@ pub trait Rule {
     fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET>;
 }
 
-/// A binder that combines two rules to generate a new single rule
+/// A binder that combines two rules to generate a new single `Rule`
 /// # Example
 /// ```rust
 ///  use refined_type::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
