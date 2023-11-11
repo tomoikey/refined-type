@@ -95,21 +95,21 @@ mod test {
     use std::collections::HashSet;
 
     #[test]
-    fn test_non_empty_string_ok() -> Result<()> {
+    fn test_refined_non_empty_string_ok() -> Result<()> {
         let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule)?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
     }
 
     #[test]
-    fn test_non_empty_string_err() -> Result<()> {
+    fn test_refined_non_empty_string_err() -> Result<()> {
         let non_empty_string = Refined::new("".to_string(), &NonEmptyStringRule);
         assert!(non_empty_string.is_err());
         Ok(())
     }
 
     #[test]
-    fn test_array_of_non_empty_string_ok() -> Result<()> {
+    fn test_refined_array_of_non_empty_string_ok() -> Result<()> {
         let strings = vec![
             "Good Morning".to_string(),
             "Hello".to_string(),
@@ -121,7 +121,7 @@ mod test {
     }
 
     #[test]
-    fn test_hash_set_of_non_empty_string_ok() -> Result<()> {
+    fn test_refined_hash_set_of_non_empty_string_ok() -> Result<()> {
         let mut set = HashSet::new();
         vec![
             "Good Morning".to_string(),
@@ -139,7 +139,7 @@ mod test {
     }
 
     #[test]
-    fn test_array_of_non_empty_string_err() -> Result<()> {
+    fn test_refined_array_of_non_empty_string_err() -> Result<()> {
         let strings = vec![
             "Good Morning".to_string(),
             "".to_string(),
