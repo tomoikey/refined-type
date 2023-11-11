@@ -34,14 +34,14 @@ where
         })
     }
 
-    fn add_rule<NewRule>(self, rule: &NewRule) -> Result<Refined<NewRule, T>>
+    pub fn add_rule<NewRule>(self, rule: &NewRule) -> Result<Refined<NewRule, T>>
     where
         NewRule: Rule<TARGET = T>,
     {
         Refined::new(self.value, rule)
     }
 
-    fn add_rules<NewRule>(self, rules: &Vec<NewRule>) -> Result<Self>
+    pub fn add_rules<NewRule>(self, rules: &Vec<NewRule>) -> Result<Self>
     where
         NewRule: Rule<TARGET = T>,
     {
