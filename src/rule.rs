@@ -2,7 +2,7 @@ mod string;
 
 use anyhow::Result;
 
-pub use string::non_empty_string::NonEmptyString;
+pub use string::non_empty_string::*;
 
 pub trait Rule {
     type TARGET;
