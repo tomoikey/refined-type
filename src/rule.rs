@@ -1,8 +1,8 @@
-mod non_empty_string;
-
-pub use non_empty_string::NonEmptyStringRule;
+mod string;
 
 use anyhow::Result;
+
+pub use string::non_empty_string::NonEmptyString;
 
 pub trait Rule {
     type TARGET;

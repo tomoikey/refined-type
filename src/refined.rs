@@ -4,7 +4,7 @@ use std::marker::PhantomData;
 use std::ops::Deref;
 
 #[derive(Debug)]
-struct Refined<RULE, T>
+pub struct Refined<RULE, T>
 where
     RULE: Rule<TARGET = T>,
 {
@@ -38,11 +38,9 @@ where
 #[cfg(test)]
 mod test {
     use crate::refined::Refined;
-    use crate::rule::NonEmptyStringRule;
+    use crate::rule::NonEmptyString;
     use anyhow::Result;
     use std::ops::Deref;
-
-    type NonEmptyString = Refined<NonEmptyStringRule, String>;
 
     #[test]
     fn test_non_empty_string_ok() -> Result<()> {
