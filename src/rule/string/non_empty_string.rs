@@ -10,7 +10,7 @@ pub struct NonEmptyStringRule;
 impl Rule for NonEmptyStringRule {
     type TARGET = String;
 
-    fn validate(target: Self::TARGET) -> Result<Self::TARGET> {
+    fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET> {
         if target.is_empty() {
             Err(Error::new("The input `String` is empty"))
         } else {
