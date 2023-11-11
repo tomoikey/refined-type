@@ -9,8 +9,8 @@ pub use string::*;
 
 /// This is a `trait` that specifies the conditions a type `T` should satisfy
 pub trait Rule {
-    type TARGET;
-    fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET>;
+    type Item;
+    fn validate(&self, target: Self::Item) -> Result<Self::Item>;
 }
 
 /// A binder that combines two rules to generate a new single `Rule`
@@ -30,8 +30,8 @@ pub struct RuleBinder<'a, T, Rule1, Rule2> {
 
 impl<'a, T, Rule1, Rule2> RuleBinder<'a, T, Rule1, Rule2>
 where
-    Rule1: Rule<TARGET = T> + 'a,
-    Rule2: Rule<TARGET = T> + 'a,
+    Rule1: Rule<Item = T> + 'a,
+    Rule2: Rule<Item = T> + 'a,
 {
     pub fn bind(rule1: Rule1, rule2: Rule2) -> Self {
         let bounded_rule = move |t: T| rule1.validate(t).and_then(|t| rule2.validate(t));
@@ -44,9 +44,9 @@ where
 }
 
 impl<T, Rule1, Rule2> Rule for RuleBinder<'_, T, Rule1, Rule2> {
-    type TARGET = T;
+    type Item = T;
 
-    fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
         self.bounden_rule.deref()(target)
     }
 }

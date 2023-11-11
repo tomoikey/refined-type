@@ -25,7 +25,7 @@ pub struct Refined<RULE, T> {
 
 impl<RULE, T> Refined<RULE, T>
 where
-    RULE: Rule<TARGET = T>,
+    RULE: Rule<Item = T>,
 {
     pub fn new(value: T, rule: &RULE) -> Result<Self> {
         Ok(Self {
@@ -37,7 +37,7 @@ where
 
 impl<RULE, ITERATOR, T> Refined<RULE, ITERATOR>
 where
-    RULE: Rule<TARGET = T>,
+    RULE: Rule<Item = T>,
     ITERATOR: IntoIterator<Item = T> + FromIterator<T>,
 {
     pub fn from_iter(value: ITERATOR, rule: &RULE) -> Result<Self> {
@@ -54,7 +54,7 @@ where
 
 impl<RULE, T> Deref for Refined<RULE, T>
 where
-    RULE: Rule<TARGET = T>,
+    RULE: Rule<Item = T>,
 {
     type Target = T;
 

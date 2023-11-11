@@ -7,9 +7,9 @@ pub type Alphabet = Refined<AlphabetRule, String>;
 pub struct AlphabetRule;
 
 impl Rule for AlphabetRule {
-    type TARGET = String;
+    type Item = String;
 
-    fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
         let regex = Regex::new(r"[a-zA-Z]*").expect("Invalid regex");
         let is_valid = regex
             .find(target.as_str())

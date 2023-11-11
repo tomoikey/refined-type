@@ -12,9 +12,9 @@ impl MinMaxI32Rule {
 }
 
 impl Rule for MinMaxI32Rule {
-    type TARGET = i32;
+    type Item = i32;
 
-    fn validate(&self, target: Self::TARGET) -> crate::Result<Self::TARGET> {
+    fn validate(&self, target: Self::Item) -> crate::Result<Self::Item> {
         if self.min <= target && target <= self.max {
             Ok(target)
         } else {

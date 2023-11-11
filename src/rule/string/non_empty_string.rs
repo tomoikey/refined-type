@@ -8,9 +8,9 @@ pub type NonEmptyString = Refined<NonEmptyStringRule, String>;
 pub struct NonEmptyStringRule;
 
 impl Rule for NonEmptyStringRule {
-    type TARGET = String;
+    type Item = String;
 
-    fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
         if target.is_empty() {
             Err(Error::new("The input `String` is empty"))
         } else {
