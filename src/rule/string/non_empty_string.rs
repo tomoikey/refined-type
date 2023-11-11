@@ -2,6 +2,7 @@ use crate::refined::Refined;
 use crate::rule::Rule;
 use anyhow::{anyhow, Result};
 
+/// This is a predicate type representing a non-empty string
 pub type NonEmptyString = Refined<NonEmptyStringRule, String>;
 
 pub struct NonEmptyStringRule;

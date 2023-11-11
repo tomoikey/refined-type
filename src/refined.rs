@@ -6,6 +6,18 @@ use std::hash::Hash;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
+/// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
+/// # Example
+/// ```rust
+/// # use std::ops::Deref;
+/// # use anyhow::Result;
+/// # use refined::{NonEmptyString, Refined};
+/// let non_empty_string_result: Result<NonEmptyString> = Refined::new("Hello World".to_string());
+/// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
+///
+/// let empty_string_result: Result<NonEmptyString> = Refined::new("".to_string());
+/// assert!(empty_string_result.is_err())
+/// ```
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Refined<RULE, T> {
     value: T,
