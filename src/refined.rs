@@ -82,4 +82,17 @@ mod test {
         assert_eq!(array_non_empty_string.value, strings);
         Ok(())
     }
+
+    #[test]
+    fn test_array_of_non_empty_string_err() -> Result<()> {
+        let strings = vec![
+            "Good Morning".to_string(),
+            "".to_string(),
+            "Good Evening".to_string(),
+        ];
+        let array_non_empty_string_result: Result<Refined<NonEmptyStringRule, Vec<String>>> =
+            Refined::try_from(strings.clone());
+        assert!(array_non_empty_string_result.is_err());
+        Ok(())
+    }
 }
