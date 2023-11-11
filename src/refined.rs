@@ -1,12 +1,22 @@
 use crate::rule::Rule;
 use anyhow::Result;
+use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Refined<RULE, T> {
     value: T,
     _phantom_data: PhantomData<RULE>,
+}
+
+impl<RULE, T> Display for Refined<RULE, T>
+where
+    T: Display,
+{
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.value)
+    }
 }
 
 impl<RULE, T> TryFrom<Vec<T>> for Refined<RULE, Vec<T>>
@@ -93,6 +103,13 @@ mod test {
         let array_non_empty_string_result: Result<Refined<NonEmptyStringRule, Vec<String>>> =
             Refined::try_from(strings.clone());
         assert!(array_non_empty_string_result.is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_display() -> Result<()> {
+        let non_empty_string: NonEmptyString = Refined::new("Hello".to_string())?;
+        assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())
     }
 }
