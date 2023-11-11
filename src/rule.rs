@@ -1,7 +1,6 @@
 mod string;
 
-use anyhow::Result;
-
+use crate::error::Result;
 pub use string::non_empty_string::*;
 
 /// This is a `trait` that specifies the conditions a type `T` should satisfy

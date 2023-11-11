@@ -1,5 +1,6 @@
+use crate::error::Result;
 use crate::rule::Rule;
-use anyhow::Result;
+use crate::Error;
 use std::collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque};
 use std::fmt::{Display, Formatter};
 use std::hash::Hash;
@@ -10,8 +11,9 @@ use std::ops::Deref;
 /// # Example
 /// ```rust
 /// # use std::ops::Deref;
-/// # use anyhow::Result;
-/// # use refined::{NonEmptyString, Refined};
+/// use refined_type::Result;
+/// use refined_type::{NonEmptyString, Refined};
+///
 /// let non_empty_string_result: Result<NonEmptyString> = Refined::new("Hello World".to_string());
 /// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
 ///
@@ -37,9 +39,9 @@ impl<RULE, T> TryFrom<Vec<T>> for Refined<RULE, Vec<T>>
 where
     RULE: Rule<TARGET = T>,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: Vec<T>) -> Result<Self, Self::Error> {
+    fn try_from(value: Vec<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = Vec::new();
         for i in value {
             result.push(RULE::validate(i)?)
@@ -55,7 +57,7 @@ impl<RULE, T> TryFrom<VecDeque<T>> for Refined<RULE, VecDeque<T>>
 where
     RULE: Rule<TARGET = T>,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
     fn try_from(value: VecDeque<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = VecDeque::new();
@@ -73,7 +75,7 @@ impl<RULE, T> TryFrom<LinkedList<T>> for Refined<RULE, LinkedList<T>>
 where
     RULE: Rule<TARGET = T>,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
     fn try_from(value: LinkedList<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = LinkedList::new();
@@ -92,7 +94,7 @@ where
     RULE: Rule<TARGET = V>,
     K: Ord,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
     fn try_from(value: BTreeMap<K, V>) -> std::result::Result<Self, Self::Error> {
         let mut result = BTreeMap::new();
@@ -111,9 +113,9 @@ where
     RULE: Rule<TARGET = V>,
     K: Eq + Hash,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: HashMap<K, V>) -> Result<Self, Self::Error> {
+    fn try_from(value: HashMap<K, V>) -> std::result::Result<Self, Self::Error> {
         let mut result = HashMap::new();
         for (k, v) in value {
             result.insert(k, RULE::validate(v)?);
@@ -130,9 +132,9 @@ where
     RULE: Rule<TARGET = T>,
     T: Eq + Hash,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: HashSet<T>) -> Result<Self, Self::Error> {
+    fn try_from(value: HashSet<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = HashSet::new();
         for i in value {
             result.insert(RULE::validate(i)?);
@@ -149,9 +151,9 @@ where
     RULE: Rule<TARGET = T>,
     T: Ord,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
-    fn try_from(value: BTreeSet<T>) -> Result<Self, Self::Error> {
+    fn try_from(value: BTreeSet<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = BTreeSet::new();
         for i in value {
             result.insert(RULE::validate(i)?);
@@ -168,7 +170,7 @@ where
     RULE: Rule<TARGET = T>,
     T: Ord,
 {
-    type Error = anyhow::Error;
+    type Error = Error;
 
     fn try_from(value: BinaryHeap<T>) -> std::result::Result<Self, Self::Error> {
         let mut result = BinaryHeap::new();
@@ -207,9 +209,9 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::error::Result;
     use crate::refined::Refined;
     use crate::rule::{NonEmptyString, NonEmptyStringRule};
-    use anyhow::Result;
 
     #[test]
     fn test_non_empty_string_ok() -> Result<()> {
