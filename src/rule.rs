@@ -13,6 +13,15 @@ pub trait Rule {
     fn validate(&self, target: Self::TARGET) -> Result<Self::TARGET>;
 }
 
+/// A binder that combines two rules to generate a new single rule
+/// # Example
+/// ```rust
+///  use refined_type::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
+///
+///  let non_empty_alphabet_rule = RuleBinder::bind(NonEmptyStringRule, AlphabetRule);
+///  let actual = non_empty_alphabet_rule.validate("Hello".to_string())?;
+///  assert_eq!(actual, "Hello");
+/// ```
 pub struct RuleBinder<'a, T, Rule1, Rule2> {
     bounden_rule: Box<dyn Fn(T) -> Result<T> + 'a>,
     _rule1: PhantomData<Rule1>,
