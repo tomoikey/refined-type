@@ -6,7 +6,7 @@ use std::hash::Hash;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Refined<RULE, T> {
     value: T,
     _phantom_data: PhantomData<RULE>,
