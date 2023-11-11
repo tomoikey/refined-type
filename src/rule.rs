@@ -19,8 +19,8 @@ pub trait Rule {
 ///  use refined_type::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
 ///
 ///  let non_empty_alphabet_rule = RuleBinder::bind(NonEmptyStringRule, AlphabetRule);
-///  let actual = non_empty_alphabet_rule.validate("Hello".to_string())?;
-///  assert_eq!(actual, "Hello");
+///  let actual = non_empty_alphabet_rule.validate("Hello".to_string());
+///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
 /// ```
 pub struct RuleBinder<'a, T, RULE1, RULE2> {
     bounden_rule: Box<dyn Fn(T) -> Result<T> + 'a>,
