@@ -24,10 +24,9 @@ assert!(eight.is_err());
 ```
 
 # Installation
-### (まだインストールできないヨ💦😅 ごめんネ❗️)
 To use refined-type in your Rust project, add the following to your Cargo.toml file
 
 ```toml
 [dependencies]
-refined-type = "?.?.?" # coming soon...
+refined-type = "0.1.0"
 ```
