@@ -25,13 +25,6 @@ fn main() {
 ```
 
 # Installation
-To use refined-type in your Rust project, add the following to your Cargo.toml file
-
-```toml
-[dependencies]
-refined-type = "0.1.2"
-```
-or
 ```shell
 cargo add refined-type
 ```
