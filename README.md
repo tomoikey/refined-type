@@ -77,6 +77,47 @@ fn main() {
 }
 ```
 
+# Compose Rules
+```rust
+struct ContainsHelloRule;
+struct ContainsWorldRule;
+
+impl Rule for ContainsHelloRule {
+    type Item = String;
+    
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+        if target.contains("Hello") {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(format!("{} does not contain `Hello`", target)))
+        }
+    }
+}
+
+impl Rule for ContainsWorldRule {
+    type Item = String;
+
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+        if target.contains("World") {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(format!("{} does not contain `World`", target)))
+        }
+    }
+}
+fn main() {
+    let contains_hello_and_world_rule = RuleBinder::bind(ContainsHelloRule, ContainsWorldRule);
+    
+    let contains_hello_and_world_result_ok = Refined::new("Hello! World!", contains_hello_and_world_rule);
+    assert!(contains_hello_and_world_result.is_ok());
+
+    let contains_hello_and_world_result_err = Refined::new("Hello, world!", contains_hello_and_world_rule);
+    assert!(contains_hello_and_world_result.is_err());
+}
+```
+
 # License
 MIT License
 
