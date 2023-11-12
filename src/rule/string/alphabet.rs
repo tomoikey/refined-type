@@ -1,4 +1,6 @@
-use crate::{Error, Refined, Result, Rule};
+use crate::result::{Error, Result};
+use crate::rule::Rule;
+use crate::Refined;
 use regex::Regex;
 
 pub type Alphabet = Refined<AlphabetRule, String>;

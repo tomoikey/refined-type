@@ -17,7 +17,7 @@ pub trait Rule {
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example
 /// ```rust
-///  use refined_type::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
+///  use refined_type::rule::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
 ///
 ///  let non_empty_alphabet_rule = RuleBinder::bind(NonEmptyStringRule, AlphabetRule);
 ///  let actual = non_empty_alphabet_rule.validate("Hello".to_string());
@@ -55,7 +55,7 @@ impl<T, RULE1, RULE2> Rule for RuleBinder<'_, T, RULE1, RULE2> {
 #[cfg(test)]
 mod test {
     use crate::result::Result;
-    use crate::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
+    use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
 
     #[test]
     fn test_rule_binder_ok() -> Result<()> {

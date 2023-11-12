@@ -8,8 +8,9 @@ use std::ops::Deref;
 /// # Example
 /// ```rust
 /// # use std::ops::Deref;
-/// use refined_type::{NonEmptyStringRule, Result};
-/// use refined_type::{NonEmptyString, Refined};
+/// use refined_type::result::Result;
+/// use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
+/// use refined_type::Refined;
 ///
 /// let non_empty_string_result: Result<NonEmptyString> = Refined::new("Hello World".to_string(), &NonEmptyStringRule);
 /// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
