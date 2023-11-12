@@ -107,6 +107,7 @@ impl Rule for ContainsWorldRule {
         }
     }
 }
+
 fn main() {
     let contains_hello_and_world_rule = RuleBinder::bind(ContainsHelloRule, ContainsWorldRule);
     
@@ -116,6 +117,13 @@ fn main() {
     let contains_hello_and_world_result_err = Refined::new("Hello, world!", contains_hello_and_world_rule);
     assert!(contains_hello_and_world_result.is_err());
 }
+```
+
+# Tip
+```rust
+type ContainsHelloAndWorldRule = RuleBinder<ContainsHelloRule, ContainsWorldRule>;
+
+type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule, String>;
 ```
 
 # License
