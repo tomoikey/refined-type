@@ -16,10 +16,10 @@ use refined_type::Refined;
 fn main() {
     let rule = MinMaxU8Rule::new(1, 6).unwrap();
 
-    let five: Refined<MinMaxU8Rule, u8> = Refined::new(5u8, rule);
+    let five = Refined::new(5u8, rule);
     assert!(five.is_ok());
 
-    let eight: Refined<MinMaxU8Rule, u8> = Refined::new(8u8, rule);
+    let eight = Refined::new(8u8, rule);
     assert!(eight.is_err());   
 }
 ```
@@ -39,6 +39,7 @@ Add your preferred conditions as you like.
 ```rust
 use refined_type::rule::Rule;
 use refined_type::result::{Error, Result};
+use refined_type::Refined;
 
 struct BiggerRule {
     than: u32
@@ -70,8 +71,8 @@ fn main() {
     let bigger_than_five_result_ok = Refined::new(7, &bigger_than_five_rule);
     let bigger_than_five_result_err = Refined::new(3, &bigger_than_five_rule);
 
-    assert!(bigger_than_five_rule_result_ok.is_ok());
-    assert!(bigger_than_five_rule_result_err.is_err());
+    assert!(bigger_than_five_result_ok.is_ok());
+    assert!(bigger_than_five_result_err.is_err());
 }
 ```
 
@@ -83,12 +84,16 @@ I have prepared something called RuleBinder.
 By using RuleBinder, composite rules can be easily created.
 
 ```rust
+use refined_type::rule::{Rule, RuleBinder};
+use refined_type::result::{Error, Result};
+use refined_type::Refined;
+
 struct ContainsHelloRule;
 struct ContainsWorldRule;
 
 impl Rule for ContainsHelloRule {
     type Item = String;
-    
+
     fn validate(&self, target: Self::Item) -> Result<Self::Item> {
         if target.contains("Hello") {
             Ok(target)
@@ -114,12 +119,12 @@ impl Rule for ContainsWorldRule {
 
 fn main() {
     let contains_hello_and_world_rule = RuleBinder::bind(ContainsHelloRule, ContainsWorldRule);
-    
-    let contains_hello_and_world_result_ok = Refined::new("Hello! World!", contains_hello_and_world_rule);
-    assert!(contains_hello_and_world_result.is_ok());
 
-    let contains_hello_and_world_result_err = Refined::new("Hello, world!", contains_hello_and_world_rule);
-    assert!(contains_hello_and_world_result.is_err());
+    let contains_hello_and_world_result_ok = Refined::new("Hello! World!".to_string(), &contains_hello_and_world_rule);
+    assert!(contains_hello_and_world_result_ok.is_ok());
+
+    let contains_hello_and_world_result_err = Refined::new("Hello, world!".to_string(), &contains_hello_and_world_rule);
+    assert!(contains_hello_and_world_result_err.is_err());
 }
 ```
 
