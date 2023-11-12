@@ -5,6 +5,7 @@ use crate::error::Result;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
+pub use number::*;
 pub use string::*;
 
 /// This is a `trait` that specifies the conditions a type `T` should satisfy

@@ -1,27 +1,68 @@
-use crate::{Error, Rule};
+macro_rules! min_max_rule {
+    ($t: ty) => {
+        paste::item! {
+            /// The MinMax type ensures that a given value falls within the specified range of minimum and maximum values
+            pub type [<MinMax $t:upper>] = $crate::Refined<[<MinMax $t:upper Rule>], $t>;
+            pub struct [<MinMax $t:upper Rule>] {
+                min: $t,
+                max: $t
+            }
+            impl [<MinMax $t:upper Rule>] {
+                pub fn new(min: $t, max: $t) -> Option<Self> {
+                    if min <= max {
+                        Some(Self { min, max })
+                    }
+                    else {
+                        None
+                    }
+                }
+            }
+            impl $crate::Rule for [<MinMax $t:upper Rule>] {
+                type Item = $t;
 
-struct MinMaxI32Rule {
-    min: i32,
-    max: i32,
-}
-
-impl MinMaxI32Rule {
-    pub fn new(min: i32, max: i32) -> Self {
-        Self { min, max }
-    }
-}
-
-impl Rule for MinMaxI32Rule {
-    type Item = i32;
-
-    fn validate(&self, target: Self::Item) -> crate::Result<Self::Item> {
-        if self.min <= target && target <= self.max {
-            Ok(target)
-        } else {
-            Err(Error::new(format!(
-                "The input `i32` is not between {} and {}",
-                self.min, self.max
-            )))
+                fn validate(&self, target: Self::Item) -> $crate::Result<Self::Item> {
+                    if self.min <= target && target <= self.max {
+                        Ok(target)
+                    } else {
+                        Err($crate::Error::new(format!("The input is not between {} and {}", self.min, self.max)))
+                    }
+                }
+            }
         }
+    };
+    ($t: ty, $($ts: ty),+) => {
+        min_max_rule! {$t}
+        min_max_rule! {$($ts), +}
+    };
+}
+
+min_max_rule! {
+    i8,
+    i16,
+    i32,
+    i64,
+    i128,
+    isize,
+    u8,
+    u16,
+    u32,
+    u64,
+    u128,
+    usize
+}
+
+#[cfg(test)]
+mod test {
+    use crate::Result;
+    use crate::{MinMaxI8Rule, Rule};
+
+    #[test]
+    fn test_min_max_i8() -> Result<()> {
+        let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
+        assert!(min_max_rule.validate(-3).is_ok());
+        assert!(min_max_rule.validate(2).is_ok());
+        assert!(min_max_rule.validate(5).is_ok());
+        assert!(min_max_rule.validate(6).is_err());
+        Ok(())
     }
 }
