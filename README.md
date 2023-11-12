@@ -1,5 +1,4 @@
 # Refined-Type
-
 **refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the range of guarantees your applications can statically ensure.
 
 # Overview
@@ -38,6 +37,12 @@ cargo add refined-type
 ```
 
 # Custom Rule
+There are many situations where you may want to define custom rules. 
+To define rules for a specific target type, you first need to define a struct. 
+In the struct, define fields for specifying detailed conditions. 
+Once the definition is complete, all you need to do is implement the Rule trait. 
+Add your preferred conditions as you like.
+
 ```rust
 use refined_type::rule::Rule;
 use refined_type::result::{Error, Result};
@@ -83,6 +88,7 @@ In the example below, there are standalone rules for 'strings containing Hello' 
 Since their target type is String, combining them is possible. 
 I have prepared something called RuleBinder. 
 By using RuleBinder, composite rules can be easily created.
+
 ```rust
 struct ContainsHelloRule;
 struct ContainsWorldRule;
@@ -127,6 +133,7 @@ fn main() {
 # Tips
 Directly writing `RuleBinder` or `Refined` can often lead to a decrease in readability. 
 Therefore, using **type aliases** can help make your code clearer.
+
 ```rust
 type ContainsHelloAndWorldRule = RuleBinder<ContainsHelloRule, ContainsWorldRule>;
 
