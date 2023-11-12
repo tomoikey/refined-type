@@ -48,7 +48,9 @@ min_max_rule! {
     u32,
     u64,
     u128,
-    usize
+    usize,
+    f32,
+    f64
 }
 
 #[cfg(test)]
