@@ -1,5 +1,11 @@
 [package]
 name = "refined_type"
+description = "A library for imbuing rules into types and elevating them to more robust types"
+authors = ["Tomoikey"]
+repository = "https://github.com/tomoikey/refined-type"
+readme = "README.md"
+categories = ["development-tools"]
+license = "Tomoikey"
 version = "0.1.0"
 edition = "2021"
 
