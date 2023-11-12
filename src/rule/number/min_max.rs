@@ -59,6 +59,12 @@ mod test {
     use crate::{MinMaxI8Rule, Rule};
 
     #[test]
+    fn test_min_max_i8_new() {
+        let min_max_rule_result = MinMaxI8Rule::new(5, -3);
+        assert!(min_max_rule_result.is_none());
+    }
+
+    #[test]
     fn test_min_max_i8() -> Result<()> {
         let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
         assert!(min_max_rule.validate(-3).is_ok());
