@@ -10,9 +10,6 @@ All rules can be arbitrarily combined and extended as long as the target type ma
 
 
 # Example Usage
-To use this library, first, create a rule instance (e.g., MinMaxU8Rule), and then use it to refine your values with the Refined type. Check if the refined value is within the specified range using the is_ok() and is_err() methods.
-
-Feel free to explore more rules and integrate them into your Rust projects to enhance type safety.
 ```rust
 use refined_type::rule::MinMaxU8Rule;
 use refined_type::Refined;
