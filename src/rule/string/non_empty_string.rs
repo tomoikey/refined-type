@@ -1,5 +1,5 @@
-use crate::error::{Error, Result};
 use crate::refined::Refined;
+use crate::result::{Error, Result};
 use crate::rule::Rule;
 
 /// This is a predicate type representing a non-empty string

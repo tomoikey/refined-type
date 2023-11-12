@@ -1,7 +1,7 @@
-mod error;
 mod refined;
+mod result;
 mod rule;
 
-pub use error::{Error, Result};
 pub use refined::Refined;
+pub use result::{Error, Result};
 pub use rule::*;

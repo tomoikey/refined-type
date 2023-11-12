@@ -1,7 +1,7 @@
 mod number;
 mod string;
 
-use crate::error::Result;
+use crate::result::Result;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
@@ -54,7 +54,7 @@ impl<T, RULE1, RULE2> Rule for RuleBinder<'_, T, RULE1, RULE2> {
 
 #[cfg(test)]
 mod test {
-    use crate::error::Result;
+    use crate::result::Result;
     use crate::{AlphabetRule, NonEmptyStringRule, Rule, RuleBinder};
 
     #[test]

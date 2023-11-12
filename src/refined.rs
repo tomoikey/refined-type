@@ -1,4 +1,4 @@
-use crate::error::Result;
+use crate::result::Result;
 use crate::rule::Rule;
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
@@ -74,8 +74,8 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::error::Result;
     use crate::refined::Refined;
+    use crate::result::Result;
     use crate::rule::NonEmptyStringRule;
     use std::collections::HashSet;
 
