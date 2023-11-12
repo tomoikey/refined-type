@@ -14,13 +14,15 @@ All rules can be arbitrarily combined and extended as long as the target type ma
 use refined_type::rule::MinMaxU8Rule;
 use refined_type::Refined;
 
-let rule = MinMaxU8Rule::new(1, 6).unwrap();
+fn main() {
+    let rule = MinMaxU8Rule::new(1, 6).unwrap();
 
-let five: Refined<MinMaxU8Rule, u8> = Refined::new(5u8, rule);
-assert!(five.is_ok());
+    let five: Refined<MinMaxU8Rule, u8> = Refined::new(5u8, rule);
+    assert!(five.is_ok());
 
-let eight: Refined<MinMaxU8Rule, u8> = Refined::new(8u8, rule);
-assert!(eight.is_err());
+    let eight: Refined<MinMaxU8Rule, u8> = Refined::new(8u8, rule);
+    assert!(eight.is_err());   
+}
 ```
 
 # Installation
@@ -29,6 +31,50 @@ To use refined-type in your Rust project, add the following to your Cargo.toml f
 ```toml
 [dependencies]
 refined-type = "0.1.2"
+```
+or
+```shell
+cargo add refined-type
+```
+
+# Custom Rule
+```rust
+use refined_type::rule::Rule;
+use refined_type::result::{Error, Result};
+
+struct BiggerRule {
+    than: u32
+}
+
+impl BiggerRule {
+    pub fn new(than: u32) -> Self {
+        Self { than }
+    }
+}
+
+impl Rule for BiggerRule {
+    type Item = u32;
+    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+        if target > self.than {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(
+                format!("{} is not bigger than {}", target, self.than)
+            ))
+        }
+    }
+}
+
+fn main() {
+    let bigger_than_five_rule = BiggerRule::new(5);
+
+    let bigger_than_five_result_ok = Refined::new(7, &bigger_than_five_rule);
+    let bigger_than_five_result_err = Refined::new(3, &bigger_than_five_rule);
+
+    assert!(bigger_than_five_rule_result_ok.is_ok());
+    assert!(bigger_than_five_rule_result_err.is_err());
+}
 ```
 
 # License
