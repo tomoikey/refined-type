@@ -119,7 +119,9 @@ fn main() {
 }
 ```
 
-# Tip
+# Tips
+Directly writing `RuleBinder` or `Refined` can often lead to a decrease in readability. 
+Therefore, using **type aliases** can help make your code clearer.
 ```rust
 type ContainsHelloAndWorldRule = RuleBinder<ContainsHelloRule, ContainsWorldRule>;
 
