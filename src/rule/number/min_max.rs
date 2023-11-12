@@ -67,6 +67,7 @@ mod test {
     #[test]
     fn test_min_max_i8() -> Result<()> {
         let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
+        assert!(min_max_rule.validate(-4).is_err());
         assert!(min_max_rule.validate(-3).is_ok());
         assert!(min_max_rule.validate(2).is_ok());
         assert!(min_max_rule.validate(5).is_ok());
