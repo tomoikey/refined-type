@@ -78,6 +78,11 @@ fn main() {
 ```
 
 # Compose Rules
+As mentioned earlier, it is possible to combine any rules as long as the target types match. 
+In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World.' 
+Since their target type is String, combining them is possible. 
+I have prepared something called RuleBinder. 
+By using RuleBinder, composite rules can be easily created.
 ```rust
 struct ContainsHelloRule;
 struct ContainsWorldRule;
