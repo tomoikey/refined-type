@@ -11,6 +11,7 @@ pub type NonEmptyStringRule<'a> = Not<'a, String, Empty<String>>;
 mod test {
     use crate::rule::{NonEmptyStringRule, Rule};
 
+    #[test]
     fn test_non_empty_string() {
         let rule = NonEmptyStringRule::default();
 
