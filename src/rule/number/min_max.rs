@@ -20,11 +20,11 @@ macro_rules! min_max_rule {
             impl $crate::rule::Rule for [<MinMax $t:upper Rule>] {
                 type Item = $t;
 
-                fn validate(&self, target: Self::Item) -> $crate::result::Result<Self::Item> {
+                fn validate(&self, target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if self.min <= target && target <= self.max {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("The input is not between {} and {}", self.min, self.max)))
+                        Err($crate::result::Error::new(format!("The input is not between {} and {}", self.min, self.max), target))
                     }
                 }
             }
@@ -55,7 +55,6 @@ min_max_rule! {
 
 #[cfg(test)]
 mod test {
-    use crate::result::Result;
     use crate::rule::{MinMaxI8Rule, Rule};
 
     #[test]
@@ -65,13 +64,12 @@ mod test {
     }
 
     #[test]
-    fn test_min_max_i8() -> Result<()> {
+    fn test_min_max_i8() {
         let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
         assert!(min_max_rule.validate(-4).is_err());
         assert!(min_max_rule.validate(-3).is_ok());
         assert!(min_max_rule.validate(2).is_ok());
         assert!(min_max_rule.validate(5).is_ok());
         assert!(min_max_rule.validate(6).is_err());
-        Ok(())
     }
 }

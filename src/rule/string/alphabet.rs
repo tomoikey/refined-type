@@ -1,4 +1,4 @@
-use crate::result::{Error, Result};
+use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
@@ -11,7 +11,7 @@ pub struct AlphabetRule;
 impl Rule for AlphabetRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         let regex = Regex::new(r"[a-zA-Z]*").expect("Invalid regex");
         let is_valid = regex
             .find(target.as_str())
@@ -21,6 +21,7 @@ impl Rule for AlphabetRule {
         } else {
             Err(Error::new(
                 "The input `String` have some non-alphabet characters",
+                target,
             ))
         }
     }
