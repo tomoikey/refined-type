@@ -11,7 +11,9 @@ use std::ops::Deref;
 ///
 /// let less_than_5 = LessI8Rule::new(5);
 /// let not_less_than_5 = Not::new(less_than_5);
+///
 /// assert!(not_less_than_5.validate(6).is_ok());
+/// assert!(not_less_than_5.validate(4).is_err());
 /// ```
 pub struct Not<'a, T, RULE> {
     bounden_rule: Box<dyn Fn(T) -> Result<T, Error<T>> + 'a>,
