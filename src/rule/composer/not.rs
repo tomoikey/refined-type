@@ -36,6 +36,18 @@ impl<T, RULE> Rule for Not<'_, T, RULE> {
     }
 }
 
+impl<'a, T, RULE> Default for Not<'a, T, RULE>
+where
+    RULE: Rule<Item = T> + Default + 'a,
+{
+    fn default() -> Self {
+        Self {
+            bounden_rule: Box::new(|t| RULE::default().validate(t)),
+            _rule: Default::default(),
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use crate::rule::composer::Not;
@@ -43,7 +55,7 @@ mod test {
 
     #[test]
     fn test_not() {
-        let non_non_empty_string = Not::new(NonEmptyStringRule);
+        let non_non_empty_string = Not::new(NonEmptyStringRule::default());
         assert!(non_non_empty_string.validate("".to_string()).is_ok());
         assert!(non_non_empty_string.validate("Hello".to_string()).is_err())
     }

@@ -43,7 +43,7 @@ mod test {
 
     #[test]
     fn test_or() {
-        let alphabet_or_non_empty = Or::new(NonEmptyStringRule, AlphabetRule);
+        let alphabet_or_non_empty = Or::new(NonEmptyStringRule::default(), AlphabetRule);
         assert!(alphabet_or_non_empty.validate("hello".to_string()).is_ok());
         assert!(alphabet_or_non_empty.validate("12345".to_string()).is_ok());
         assert!(alphabet_or_non_empty.validate("".to_string()).is_ok());

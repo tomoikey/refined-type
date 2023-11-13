@@ -1,20 +1,20 @@
 use crate::refined::Refined;
-use crate::result::Error;
-use crate::rule::Rule;
+use crate::rule::composer::Not;
+use crate::rule::empty::Empty;
 
 /// This is a predicate type representing a non-empty string
-pub type NonEmptyString = Refined<NonEmptyStringRule, String>;
+pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>, String>;
 
-pub struct NonEmptyStringRule;
+pub type NonEmptyStringRule<'a> = Not<'a, String, Empty<String>>;
 
-impl Rule for NonEmptyStringRule {
-    type Item = String;
+#[cfg(test)]
+mod test {
+    use crate::rule::{NonEmptyStringRule, Rule};
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        if target.is_empty() {
-            Err(Error::new("The input `String` is empty", target))
-        } else {
-            Ok(target)
-        }
+    fn test_non_empty_string() {
+        let rule = NonEmptyStringRule::default();
+
+        assert!(rule.validate("hello".to_string()).is_ok());
+        assert!(rule.validate("".to_string()).is_err());
     }
 }
