@@ -1,9 +1,8 @@
-use crate::rule::composer::Not;
-use crate::rule::empty::Empty;
+use crate::rule::composer::NonEmpty;
 use crate::Refined;
 
 pub type NonEmptyVec<'a, T> = Refined<NonEmptyVecRule<'a, T>, T>;
-pub type NonEmptyVecRule<'a, T> = Not<'a, Vec<T>, Empty<Vec<T>>>;
+pub type NonEmptyVecRule<'a, T> = NonEmpty<'a, Vec<T>>;
 
 #[cfg(test)]
 mod test {

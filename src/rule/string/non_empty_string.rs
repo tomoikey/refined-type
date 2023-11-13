@@ -1,11 +1,10 @@
 use crate::refined::Refined;
-use crate::rule::composer::Not;
-use crate::rule::empty::Empty;
+use crate::rule::composer::NonEmpty;
 
 /// This is a predicate type representing a non-empty string
 pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>, String>;
 
-pub type NonEmptyStringRule<'a> = Not<'a, String, Empty<String>>;
+pub type NonEmptyStringRule<'a> = NonEmpty<'a, String>;
 
 #[cfg(test)]
 mod test {
