@@ -1,4 +1,4 @@
-use crate::rule::composer::NonEmpty;
+use crate::rule::NonEmpty;
 use crate::Refined;
 
 pub type NonEmptyVec<'a, T> = Refined<NonEmptyVecRule<'a, T>, T>;

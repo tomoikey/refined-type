@@ -5,6 +5,7 @@ mod number;
 mod string;
 
 use crate::result::Error;
+pub use empty::*;
 pub use non_empty_vec::*;
 pub use number::*;
 pub use string::*;

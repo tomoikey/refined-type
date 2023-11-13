@@ -1,7 +1,10 @@
 use crate::result::Error;
+use crate::rule::composer::Not;
 use crate::rule::Rule;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::marker::PhantomData;
+
+pub type NonEmpty<'a, T> = Not<'a, T, Empty<T>>;
 
 pub struct Empty<T> {
     _phantom_data: PhantomData<T>,

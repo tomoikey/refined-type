@@ -3,7 +3,7 @@ mod not;
 mod or;
 
 pub use and::And;
-pub use not::{NonEmpty, Not};
+pub use not::Not;
 pub use or::Or;
 
 #[cfg(test)]

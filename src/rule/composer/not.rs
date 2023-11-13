@@ -1,10 +1,7 @@
 use crate::result::Error;
-use crate::rule::empty::Empty;
 use crate::rule::Rule;
 use std::marker::PhantomData;
 use std::ops::Deref;
-
-pub type NonEmpty<'a, T> = Not<'a, T, Empty<T>>;
 
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example

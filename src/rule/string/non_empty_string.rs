@@ -1,5 +1,5 @@
 use crate::refined::Refined;
-use crate::rule::composer::NonEmpty;
+use crate::rule::NonEmpty;
 
 /// This is a predicate type representing a non-empty string
 pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>, String>;
