@@ -42,7 +42,7 @@ where
 {
     fn default() -> Self {
         Self {
-            bounden_rule: Box::new(|t| RULE::default().validate(t)),
+            bounden_rule: Box::new(|t| Not::new(RULE::default()).validate(t)),
             _rule: Default::default(),
         }
     }
