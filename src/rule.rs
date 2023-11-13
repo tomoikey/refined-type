@@ -1,9 +1,11 @@
 pub mod composer;
 mod empty;
+mod non_empty_vec;
 mod number;
 mod string;
 
 use crate::result::Error;
+pub use non_empty_vec::*;
 pub use number::*;
 pub use string::*;
 

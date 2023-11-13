@@ -7,7 +7,10 @@ pub struct Empty<T> {
     _phantom_data: PhantomData<T>,
 }
 
-impl<T> Default for Empty<T> {
+impl<T> Default for Empty<T>
+where
+    T: EmptyDefinition,
+{
     fn default() -> Self {
         Self {
             _phantom_data: Default::default(),
