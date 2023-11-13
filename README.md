@@ -168,6 +168,45 @@ fn main() {
 }
 ```
 
+### 4: Compose Rule Composer
+Rule Composer is also a rule. 
+Therefore, it can be treated much like a composite function
+```rust
+fn main() {
+    let less_than_3 = LessI8Rule::new(3);
+    let more_than_1 = MoreI8Rule::new(1);
+
+    // (1 <= x <= 3)
+    let more_than_1_and_less_than_3 = And::new(less_than_3, more_than_1);
+
+    assert!(more_than_1_and_less_than_3.validate(0).is_err());
+    assert!(more_than_1_and_less_than_3.validate(2).is_ok());
+    assert!(more_than_1_and_less_than_3.validate(4).is_err());
+
+    let more_than_5 = MoreI8Rule::new(5);
+
+    // (1 <= x <= 3) or (5 <= x)
+    let or_more_than_5 = Or::new(more_than_1_and_less_than_3, more_than_5);
+
+    assert!(or_more_than_5.validate(0).is_err());
+    assert!(or_more_than_5.validate(2).is_ok());
+    assert!(or_more_than_5.validate(4).is_err());
+    assert!(or_more_than_5.validate(5).is_ok());
+    assert!(or_more_than_5.validate(100).is_ok());
+
+    let more_than_7 = MoreI8Rule::new(7);
+
+    // ((1 <= x <= 3) or (5 <= x)) & (x < 7)
+    let not_more_than_7 = And::new(or_more_than_5, Not::new(more_than_7));
+
+    assert!(not_more_than_7.validate(0).is_err());
+    assert!(not_more_than_7.validate(2).is_ok());
+    assert!(not_more_than_7.validate(4).is_err());
+    assert!(not_more_than_7.validate(5).is_ok());
+    assert!(not_more_than_7.validate(100).is_err());
+}
+```
+
 # Tips
 Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability. 
 Therefore, using **type aliases** can help make your code clearer.
