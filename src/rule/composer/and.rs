@@ -44,23 +44,18 @@ impl<T, RULE1, RULE2> Rule for And<'_, T, RULE1, RULE2> {
 
 #[cfg(test)]
 mod test {
-    use crate::result::Result;
     use crate::rule::composer::And;
     use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 
     #[test]
-    fn test_rule_binder_ok() -> Result<(), String> {
-        let non_empty_alphabet_rule = And::new(NonEmptyStringRule, AlphabetRule);
-        let actual = non_empty_alphabet_rule.validate("Hello".to_string())?;
-        assert_eq!(actual, "Hello");
-        Ok(())
+    fn test_rule_binder_ok() {
+        let rule = And::new(NonEmptyStringRule, AlphabetRule);
+        assert!(rule.validate("Hello".to_string()).is_ok());
     }
 
     #[test]
-    fn test_rule_binder_err() -> Result<(), String> {
-        let non_empty_alphabet_rule = And::new(NonEmptyStringRule, AlphabetRule);
-        let actual = non_empty_alphabet_rule.validate("Hello1".to_string());
-        assert!(actual.is_err());
-        Ok(())
+    fn test_rule_binder_err() {
+        let rule = And::new(NonEmptyStringRule, AlphabetRule);
+        assert!(rule.validate("Hello1".to_string()).is_err());
     }
 }
