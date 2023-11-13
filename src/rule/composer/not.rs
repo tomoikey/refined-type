@@ -35,3 +35,16 @@ impl<T, RULE> Rule for Not<'_, T, RULE> {
         self.bounden_rule.deref()(target)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::rule::composer::Not;
+    use crate::rule::{NonEmptyStringRule, Rule};
+
+    #[test]
+    fn test_not() {
+        let non_non_empty_string = Not::new(NonEmptyStringRule);
+        assert!(non_non_empty_string.validate("".to_string()).is_ok());
+        assert!(non_non_empty_string.validate("Hello".to_string()).is_err())
+    }
+}
