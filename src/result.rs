@@ -1,8 +1,5 @@
 use std::fmt::{Debug, Display, Formatter};
 
-/// A `Result` type alias with a custom-defined error in the `refined-type` crate
-pub type Result<T, E> = std::result::Result<T, Error<E>>;
-
 /// A type indicating a failure to convert to `Refined`
 #[derive(Debug)]
 pub struct Error<T> {

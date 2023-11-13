@@ -20,7 +20,7 @@ macro_rules! min_max_rule {
             impl $crate::rule::Rule for [<MinMax $t:upper Rule>] {
                 type Item = $t;
 
-                fn validate(&self, target: Self::Item) -> $crate::result::Result<Self::Item, Self::Item> {
+                fn validate(&self, target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if self.min <= target && target <= self.max {
                         Ok(target)
                     } else {

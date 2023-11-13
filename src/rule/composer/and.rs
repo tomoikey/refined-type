@@ -1,4 +1,4 @@
-use crate::result::Result;
+use crate::result::Error;
 use crate::rule::Rule;
 use std::marker::PhantomData;
 use std::ops::Deref;
@@ -14,7 +14,7 @@ use std::ops::Deref;
 ///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
 /// ```
 pub struct And<'a, T, RULE1, RULE2> {
-    bounden_rule: Box<dyn Fn(T) -> Result<T, T> + 'a>,
+    bounden_rule: Box<dyn Fn(T) -> Result<T, Error<T>> + 'a>,
     _rule1: PhantomData<RULE1>,
     _rule2: PhantomData<RULE2>,
 }
@@ -37,7 +37,7 @@ where
 impl<T, RULE1, RULE2> Rule for And<'_, T, RULE1, RULE2> {
     type Item = T;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         self.bounden_rule.deref()(target)
     }
 }

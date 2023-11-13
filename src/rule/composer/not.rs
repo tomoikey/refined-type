@@ -1,4 +1,4 @@
-use crate::result::{Error, Result};
+use crate::result::Error;
 use crate::rule::Rule;
 use std::marker::PhantomData;
 use std::ops::Deref;
@@ -8,7 +8,7 @@ use std::ops::Deref;
 /// ```rust
 /// ```
 pub struct Not<'a, T, RULE> {
-    bounden_rule: Box<dyn Fn(T) -> Result<T, T> + 'a>,
+    bounden_rule: Box<dyn Fn(T) -> Result<T, Error<T>> + 'a>,
     _rule: PhantomData<RULE>,
 }
 
@@ -31,7 +31,7 @@ where
 impl<T, RULE> Rule for Not<'_, T, RULE> {
     type Item = T;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         self.bounden_rule.deref()(target)
     }
 }

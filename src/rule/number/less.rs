@@ -14,7 +14,7 @@ macro_rules! less_rule {
             impl $crate::rule::Rule for [<Less $t:upper Rule>] {
                 type Item = $t;
 
-                fn validate(&self, target: Self::Item) -> $crate::result::Result<Self::Item, Self::Item> {
+                fn validate(&self, target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if target <= self.than {
                         Ok(target)
                     } else {
