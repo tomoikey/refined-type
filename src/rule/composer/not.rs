@@ -6,6 +6,12 @@ use std::ops::Deref;
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example
 /// ```rust
+/// use refined_type::rule::composer::Not;
+/// use refined_type::rule::{LessI8Rule, Rule};
+///
+/// let less_than_5 = LessI8Rule::new(5);
+/// let not_less_than_5 = Not::new(less_than_5);
+/// assert!(not_less_than_5.validate(6).is_ok());
 /// ```
 pub struct Not<'a, T, RULE> {
     bounden_rule: Box<dyn Fn(T) -> Result<T, Error<T>> + 'a>,
