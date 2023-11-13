@@ -35,3 +35,17 @@ impl<T, RULE1, RULE2> Rule for Or<'_, T, RULE1, RULE2> {
         self.bounden_rule.deref()(target)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::rule::composer::Or;
+    use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule};
+
+    #[test]
+    fn test_or() {
+        let alphabet_or_non_empty = Or::new(NonEmptyStringRule, AlphabetRule);
+        assert!(alphabet_or_non_empty.validate("hello".to_string()).is_ok());
+        assert!(alphabet_or_non_empty.validate("12345".to_string()).is_ok());
+        assert!(alphabet_or_non_empty.validate("".to_string()).is_ok());
+    }
+}
