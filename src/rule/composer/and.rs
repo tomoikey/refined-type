@@ -9,7 +9,7 @@ use std::ops::Deref;
 ///  use refined_type::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 ///  use refined_type::rule::composer::And;
 ///
-///  let non_empty_alphabet_rule = And::new(NonEmptyStringRule, AlphabetRule);
+///  let non_empty_alphabet_rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
 ///  let actual = non_empty_alphabet_rule.validate("Hello".to_string());
 ///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
 /// ```
@@ -49,13 +49,13 @@ mod test {
 
     #[test]
     fn test_rule_binder_ok() {
-        let rule = And::new(NonEmptyStringRule, AlphabetRule);
+        let rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
         assert!(rule.validate("Hello".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_err() {
-        let rule = And::new(NonEmptyStringRule, AlphabetRule);
+        let rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
         assert!(rule.validate("Hello1".to_string()).is_err());
     }
 }

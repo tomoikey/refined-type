@@ -11,10 +11,10 @@ use std::ops::Deref;
 /// use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
 /// use refined_type::Refined;
 ///
-/// let non_empty_string_result = Refined::new("Hello World".to_string(), &NonEmptyStringRule);
+/// let non_empty_string_result = Refined::new("Hello World".to_string(), &NonEmptyStringRule::default());
 /// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
 ///
-/// let empty_string_result = Refined::new("".to_string(), &NonEmptyStringRule);
+/// let empty_string_result = Refined::new("".to_string(), &NonEmptyStringRule::default());
 /// assert!(empty_string_result.is_err())
 /// ```
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -81,14 +81,14 @@ mod test {
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
-        let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule)?;
+        let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule::default())?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
     }
 
     #[test]
     fn test_refined_non_empty_string_err() -> Result<(), String> {
-        let non_empty_string = Refined::new("".to_string(), &NonEmptyStringRule);
+        let non_empty_string = Refined::new("".to_string(), &NonEmptyStringRule::default());
         assert!(non_empty_string.is_err());
         Ok(())
     }
@@ -100,7 +100,8 @@ mod test {
             "Hello".to_string(),
             "Good Evening".to_string(),
         ];
-        let array_non_empty_string = Refined::from_iter(strings.clone(), &NonEmptyStringRule)?;
+        let array_non_empty_string =
+            Refined::from_iter(strings.clone(), &NonEmptyStringRule::default())?;
         assert_eq!(array_non_empty_string.value, strings);
         Ok(())
     }
@@ -118,7 +119,8 @@ mod test {
             set.insert(n);
         });
 
-        let array_non_empty_string = Refined::from_iter(set.clone(), &NonEmptyStringRule)?;
+        let array_non_empty_string =
+            Refined::from_iter(set.clone(), &NonEmptyStringRule::default())?;
         assert_eq!(array_non_empty_string.value, set);
         Ok(())
     }
@@ -131,14 +133,14 @@ mod test {
             "Good Evening".to_string(),
         ];
         let array_non_empty_string_result =
-            Refined::from_iter(strings.clone(), &NonEmptyStringRule);
+            Refined::from_iter(strings.clone(), &NonEmptyStringRule::default());
         assert!(array_non_empty_string_result.is_err());
         Ok(())
     }
 
     #[test]
     fn test_refined_display() -> Result<(), Error<String>> {
-        let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule)?;
+        let non_empty_string = Refined::new("Hello".to_string(), &NonEmptyStringRule::default())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())
     }

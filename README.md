@@ -16,10 +16,10 @@ use refined_type::Refined;
 fn main() {
     let rule = MinMaxU8Rule::new(1, 6).unwrap();
 
-    let five = Refined::new(5u8, rule);
+    let five = Refined::new(5, &rule);
     assert!(five.is_ok());
 
-    let eight = Refined::new(8u8, rule);
+    let eight = Refined::new(8, &rule);
     assert!(eight.is_err());   
 }
 ```
@@ -38,7 +38,7 @@ Add your preferred conditions as you like.
 
 ```rust
 use refined_type::rule::Rule;
-use refined_type::result::{Error, Result};
+use refined_type::result::Error;
 use refined_type::Refined;
 
 struct BiggerRule {
@@ -53,7 +53,7 @@ impl BiggerRule {
 
 impl Rule for BiggerRule {
     type Item = u32;
-    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target > self.than {
             Ok(target)
         }
@@ -78,14 +78,16 @@ fn main() {
 
 # Compose Rules
 As mentioned earlier, it is possible to combine any rules as long as the target types match. 
-In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World.' 
+In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World'. 
 Since their target type is String, combining them is possible. 
-I have prepared something called RuleBinder. 
-By using RuleBinder, composite rules can be easily created.
+I have prepared something called Rule Composer (`And`, `Or`, `Not`). 
+By using Rule Composer, composite rules can be easily created.
 
+### Original Rules
 ```rust
-use refined_type::rule::{Rule, RuleBinder};
-use refined_type::result::{Error, Result};
+use refined_type::result::Error;
+use refined_type::rule::Rule;
+use refined_type::rule::composer::And;
 use refined_type::Refined;
 
 struct ContainsHelloRule;
@@ -94,7 +96,7 @@ struct ContainsWorldRule;
 impl Rule for ContainsHelloRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("Hello") {
             Ok(target)
         }
@@ -107,7 +109,7 @@ impl Rule for ContainsHelloRule {
 impl Rule for ContainsWorldRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item> {
+    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("World") {
             Ok(target)
         }
@@ -116,24 +118,101 @@ impl Rule for ContainsWorldRule {
         }
     }
 }
+```
 
+### 1: `And` Rule Composer
+`And` Rule Composer is a rule that satisfies both of the two rules. 
+It is generally effective when you want to narrow down the condition range.
+```rust
 fn main() {
-    let contains_hello_and_world_rule = RuleBinder::bind(ContainsHelloRule, ContainsWorldRule);
+    let rule = And::new(ContainsHelloRule, ContainsWorldRule);
 
-    let contains_hello_and_world_result_ok = Refined::new("Hello! World!".to_string(), &contains_hello_and_world_rule);
-    assert!(contains_hello_and_world_result_ok.is_ok());
+    let rule_ok = Refined::new("Hello! World!".to_string(), &rule);
+    assert!(rule_ok.is_ok());
 
-    let contains_hello_and_world_result_err = Refined::new("Hello, world!".to_string(), &contains_hello_and_world_rule);
-    assert!(contains_hello_and_world_result_err.is_err());
+    let rule_err = Refined::new("Hello, world!".to_string(), &rule);
+    assert!(rule_err.is_err());
+}
+```
+
+### 2: `Or` Rule Composer
+`Or` Rule Composer is a rule that satisfies either of the two rules. 
+It is generally effective when you want to expand the condition range.
+```rust
+fn main() {
+    let rule = Or::new(ContainsHelloRule, ContainsWorldRule);
+
+    let rule_ok_1 = Refined::new("Hello! World!".to_string(), &rule);
+    assert!(rule_ok_1.is_ok());
+
+    let rule_ok_2 = Refined::new("hello World!".to_string(), &rule);
+    assert!(rule_ok_2.is_ok());
+
+    let rule_err = Refined::new("hello, world!".to_string(), &rule);
+    assert!(rule_err.is_err());
+}
+```
+
+### 3: `Not` Rule Composer
+`Not` Rule Composer is a rule that does not satisfy a specific condition. 
+It is generally effective when you want to discard only certain situations.
+```rust
+fn main() {
+    let rule = Not::new(ContainsHelloRule);
+
+    let rule_ok = Refined::new("hello! World!".to_string(), &rule);
+    assert!(rule_ok.is_ok());
+
+    let rule_err = Refined::new("Hello, World!".to_string(), &rule);
+    assert!(rule_err.is_err());
+}
+```
+
+### 4: Compose Rule Composer
+Rule Composer is also a rule. 
+Therefore, it can be treated much like a composite function
+```rust
+fn main() {
+    let less_than_3 = LessI8Rule::new(3);
+    let more_than_1 = MoreI8Rule::new(1);
+
+    // (1 <= x <= 3)
+    let more_than_1_and_less_than_3 = And::new(less_than_3, more_than_1);
+
+    assert!(more_than_1_and_less_than_3.validate(0).is_err());
+    assert!(more_than_1_and_less_than_3.validate(2).is_ok());
+    assert!(more_than_1_and_less_than_3.validate(4).is_err());
+
+    let more_than_5 = MoreI8Rule::new(5);
+
+    // (1 <= x <= 3) or (5 <= x)
+    let or_more_than_5 = Or::new(more_than_1_and_less_than_3, more_than_5);
+
+    assert!(or_more_than_5.validate(0).is_err());
+    assert!(or_more_than_5.validate(2).is_ok());
+    assert!(or_more_than_5.validate(4).is_err());
+    assert!(or_more_than_5.validate(5).is_ok());
+    assert!(or_more_than_5.validate(100).is_ok());
+
+    let more_than_7 = MoreI8Rule::new(7);
+
+    // ((1 <= x <= 3) or (5 <= x)) & (x < 7)
+    let not_more_than_7 = And::new(or_more_than_5, Not::new(more_than_7));
+
+    assert!(not_more_than_7.validate(0).is_err());
+    assert!(not_more_than_7.validate(2).is_ok());
+    assert!(not_more_than_7.validate(4).is_err());
+    assert!(not_more_than_7.validate(5).is_ok());
+    assert!(not_more_than_7.validate(100).is_err());
 }
 ```
 
 # Tips
-Directly writing `RuleBinder` or `Refined` can often lead to a decrease in readability. 
+Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability. 
 Therefore, using **type aliases** can help make your code clearer.
 
 ```rust
-type ContainsHelloAndWorldRule = RuleBinder<ContainsHelloRule, ContainsWorldRule>;
+type ContainsHelloAndWorldRule = And<String, ContainsHelloRule, ContainsWorldRule>;
 
 type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule, String>;
 ```
