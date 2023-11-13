@@ -6,7 +6,7 @@ pub type NonEmptyVecRule<'a, T> = NonEmpty<'a, Vec<T>>;
 
 #[cfg(test)]
 mod test {
-    use crate::rule::non_empty_vec::NonEmptyVecRule;
+    use crate::rule::non_empty::NonEmptyVecRule;
     use crate::rule::Rule;
 
     #[test]
