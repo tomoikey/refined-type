@@ -7,11 +7,11 @@ Once you have established the rules, you can easily combine them.
 Specifically, if you create rules for 'non-empty strings' and 'strings composed only of alphabets,' you do not need to redefine a new rule for 'non-empty strings composed only of alphabets'. 
 All rules can be arbitrarily combined and extended as long as the target type matches. Enjoy a wonderful type life!
 
-
 # Example Usage
 ```rust
 use refined_type::rule::MinMaxU8Rule;
 use refined_type::Refined;
+use std::ops::Deref;
 
 fn main() {
     let rule = MinMaxU8Rule::new(1, 6).unwrap();
@@ -20,7 +20,12 @@ fn main() {
     assert!(five.is_ok());
 
     let eight = Refined::new(8, &rule);
-    assert!(eight.is_err());   
+    assert!(eight.is_err());
+    
+    // I have prepared a macro for cases where it would be cumbersome
+    // for what is declared at compile time to be returned as a Result type
+    let two = refined!(2, &rule);
+    assert_eq!(two.deref(), 2);
 }
 ```
 
