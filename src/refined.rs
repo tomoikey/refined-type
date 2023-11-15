@@ -7,7 +7,7 @@ use std::ops::Deref;
 #[macro_export]
 macro_rules! refined {
     ($ex:expr, $rule:expr) => {
-        Refined::new($ex, &$rule).expect("Error")
+        Refined::new($ex, $rule).expect("Error")
     };
 }
 
@@ -90,7 +90,7 @@ mod test {
     #[test]
     fn test_refined_macro_ok() {
         let rule = NonEmptyStringRule::default();
-        let non_empty_string = refined!("Hello".to_string(), rule);
+        let non_empty_string = refined!("Hello".to_string(), &rule);
         assert_eq!(non_empty_string.deref(), "Hello")
     }
 
@@ -98,7 +98,7 @@ mod test {
     #[should_panic]
     fn test_refined_macro_err() {
         let rule = NonEmptyStringRule::default();
-        let _ = refined!("".to_string(), rule);
+        let _ = refined!("".to_string(), &rule);
     }
 
     #[test]
