@@ -16,19 +16,9 @@ use std::marker::PhantomData;
 /// assert!(Empty::default().validate(0).is_ok());
 /// assert!(Empty::default().validate(1).is_err());
 /// ```
+#[derive(Default)]
 pub struct Empty<T> {
     _phantom_data: PhantomData<T>,
-}
-
-impl<T> Default for Empty<T>
-where
-    T: EmptyDefinition,
-{
-    fn default() -> Self {
-        Self {
-            _phantom_data: Default::default(),
-        }
-    }
 }
 
 pub trait EmptyDefinition {
