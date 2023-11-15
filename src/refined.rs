@@ -4,6 +4,13 @@ use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
+#[macro_export]
+macro_rules! refined {
+    ($ex:expr, $rule:expr) => {
+        Refined::new($ex, &$rule).expect("Error")
+    };
+}
+
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example
 /// ```rust
@@ -78,6 +85,21 @@ mod test {
     use crate::result::Error;
     use crate::rule::NonEmptyStringRule;
     use std::collections::HashSet;
+    use std::ops::Deref;
+
+    #[test]
+    fn test_refined_macro_ok() {
+        let rule = NonEmptyStringRule::default();
+        let non_empty_string = refined!("Hello".to_string(), rule);
+        assert_eq!(non_empty_string.deref(), "Hello")
+    }
+
+    #[test]
+    #[should_panic]
+    fn test_refined_macro_err() {
+        let rule = NonEmptyStringRule::default();
+        let _ = refined!("".to_string(), rule);
+    }
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
