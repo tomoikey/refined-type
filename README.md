@@ -21,11 +21,6 @@ fn main() {
 
     let eight = Refined::new(8, &rule);
     assert!(eight.is_err());
-    
-    // I have prepared a macro for cases where it would be cumbersome
-    // for what is declared at compile time to be returned as a Result type
-    let two = refined!(2, &rule);
-    assert_eq!(two.deref(), 2);
 }
 ```
 
