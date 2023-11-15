@@ -17,7 +17,7 @@ fn main() {
     let rule = MinMaxU8Rule::new(1, 6).unwrap();
 
     let five = Refined::new(5, &rule);
-    assert!(five.is_ok());
+    assert_eq!(five.deref(), 5);
 
     let eight = Refined::new(8, &rule);
     assert!(eight.is_err());
