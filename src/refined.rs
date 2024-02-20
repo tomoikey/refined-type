@@ -36,6 +36,10 @@ where
             _rule: Default::default(),
         })
     }
+
+    pub fn value(&self) -> &RULE::Item {
+        &self.value
+    }
 }
 
 impl<RULE, T> Deref for Refined<RULE>
