@@ -13,7 +13,7 @@ type NonEmptyString = Refined<NonEmptyStringRule>;
 
 fn main() {
     let hello_world = NonEmptyString::new("hello world".to_string());
-    assert_eq!(hello_world.deref(), "hello world");
+    assert_eq!(hello_world.unwrap().deref(), "hello world");
 
     let empty_string = NonEmptyString::new("".to_string());
     assert!(empty_string.is_err());
