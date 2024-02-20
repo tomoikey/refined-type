@@ -1,9 +1,11 @@
+mod closed_algebraic;
 pub mod composer;
 mod empty;
 mod non_empty;
 mod string;
 
 use crate::result::Error;
+pub use closed_algebraic::ClosedAlgebraic;
 pub use empty::*;
 pub use non_empty::*;
 pub use string::*;
