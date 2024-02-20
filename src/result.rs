@@ -4,7 +4,7 @@ use std::fmt::{Debug, Display, Formatter};
 #[derive(Debug)]
 pub struct Error<T> {
     message: String,
-    pub target: T,
+    target: T,
 }
 
 impl<T> Error<T> {
@@ -13,6 +13,10 @@ impl<T> Error<T> {
             message: message.into(),
             target,
         }
+    }
+
+    pub fn into_target(self) -> T {
+        self.target
     }
 }
 

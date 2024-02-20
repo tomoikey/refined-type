@@ -26,7 +26,7 @@ where
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         let bounded_rule = move |t: T| match RULE::validate(t) {
             Ok(t) => Err(Error::new("Target satisfies the rule", t)),
-            Err(e) => Ok(e.target),
+            Err(e) => Ok(e.into_target()),
         };
         bounded_rule(target)
     }

@@ -27,7 +27,8 @@ where
     type Item = T;
 
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        let bounded_rule = move |t: T| RULE1::validate(t).or_else(|e| RULE2::validate(e.target));
+        let bounded_rule =
+            move |t: T| RULE1::validate(t).or_else(|e| RULE2::validate(e.into_target()));
         bounded_rule(target)
     }
 }
