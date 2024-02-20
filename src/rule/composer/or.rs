@@ -1,7 +1,6 @@
 use crate::result::Error;
 use crate::rule::Rule;
 use std::marker::PhantomData;
-use std::ops::Deref;
 
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example
