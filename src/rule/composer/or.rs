@@ -5,19 +5,14 @@ use std::marker::PhantomData;
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example
 /// ```rust
-/// //use refined_type::rule::{LessI8Rule, MoreI8Rule, Rule};
 /// use refined_type::rule::composer::Or;
+/// use refined_type::rule::{AlphabetRule, Empty, Rule};
 ///
-/// //let less_than_1 = LessI8Rule::new(1);
-/// //let more_than_5 = MoreI8Rule::new(5);
-/// //let rule = Or::new(less_than_1, more_than_5);
+/// type EmptyOrAlphabetString = Or<Empty<String>, AlphabetRule>;
 ///
-/// //assert!(rule.validate(0).is_ok());
-/// //assert!(rule.validate(1).is_ok());
-/// //assert!(rule.validate(2).is_err());
-/// //assert!(rule.validate(4).is_err());
-/// //assert!(rule.validate(5).is_ok());
-/// //assert!(rule.validate(6).is_ok());
+/// assert!(EmptyOrAlphabetString::validate("".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate("alphabet".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate("1".to_string()).is_err());
 /// ```
 pub struct Or<RULE1, RULE2> {
     _rule1: PhantomData<RULE1>,

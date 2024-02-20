@@ -6,15 +6,12 @@ use std::marker::PhantomData;
 /// # Example
 /// ```rust
 /// use refined_type::rule::composer::Not;
-/// //use refined_type::rule::{LessI8Rule, Rule};
+/// use refined_type::rule::{Empty, Rule};
 ///
+/// type NonEmptyString = Not<Empty<String>>;
 ///
-///
-/// // let less_than_5 = LessI8Rule::new(5);
-/// // let not_less_than_5 = Not::<LessI8Rule>::new();
-///
-/// //assert!(not_less_than_5.validate(6).is_ok());
-/// //assert!(not_less_than_5.validate(4).is_err());
+/// assert!(NonEmptyString::validate("non empty".to_string()).is_ok());
+/// assert!(NonEmptyString::validate("".to_string()).is_err());
 /// ```
 pub struct Not<RULE> {
     _rule: PhantomData<RULE>,
