@@ -1,8 +1,8 @@
 use crate::rule::NonEmpty;
 use crate::Refined;
 
-pub type NonEmptyVec<'a, T> = Refined<NonEmptyVecRule<'a, T>>;
-pub type NonEmptyVecRule<'a, T> = NonEmpty<'a, Vec<T>>;
+pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
+pub type NonEmptyVecRule<T> = NonEmpty<Vec<T>>;
 
 #[cfg(test)]
 mod test {

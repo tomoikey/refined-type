@@ -2,9 +2,9 @@ use crate::refined::Refined;
 use crate::rule::NonEmpty;
 
 /// This is a predicate type representing a non-empty string
-pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>>;
+pub type NonEmptyString = Refined<NonEmptyStringRule>;
 
-pub type NonEmptyStringRule<'a> = NonEmpty<'a, String>;
+pub type NonEmptyStringRule = NonEmpty<String>;
 
 #[cfg(test)]
 mod test {

@@ -8,7 +8,7 @@ use std::marker::PhantomData;
 ///  use refined_type::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 ///  use refined_type::rule::composer::And;
 ///
-///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule<'a>, AlphabetRule>;
+///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule, AlphabetRule>;
 ///
 ///  let actual = NonEmptyAlphabetString::validate("Hello".to_string());
 ///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
@@ -55,7 +55,7 @@ mod test {
     use crate::rule::composer::And;
     use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 
-    type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule<'a>, AlphabetRule>;
+    type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule>;
 
     #[test]
     fn test_rule_binder_ok() {

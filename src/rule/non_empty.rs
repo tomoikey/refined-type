@@ -18,4 +18,4 @@ pub use non_empty_vec::*;
 /// assert!(NonEmpty::<u8>::validate(1).is_ok());
 /// assert!(NonEmpty::<u8>::validate(0).is_err());
 /// ```
-pub type NonEmpty<'a, T> = Not<Empty<T>>;
+pub type NonEmpty<T> = Not<Empty<T>>;

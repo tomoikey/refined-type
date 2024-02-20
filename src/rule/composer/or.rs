@@ -39,7 +39,7 @@ mod test {
 
     #[test]
     fn test_or() {
-        type NonEmptyOrAlphabetString<'a> = Or<NonEmptyStringRule<'a>, AlphabetRule>;
+        type NonEmptyOrAlphabetString = Or<NonEmptyStringRule, AlphabetRule>;
         assert!(NonEmptyOrAlphabetString::validate("hello".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate("12345".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate("".to_string()).is_ok());

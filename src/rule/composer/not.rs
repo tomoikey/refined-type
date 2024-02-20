@@ -39,7 +39,7 @@ mod test {
 
     #[test]
     fn test_not() {
-        type NonNonEmptyString<'a> = Not<NonEmptyStringRule<'a>>;
+        type NonNonEmptyString = Not<NonEmptyStringRule>;
         assert!(NonNonEmptyString::validate("".to_string()).is_ok());
         assert!(NonNonEmptyString::validate("Hello".to_string()).is_err())
     }
