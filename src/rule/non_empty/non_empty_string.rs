@@ -12,9 +12,7 @@ mod test {
 
     #[test]
     fn test_non_empty_string() {
-        let rule = NonEmptyStringRule::default();
-
-        assert!(rule.validate("hello".to_string()).is_ok());
-        assert!(rule.validate("".to_string()).is_err());
+        assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
+        assert!(NonEmptyStringRule::validate("".to_string()).is_err());
     }
 }

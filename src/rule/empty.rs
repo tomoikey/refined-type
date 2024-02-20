@@ -7,14 +7,14 @@ use std::marker::PhantomData;
 /// ```rust
 /// use refined_type::rule::{Empty, Rule};
 ///
-/// assert!(Empty::default().validate("".to_string()).is_ok());
-/// assert!(Empty::default().validate("non empty".to_string()).is_err());
+/// assert!(Empty::<String>::validate("".to_string()).is_ok());
+/// assert!(Empty::<String>::validate("non empty".to_string()).is_err());
 ///
-/// assert!(Empty::default().validate(Vec::<u8>::new()).is_ok());
-/// assert!(Empty::default().validate(vec![1, 2, 3]).is_err());
+/// assert!(Empty::<Vec<u8>>::validate(Vec::<u8>::new()).is_ok());
+/// assert!(Empty::<Vec<u8>>::validate(vec![1, 2, 3]).is_err());
 ///
-/// assert!(Empty::default().validate(0).is_ok());
-/// assert!(Empty::default().validate(1).is_err());
+/// assert!(Empty::<u8>::validate(0).is_ok());
+/// assert!(Empty::<u8>::validate(1).is_err());
 /// ```
 #[derive(Default)]
 pub struct Empty<T> {
@@ -157,7 +157,7 @@ where
 {
     type Item = T;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.empty() {
             Ok(target)
         } else {

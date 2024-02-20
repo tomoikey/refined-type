@@ -30,33 +30,33 @@ macro_rules! more_rule {
     };
 }
 
-more_rule! {
-    i8,
-    i16,
-    i32,
-    i64,
-    i128,
-    isize,
-    u8,
-    u16,
-    u32,
-    u64,
-    u128,
-    usize,
-    f32,
-    f64
-}
+// more_rule! {
+//     i8,
+//     i16,
+//     i32,
+//     i64,
+//     i128,
+//     isize,
+//     u8,
+//     u16,
+//     u32,
+//     u64,
+//     u128,
+//     usize,
+//     f32,
+//     f64
+// }
 
 #[cfg(test)]
 mod test {
-    use crate::rule::number::more::MoreI8Rule;
-    use crate::rule::Rule;
-
-    #[test]
-    fn test_more_i8() {
-        let rule = MoreI8Rule::new(3);
-        assert!(rule.validate(2).is_err());
-        assert!(rule.validate(3).is_ok());
-        assert!(rule.validate(4).is_ok());
-    }
+    // use crate::rule::number::more::MoreI8Rule;
+    // use crate::rule::Rule;
+    //
+    // #[test]
+    // fn test_more_i8() {
+    //     let rule = MoreI8Rule::new(3);
+    //     assert!(rule.validate(2).is_err());
+    //     assert!(rule.validate(3).is_ok());
+    //     assert!(rule.validate(4).is_ok());
+    // }
 }

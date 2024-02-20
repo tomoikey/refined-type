@@ -9,36 +9,45 @@ use std::ops::Deref;
 ///  use refined_type::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 ///  use refined_type::rule::composer::And;
 ///
-///  let non_empty_alphabet_rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
-///  let actual = non_empty_alphabet_rule.validate("Hello".to_string());
+///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule<'a>, AlphabetRule>;
+///
+///  let actual = NonEmptyAlphabetString::validate("Hello".to_string());
 ///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
 /// ```
-pub struct And<'a, T, RULE1, RULE2> {
-    bounden_rule: Box<dyn Fn(T) -> Result<T, Error<T>> + 'a>,
+pub struct And<RULE1, RULE2> {
     _rule1: PhantomData<RULE1>,
     _rule2: PhantomData<RULE2>,
 }
 
-impl<'a, T, RULE1, RULE2> And<'a, T, RULE1, RULE2>
+impl<'a, T, RULE1, RULE2> And<RULE1, RULE2>
 where
     RULE1: Rule<Item = T> + 'a,
     RULE2: Rule<Item = T> + 'a,
 {
-    pub fn new(rule1: RULE1, rule2: RULE2) -> Self {
-        let bounded_rule = move |t: T| rule1.validate(t).and_then(|t| rule2.validate(t));
+    pub fn new() -> Self {
+        Self::default()
+    }
+}
+
+impl<RULE1, RULE2> Default for And<RULE1, RULE2> {
+    fn default() -> Self {
         Self {
-            bounden_rule: Box::new(bounded_rule),
             _rule1: Default::default(),
             _rule2: Default::default(),
         }
     }
 }
 
-impl<T, RULE1, RULE2> Rule for And<'_, T, RULE1, RULE2> {
+impl<'a, T, RULE1, RULE2> Rule for And<RULE1, RULE2>
+where
+    RULE1: Rule<Item = T> + 'a,
+    RULE2: Rule<Item = T> + 'a,
+{
     type Item = T;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        self.bounden_rule.deref()(target)
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        let bounded_rule = move |t: T| RULE1::validate(t).and_then(|t| RULE2::validate(t));
+        bounded_rule(target)
     }
 }
 
@@ -47,15 +56,15 @@ mod test {
     use crate::rule::composer::And;
     use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 
+    type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule<'a>, AlphabetRule>;
+
     #[test]
     fn test_rule_binder_ok() {
-        let rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
-        assert!(rule.validate("Hello".to_string()).is_ok());
+        assert!(NonEmptyAlphabetString::validate("Hello".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_err() {
-        let rule = And::new(NonEmptyStringRule::default(), AlphabetRule);
-        assert!(rule.validate("Hello1".to_string()).is_err());
+        assert!(NonEmptyAlphabetString::validate("Hello1".to_string()).is_err());
     }
 }

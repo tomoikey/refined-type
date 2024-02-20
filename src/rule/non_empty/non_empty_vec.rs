@@ -11,9 +11,7 @@ mod test {
 
     #[test]
     fn test_non_empty_vec() {
-        let rule: NonEmptyVecRule<u8> = NonEmptyVecRule::default();
-
-        assert!(rule.validate(vec![1, 2, 3]).is_ok());
-        assert!(rule.validate(vec![]).is_err());
+        assert!(NonEmptyVecRule::validate(vec![1, 2, 3]).is_ok());
+        assert!(NonEmptyVecRule::<u8>::validate(vec![]).is_err());
     }
 }

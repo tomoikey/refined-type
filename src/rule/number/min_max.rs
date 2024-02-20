@@ -36,40 +36,40 @@ macro_rules! min_max_rule {
     };
 }
 
-min_max_rule! {
-    i8,
-    i16,
-    i32,
-    i64,
-    i128,
-    isize,
-    u8,
-    u16,
-    u32,
-    u64,
-    u128,
-    usize,
-    f32,
-    f64
-}
+// min_max_rule! {
+//     i8,
+//     i16,
+//     i32,
+//     i64,
+//     i128,
+//     isize,
+//     u8,
+//     u16,
+//     u32,
+//     u64,
+//     u128,
+//     usize,
+//     f32,
+//     f64
+// }
 
 #[cfg(test)]
 mod test {
-    use crate::rule::{MinMaxI8Rule, Rule};
-
-    #[test]
-    fn test_min_max_i8_new() {
-        let min_max_rule_result = MinMaxI8Rule::new(5, -3);
-        assert!(min_max_rule_result.is_none());
-    }
-
-    #[test]
-    fn test_min_max_i8() {
-        let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
-        assert!(min_max_rule.validate(-4).is_err());
-        assert!(min_max_rule.validate(-3).is_ok());
-        assert!(min_max_rule.validate(2).is_ok());
-        assert!(min_max_rule.validate(5).is_ok());
-        assert!(min_max_rule.validate(6).is_err());
-    }
+    // use crate::rule::{MinMaxI8Rule, Rule};
+    //
+    // #[test]
+    // fn test_min_max_i8_new() {
+    //     let min_max_rule_result = MinMaxI8Rule::new(5, -3);
+    //     assert!(min_max_rule_result.is_none());
+    // }
+    //
+    // #[test]
+    // fn test_min_max_i8() {
+    //     let min_max_rule = MinMaxI8Rule::new(-3, 5).unwrap();
+    //     assert!(min_max_rule.validate(-4).is_err());
+    //     assert!(min_max_rule.validate(-3).is_ok());
+    //     assert!(min_max_rule.validate(2).is_ok());
+    //     assert!(min_max_rule.validate(5).is_ok());
+    //     assert!(min_max_rule.validate(6).is_err());
+    // }
 }

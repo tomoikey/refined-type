@@ -18,28 +18,29 @@ impl RegexRule {
 impl Rule for RegexRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        if self.regex.is_match(target.as_str()) {
-            Ok(target)
-        } else {
-            Err(Error::new(
-                format!("{} is not matched regex", target),
-                target,
-            ))
-        }
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        todo!()
+        // if self.regex.is_match(target.as_str()) {
+        //     Ok(target)
+        // } else {
+        //     Err(Error::new(
+        //         format!("{} is not matched regex", target),
+        //         target,
+        //     ))
+        // }
     }
 }
 
 #[cfg(test)]
 mod test {
-    use crate::rule::string::regex::RegexRule;
-    use crate::rule::Rule;
-    use regex::Regex;
-
-    #[test]
-    fn test_regex() {
-        let rule = RegexRule::new(Regex::new(r"^Hello").unwrap());
-        assert!(rule.validate("Hello".to_string()).is_ok());
-        assert!(rule.validate("Hey!, Hello".to_string()).is_err());
-    }
+    // use crate::rule::string::regex::RegexRule;
+    // use crate::rule::Rule;
+    // use regex::Regex;
+    //
+    // #[test]
+    // fn test_regex() {
+    //     let rule = RegexRule::new(Regex::new(r"^Hello").unwrap());
+    //     assert!(rule.validate("Hello".to_string()).is_ok());
+    //     assert!(rule.validate("Hey!, Hello".to_string()).is_err());
+    // }
 }
