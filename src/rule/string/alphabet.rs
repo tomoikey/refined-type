@@ -3,7 +3,7 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
-pub type Alphabet = Refined<AlphabetRule, String>;
+pub type Alphabet = Refined<AlphabetRule>;
 
 /// A string consisting entirely of alphabetic characters
 pub struct AlphabetRule;

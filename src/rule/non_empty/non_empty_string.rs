@@ -2,7 +2,7 @@ use crate::refined::Refined;
 use crate::rule::NonEmpty;
 
 /// This is a predicate type representing a non-empty string
-pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>, String>;
+pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>>;
 
 pub type NonEmptyStringRule<'a> = NonEmpty<'a, String>;
 

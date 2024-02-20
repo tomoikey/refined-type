@@ -11,19 +11,22 @@ use std::ops::Deref;
 /// use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
 /// use refined_type::Refined;
 ///
-/// let non_empty_string_result = Refined::<NonEmptyStringRule, String>::new("Hello World".to_string());
+/// let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
 /// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
 ///
-/// let empty_string_result = Refined::<NonEmptyStringRule, String>::new("".to_string());
+/// let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
 /// assert!(empty_string_result.is_err())
 /// ```
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Refined<RULE, T> {
-    value: T,
+pub struct Refined<RULE>
+where
+    RULE: Rule,
+{
+    value: RULE::Item,
     _rule: PhantomData<RULE>,
 }
 
-impl<RULE, T> Refined<RULE, T>
+impl<RULE, T> Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
@@ -35,24 +38,7 @@ where
     }
 }
 
-impl<RULE, ITERATOR, T> Refined<RULE, ITERATOR>
-where
-    RULE: Rule<Item = T>,
-    ITERATOR: IntoIterator<Item = T> + FromIterator<T>,
-{
-    pub fn from_iter(value: ITERATOR) -> Result<Self, Error<T>> {
-        let mut result = Vec::new();
-        for i in value.into_iter() {
-            result.push(RULE::validate(i)?)
-        }
-        Ok(Self {
-            value: result.into_iter().collect(),
-            _rule: Default::default(),
-        })
-    }
-}
-
-impl<RULE, T> Deref for Refined<RULE, T>
+impl<RULE, T> Deref for Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
@@ -63,8 +49,9 @@ where
     }
 }
 
-impl<RULE, T> Display for Refined<RULE, T>
+impl<RULE, T> Display for Refined<RULE>
 where
+    RULE: Rule<Item = T>,
     T: Display,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -77,70 +64,24 @@ mod test {
     use crate::refined::Refined;
     use crate::result::Error;
     use crate::rule::NonEmptyStringRule;
-    use std::collections::HashSet;
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
-        let non_empty_string = Refined::<NonEmptyStringRule, String>::new("Hello".to_string())?;
+        let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
     }
 
     #[test]
     fn test_refined_non_empty_string_err() -> Result<(), String> {
-        let non_empty_string = Refined::<NonEmptyStringRule, String>::new("".to_string());
+        let non_empty_string = Refined::<NonEmptyStringRule>::new("".to_string());
         assert!(non_empty_string.is_err());
         Ok(())
     }
 
     #[test]
-    fn test_refined_array_of_non_empty_string_ok() -> Result<(), Error<String>> {
-        let strings = vec![
-            "Good Morning".to_string(),
-            "Hello".to_string(),
-            "Good Evening".to_string(),
-        ];
-        let array_non_empty_string =
-            Refined::<NonEmptyStringRule, Vec<String>>::from_iter(strings.clone())?;
-        assert_eq!(array_non_empty_string.value, strings);
-        Ok(())
-    }
-
-    #[test]
-    fn test_refined_hash_set_of_non_empty_string_ok() -> Result<(), Error<String>> {
-        let mut set = HashSet::new();
-        vec![
-            "Good Morning".to_string(),
-            "Hello".to_string(),
-            "Good Evening".to_string(),
-        ]
-        .into_iter()
-        .for_each(|n| {
-            set.insert(n);
-        });
-
-        let array_non_empty_string =
-            Refined::<NonEmptyStringRule, HashSet<String>>::from_iter(set.clone())?;
-        assert_eq!(array_non_empty_string.value, set);
-        Ok(())
-    }
-
-    #[test]
-    fn test_refined_array_of_non_empty_string_err() -> Result<(), String> {
-        let strings = vec![
-            "Good Morning".to_string(),
-            "".to_string(),
-            "Good Evening".to_string(),
-        ];
-        let array_non_empty_string_result =
-            Refined::<NonEmptyStringRule, Vec<String>>::from_iter(strings.clone());
-        assert!(array_non_empty_string_result.is_err());
-        Ok(())
-    }
-
-    #[test]
     fn test_refined_display() -> Result<(), Error<String>> {
-        let non_empty_string = Refined::<NonEmptyStringRule, String>::new("Hello".to_string())?;
+        let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())
     }
