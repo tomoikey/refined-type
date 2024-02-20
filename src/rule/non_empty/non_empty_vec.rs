@@ -1,8 +1,8 @@
 use crate::rule::NonEmpty;
 use crate::Refined;
 
-pub type NonEmptyVec<'a, T> = Refined<NonEmptyVecRule<'a, T>, T>;
-pub type NonEmptyVecRule<'a, T> = NonEmpty<'a, Vec<T>>;
+pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
+pub type NonEmptyVecRule<T> = NonEmpty<Vec<T>>;
 
 #[cfg(test)]
 mod test {
@@ -11,9 +11,7 @@ mod test {
 
     #[test]
     fn test_non_empty_vec() {
-        let rule: NonEmptyVecRule<u8> = NonEmptyVecRule::default();
-
-        assert!(rule.validate(vec![1, 2, 3]).is_ok());
-        assert!(rule.validate(vec![]).is_err());
+        assert!(NonEmptyVecRule::validate(vec![1, 2, 3]).is_ok());
+        assert!(NonEmptyVecRule::<u8>::validate(vec![]).is_err());
     }
 }

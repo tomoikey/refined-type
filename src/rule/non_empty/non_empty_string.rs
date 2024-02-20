@@ -2,9 +2,9 @@ use crate::refined::Refined;
 use crate::rule::NonEmpty;
 
 /// This is a predicate type representing a non-empty string
-pub type NonEmptyString<'a> = Refined<NonEmptyStringRule<'a>, String>;
+pub type NonEmptyString = Refined<NonEmptyStringRule>;
 
-pub type NonEmptyStringRule<'a> = NonEmpty<'a, String>;
+pub type NonEmptyStringRule = NonEmpty<String>;
 
 #[cfg(test)]
 mod test {
@@ -12,9 +12,7 @@ mod test {
 
     #[test]
     fn test_non_empty_string() {
-        let rule = NonEmptyStringRule::default();
-
-        assert!(rule.validate("hello".to_string()).is_ok());
-        assert!(rule.validate("".to_string()).is_err());
+        assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
+        assert!(NonEmptyStringRule::validate("".to_string()).is_err());
     }
 }

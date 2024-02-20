@@ -3,7 +3,7 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
-pub type Alphabet = Refined<AlphabetRule, String>;
+pub type Alphabet = Refined<AlphabetRule>;
 
 /// A string consisting entirely of alphabetic characters
 pub struct AlphabetRule;
@@ -11,7 +11,7 @@ pub struct AlphabetRule;
 impl Rule for AlphabetRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         let regex = Regex::new(r"[a-zA-Z]*").expect("Invalid regex");
         let is_valid = regex
             .find(target.as_str())

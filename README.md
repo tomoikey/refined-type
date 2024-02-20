@@ -13,13 +13,13 @@ use refined_type::rule::MinMaxU8Rule;
 use refined_type::Refined;
 use std::ops::Deref;
 
+type NonEmptyString = Refined<NonEmptyStringRule>;
+
 fn main() {
-    let rule = MinMaxU8Rule::new(1, 6).unwrap();
+    let hello_world = NonEmptyString::new("hello world".to_string());
+    assert_eq!(five.deref(), "hello world");
 
-    let five = Refined::new(5, &rule);
-    assert_eq!(five.deref(), 5);
-
-    let eight = Refined::new(8, &rule);
+    let empty_string = NonEmptyString::new("".to_string());
     assert!(eight.is_err());
 }
 ```
@@ -37,42 +37,15 @@ Once the definition is complete, all you need to do is implement the Rule trait.
 Add your preferred conditions as you like.
 
 ```rust
-use refined_type::rule::Rule;
-use refined_type::result::Error;
+use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
 use refined_type::Refined;
 
-struct BiggerRule {
-    than: u32
-}
-
-impl BiggerRule {
-    pub fn new(than: u32) -> Self {
-        Self { than }
-    }
-}
-
-impl Rule for BiggerRule {
-    type Item = u32;
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        if target > self.than {
-            Ok(target)
-        }
-        else {
-            Err(Error::new(
-                format!("{} is not bigger than {}", target, self.than)
-            ))
-        }
-    }
-}
-
 fn main() {
-    let bigger_than_five_rule = BiggerRule::new(5);
+    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
+    assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
 
-    let bigger_than_five_result_ok = Refined::new(7, &bigger_than_five_rule);
-    let bigger_than_five_result_err = Refined::new(3, &bigger_than_five_rule);
-
-    assert!(bigger_than_five_result_ok.is_ok());
-    assert!(bigger_than_five_result_err.is_err());
+    let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
+    assert!(empty_string_result.is_err())   
 }
 ```
 
@@ -96,7 +69,7 @@ struct ContainsWorldRule;
 impl Rule for ContainsHelloRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("Hello") {
             Ok(target)
         }
@@ -109,7 +82,7 @@ impl Rule for ContainsHelloRule {
 impl Rule for ContainsWorldRule {
     type Item = String;
 
-    fn validate(&self, target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("World") {
             Ok(target)
         }
@@ -125,12 +98,12 @@ impl Rule for ContainsWorldRule {
 It is generally effective when you want to narrow down the condition range.
 ```rust
 fn main() {
-    let rule = And::new(ContainsHelloRule, ContainsWorldRule);
+    type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
-    let rule_ok = Refined::new("Hello! World!".to_string(), &rule);
+    let rule_ok = Refind::<HelloAndWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok.is_ok());
 
-    let rule_err = Refined::new("Hello, world!".to_string(), &rule);
+    let rule_err = Refined::<HelloAndWorldRule>::new("Hello, world!".to_string());
     assert!(rule_err.is_err());
 }
 ```
@@ -140,15 +113,15 @@ fn main() {
 It is generally effective when you want to expand the condition range.
 ```rust
 fn main() {
-    let rule = Or::new(ContainsHelloRule, ContainsWorldRule);
+    type HelloOrWorldRule = Or<ContainsHelloRule, ContainsWorldRule>;
 
-    let rule_ok_1 = Refined::new("Hello! World!".to_string(), &rule);
+    let rule_ok_1 = Refined::<HelloOrWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok_1.is_ok());
 
-    let rule_ok_2 = Refined::new("hello World!".to_string(), &rule);
+    let rule_ok_2 = Refined::<HelloOrWorldRule>::new("hello World!".to_string());
     assert!(rule_ok_2.is_ok());
 
-    let rule_err = Refined::new("hello, world!".to_string(), &rule);
+    let rule_err = Refined::<HelloOrWorldRule>::new("hello, world!".to_string());
     assert!(rule_err.is_err());
 }
 ```
@@ -158,12 +131,12 @@ fn main() {
 It is generally effective when you want to discard only certain situations.
 ```rust
 fn main() {
-    let rule = Not::new(ContainsHelloRule);
+    type NotHelloRule = Not<ContainsHelloRule>;
 
-    let rule_ok = Refined::new("hello! World!".to_string(), &rule);
+    let rule_ok = Refined::<NotHelloRule>::new("hello! World!".to_string());
     assert!(rule_ok.is_ok());
 
-    let rule_err = Refined::new("Hello, World!".to_string(), &rule);
+    let rule_err = Refined::<NotHelloRule>::new("Hello, World!".to_string());
     assert!(rule_err.is_err());
 }
 ```
@@ -173,37 +146,20 @@ Rule Composer is also a rule.
 Therefore, it can be treated much like a composite function
 ```rust
 fn main() {
-    let less_than_3 = LessI8Rule::new(3);
-    let more_than_1 = MoreI8Rule::new(1);
+    struct StartWithHelloRule;
+    struct StartWithByeRule;
 
-    // (1 <= x <= 3)
-    let more_than_1_and_less_than_3 = And::new(less_than_3, more_than_1);
+    struct EndWithJohnRule;
 
-    assert!(more_than_1_and_less_than_3.validate(0).is_err());
-    assert!(more_than_1_and_less_than_3.validate(2).is_ok());
-    assert!(more_than_1_and_less_than_3.validate(4).is_err());
+    type StartWithHelloOrByeRule = Or<StartWithHelloRule, StartWithByeRule>;
+    type GreetingRule = And<StartWithHelloOrByeRule, EndWithJohnRule>;
 
-    let more_than_5 = MoreI8Rule::new(5);
+    type Greeting = Refined<GreetingRule>;
 
-    // (1 <= x <= 3) or (5 <= x)
-    let or_more_than_5 = Or::new(more_than_1_and_less_than_3, more_than_5);
-
-    assert!(or_more_than_5.validate(0).is_err());
-    assert!(or_more_than_5.validate(2).is_ok());
-    assert!(or_more_than_5.validate(4).is_err());
-    assert!(or_more_than_5.validate(5).is_ok());
-    assert!(or_more_than_5.validate(100).is_ok());
-
-    let more_than_7 = MoreI8Rule::new(7);
-
-    // ((1 <= x <= 3) or (5 <= x)) & (x < 7)
-    let not_more_than_7 = And::new(or_more_than_5, Not::new(more_than_7));
-
-    assert!(not_more_than_7.validate(0).is_err());
-    assert!(not_more_than_7.validate(2).is_ok());
-    assert!(not_more_than_7.validate(4).is_err());
-    assert!(not_more_than_7.validate(5).is_ok());
-    assert!(not_more_than_7.validate(100).is_err());
+    assert!(GreetingRule::validate("Hello! Nice to meet you John".to_string()).is_ok());
+    assert!(Greeting::validate("Bye! Have a good day John".to_string()).is_ok());
+    assert!(Greeting::validate("How are you? Have a good day John".to_string()).is_err());
+    assert!(Greeting::validate("Bye! Have a good day Tom".to_string()).is_err());
 }
 ```
 
@@ -212,15 +168,15 @@ Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in
 Therefore, using **type aliases** can help make your code clearer.
 
 ```rust
-type ContainsHelloAndWorldRule = And<String, ContainsHelloRule, ContainsWorldRule>;
+type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
-type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule, String>;
+type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
 ```
 
 # License
 MIT License
 
-Copyright (c) 2023 Tomoki Someya
+Copyright (c) 2024 Tomoki Someya
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
