@@ -40,6 +40,10 @@ where
     pub fn value(&self) -> &RULE::Item {
         &self.value
     }
+
+    pub fn into_value(self) -> RULE::Item {
+        self.value
+    }
 }
 
 impl<RULE, T> Deref for Refined<RULE>
