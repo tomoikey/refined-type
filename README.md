@@ -9,10 +9,6 @@ All rules can be arbitrarily combined and extended as long as the target type ma
 
 # Example Usage
 ```rust
-use refined_type::rule::MinMaxU8Rule;
-use refined_type::Refined;
-use std::ops::Deref;
-
 type NonEmptyString = Refined<NonEmptyStringRule>;
 
 fn main() {
@@ -37,9 +33,6 @@ Once the definition is complete, all you need to do is implement the Rule trait.
 Add your preferred conditions as you like.
 
 ```rust
-use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
-use refined_type::Refined;
-
 fn main() {
     let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
     assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
@@ -58,11 +51,6 @@ By using Rule Composer, composite rules can be easily created.
 
 ### Original Rules
 ```rust
-use refined_type::result::Error;
-use refined_type::rule::Rule;
-use refined_type::rule::composer::And;
-use refined_type::Refined;
-
 struct ContainsHelloRule;
 struct ContainsWorldRule;
 
