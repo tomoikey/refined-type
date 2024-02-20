@@ -145,11 +145,50 @@ fn main() {
 Rule Composer is also a rule. 
 Therefore, it can be treated much like a composite function
 ```rust
-fn main() {
-    struct StartWithHelloRule;
-    struct StartWithByeRule;
-    struct EndWithJohnRule;
+struct StartWithHelloRule;
+struct StartWithByeRule;
+struct EndWithJohnRule;
 
+impl Rule for StartsWithHelloRule {
+    type Item = String;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        if target.starts_with("Hello") {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(format!("{} does not start with `Hello`", target)))
+        }
+    }
+}
+
+impl Rule for StartsWithByeRule {
+    type Item = String;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        if target.starts_with("Bye") {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(format!("{} does not start with `Bye`", target)))
+        }
+    }
+}
+
+impl Rule for EndWithJohnRule {
+    type Item = String;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        if target.ends_with("John") {
+            Ok(target)
+        }
+        else {
+            Err(Error::new(format!("{} does not end with `John`", target)))
+        }
+    }
+}
+
+fn main() {
     type GreetingRule = And<Or<StartWithHelloRule, StartWithByeRule>, EndWithJohnRule>;
 
     assert!(GreetingRule::validate("Hello! Nice to meet you John".to_string()).is_ok());
