@@ -148,18 +148,14 @@ Therefore, it can be treated much like a composite function
 fn main() {
     struct StartWithHelloRule;
     struct StartWithByeRule;
-
     struct EndWithJohnRule;
 
-    type StartWithHelloOrByeRule = Or<StartWithHelloRule, StartWithByeRule>;
-    type GreetingRule = And<StartWithHelloOrByeRule, EndWithJohnRule>;
-
-    type Greeting = Refined<GreetingRule>;
+    type GreetingRule = And<Or<StartWithHelloRule, StartWithByeRule>, EndWithJohnRule>;
 
     assert!(GreetingRule::validate("Hello! Nice to meet you John".to_string()).is_ok());
-    assert!(Greeting::validate("Bye! Have a good day John".to_string()).is_ok());
-    assert!(Greeting::validate("How are you? Have a good day John".to_string()).is_err());
-    assert!(Greeting::validate("Bye! Have a good day Tom".to_string()).is_err());
+    assert!(GreetingRule::validate("Bye! Have a good day John".to_string()).is_ok());
+    assert!(GreetingRule::validate("How are you? Have a good day John".to_string()).is_err());
+    assert!(GreetingRule::validate("Bye! Have a good day Tom".to_string()).is_err());
 }
 ```
 
