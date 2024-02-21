@@ -71,7 +71,7 @@ where
 mod test {
     use crate::refined::Refined;
     use crate::result::Error;
-    use crate::rule::{ClosedAlgebraic, NonEmptyStringRule};
+    use crate::rule::NonEmptyStringRule;
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
@@ -91,16 +91,6 @@ mod test {
     fn test_refined_display() -> Result<(), Error<String>> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
-        Ok(())
-    }
-
-    #[test]
-    fn test_refined_plus_non_empty_string() -> Result<(), Error<String>> {
-        let non_empty_string_1 = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
-        let non_empty_string_2 = Refined::<NonEmptyStringRule>::new("World".to_string())?;
-        let nonempty_string = non_empty_string_1.plus(non_empty_string_2);
-
-        assert_eq!(nonempty_string.into_value(), "HelloWorld");
         Ok(())
     }
 }
