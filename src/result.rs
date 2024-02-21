@@ -2,10 +2,12 @@ use std::fmt::{Debug, Display, Formatter};
 
 /// A type indicating a failure to convert to `Refined`
 #[derive(Debug)]
-pub struct Error<T> {
+pub struct Error<T: Sized> {
     message: String,
     target: T,
 }
+
+impl<T> std::error::Error for Error<T> where T: Debug {}
 
 impl<T> Error<T> {
     pub fn new(message: impl Into<String>, target: T) -> Self {

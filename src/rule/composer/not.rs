@@ -13,6 +13,7 @@ use std::marker::PhantomData;
 /// assert!(NonEmptyString::validate("non empty".to_string()).is_ok());
 /// assert!(NonEmptyString::validate("".to_string()).is_err());
 /// ```
+#[derive(Debug)]
 pub struct Not<RULE> {
     _rule: PhantomData<RULE>,
 }
