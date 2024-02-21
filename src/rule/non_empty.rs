@@ -2,7 +2,8 @@ mod non_empty_string;
 mod non_empty_vec;
 
 use crate::rule::composer::Not;
-use crate::rule::Empty;
+use crate::rule::EmptyRule;
+
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
 
@@ -18,4 +19,4 @@ pub use non_empty_vec::*;
 /// assert!(NonEmpty::<u8>::validate(1).is_ok());
 /// assert!(NonEmpty::<u8>::validate(0).is_err());
 /// ```
-pub type NonEmpty<T> = Not<Empty<T>>;
+pub type NonEmpty<T> = Not<EmptyRule<T>>;

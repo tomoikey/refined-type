@@ -6,9 +6,9 @@ use std::marker::PhantomData;
 /// # Example
 /// ```rust
 /// use refined_type::rule::composer::Not;
-/// use refined_type::rule::{Empty, Rule};
+/// use refined_type::rule::{EmptyRule, Rule};
 ///
-/// type NonEmptyString = Not<Empty<String>>;
+/// type NonEmptyString = Not<EmptyRule<String>>;
 ///
 /// assert!(NonEmptyString::validate("non empty".to_string()).is_ok());
 /// assert!(NonEmptyString::validate("".to_string()).is_err());
