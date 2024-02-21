@@ -187,6 +187,7 @@ fn main() {
 ```
 
 # JSON
+`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize` and `Deserialize`.
 ### Serialize
 ```rust
 type NonEmptyString = Refined<NonEmptyStringRule>;
