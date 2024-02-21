@@ -13,6 +13,7 @@ use std::marker::PhantomData;
 ///  let actual = NonEmptyAlphabetString::validate("Hello".to_string());
 ///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
 /// ```
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct And<RULE1, RULE2> {
     _rule1: PhantomData<RULE1>,
     _rule2: PhantomData<RULE2>,

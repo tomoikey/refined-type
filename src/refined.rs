@@ -18,7 +18,7 @@ use std::ops::Deref;
 /// let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
 /// assert!(empty_string_result.is_err())
 /// ```
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Refined<RULE>
 where
     RULE: Rule,
@@ -102,7 +102,7 @@ mod test {
     use crate::refined::Refined;
     use crate::result::Error;
     use crate::rule::NonEmptyStringRule;
-    use serde::Serialize;
+    use serde::{Deserialize, Serialize};
     use serde_json::json;
 
     #[test]
@@ -160,12 +160,36 @@ mod test {
     }
 
     #[test]
-    fn test_refined_deserialize_json_ok() -> anyhow::Result<()> {
+    fn test_refined_deserialize_json_ok_string() -> anyhow::Result<()> {
         let json = json!("hello").to_string();
         let non_empty_string: Refined<NonEmptyStringRule> = serde_json::from_str(&json)?;
 
         let actual = non_empty_string.into_value();
         let expected = "hello";
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
+        type NonEmptyString = Refined<NonEmptyStringRule>;
+        #[derive(Debug, Eq, PartialEq, Deserialize)]
+        struct Human {
+            name: NonEmptyString,
+            age: u8,
+        }
+        let json = json! {{
+            "name": "john",
+            "age": 8
+        }}
+        .to_string();
+
+        let actual = serde_json::from_str::<Human>(&json)?;
+
+        let expected = Human {
+            name: NonEmptyString::new("john".to_string())?,
+            age: 8,
+        };
         assert_eq!(actual, expected);
         Ok(())
     }
