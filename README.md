@@ -187,8 +187,58 @@ fn main() {
 ```
 
 # JSON
+### Serialize
 ```rust
+type NonEmptyString = Refined<NonEmptyStringRule>;
 
+#[derive(Serialize)]
+struct Human {
+    name: NonEmptyString,
+    age: u8,
+}
+
+fn main() -> anyhow::Result<()> {
+    let john = Human {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+
+    let actual = json!(john);
+    let expected = json! {{
+        "name": "john",
+        "age": 8
+    }};
+    assert_eq!(actual, expected);
+    Ok(())
+}
+```
+
+### Deserialize
+```rust
+type NonEmptyString = Refined<NonEmptyStringRule>;
+
+#[derive(Debug, Eq, PartialEq, Deserialize)]
+struct Human {
+    name: NonEmptyString,
+    age: u8,
+}
+
+fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "age": 8
+    }}
+    .to_string();
+
+    let actual = serde_json::from_str::<Human>(&json)?;
+
+    let expected = Human {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+    assert_eq!(actual, expected);
+    Ok(())
+}
 ```
 
 # Tips
