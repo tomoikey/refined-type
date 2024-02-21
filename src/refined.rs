@@ -102,6 +102,7 @@ mod test {
     use crate::refined::Refined;
     use crate::result::Error;
     use crate::rule::NonEmptyStringRule;
+    use serde::Serialize;
     use serde_json::json;
 
     #[test]
@@ -126,11 +127,34 @@ mod test {
     }
 
     #[test]
-    fn test_refined_serialize_json() -> anyhow::Result<()> {
+    fn test_refined_serialize_json_string() -> anyhow::Result<()> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("hello".to_string())?;
 
-        let actual = serde_json::to_string(&non_empty_string)?;
-        let expected = json!("hello").to_string();
+        let actual = json!(non_empty_string);
+        let expected = json!("hello");
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_serialize_json_struct() -> anyhow::Result<()> {
+        type NonEmptyString = Refined<NonEmptyStringRule>;
+        #[derive(Serialize)]
+        struct Human {
+            name: NonEmptyString,
+            age: u8,
+        }
+
+        let john = Human {
+            name: NonEmptyString::new("john".to_string())?,
+            age: 8,
+        };
+
+        let actual = json!(john);
+        let expected = json! {{
+            "name": "john",
+            "age": 8
+        }};
         assert_eq!(actual, expected);
         Ok(())
     }

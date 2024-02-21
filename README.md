@@ -186,6 +186,11 @@ fn main() {
 }
 ```
 
+# JSON
+```rust
+
+```
+
 # Tips
 Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability. 
 Therefore, using **type aliases** can help make your code clearer.
