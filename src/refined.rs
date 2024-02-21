@@ -1,5 +1,6 @@
 use crate::result::Error;
 use crate::rule::Rule;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
 use std::ops::Deref;
@@ -17,13 +18,42 @@ use std::ops::Deref;
 /// let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
 /// assert!(empty_string_result.is_err())
 /// ```
-#[derive(Debug, PartialEq, Eq, Clone)]
+#[derive(Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Refined<RULE>
 where
     RULE: Rule,
 {
     value: RULE::Item,
     _rule: PhantomData<RULE>,
+}
+
+impl<RULE, T> Serialize for Refined<RULE>
+where
+    RULE: Rule<Item = T>,
+    T: Serialize,
+{
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.value.serialize(serializer)
+    }
+}
+
+impl<'de, RULE, T> Deserialize<'de> for Refined<RULE>
+where
+    RULE: Rule<Item = T>,
+    T: Deserialize<'de>,
+{
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        use serde::de::Error;
+        let item: T = Deserialize::deserialize(deserializer)?;
+        let refined = Refined::new(item).map_err(|e| Error::custom(e.to_string()))?;
+        Ok(refined)
+    }
 }
 
 impl<RULE, T> Refined<RULE>
@@ -72,6 +102,8 @@ mod test {
     use crate::refined::Refined;
     use crate::result::Error;
     use crate::rule::NonEmptyStringRule;
+    use serde::{Deserialize, Serialize};
+    use serde_json::json;
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
@@ -91,6 +123,82 @@ mod test {
     fn test_refined_display() -> Result<(), Error<String>> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_serialize_json_string() -> anyhow::Result<()> {
+        let non_empty_string = Refined::<NonEmptyStringRule>::new("hello".to_string())?;
+
+        let actual = json!(non_empty_string);
+        let expected = json!("hello");
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_serialize_json_struct() -> anyhow::Result<()> {
+        type NonEmptyString = Refined<NonEmptyStringRule>;
+        #[derive(Serialize)]
+        struct Human {
+            name: NonEmptyString,
+            age: u8,
+        }
+
+        let john = Human {
+            name: NonEmptyString::new("john".to_string())?,
+            age: 8,
+        };
+
+        let actual = json!(john);
+        let expected = json! {{
+            "name": "john",
+            "age": 8
+        }};
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_ok_string() -> anyhow::Result<()> {
+        let json = json!("hello").to_string();
+        let non_empty_string: Refined<NonEmptyStringRule> = serde_json::from_str(&json)?;
+
+        let actual = non_empty_string.into_value();
+        let expected = "hello";
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
+        type NonEmptyString = Refined<NonEmptyStringRule>;
+        #[derive(Debug, Eq, PartialEq, Deserialize)]
+        struct Human {
+            name: NonEmptyString,
+            age: u8,
+        }
+        let json = json! {{
+            "name": "john",
+            "age": 8
+        }}
+        .to_string();
+
+        let actual = serde_json::from_str::<Human>(&json)?;
+
+        let expected = Human {
+            name: NonEmptyString::new("john".to_string())?,
+            age: 8,
+        };
+        assert_eq!(actual, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_err() -> anyhow::Result<()> {
+        let json = json!("").to_string();
+        let result = serde_json::from_str::<Refined<NonEmptyStringRule>>(&json);
+        assert!(result.is_err());
         Ok(())
     }
 }

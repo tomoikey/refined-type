@@ -16,7 +16,7 @@ use std::marker::PhantomData;
 /// assert!(Empty::<u8>::validate(0).is_ok());
 /// assert!(Empty::<u8>::validate(1).is_err());
 /// ```
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Empty<T> {
     _phantom_data: PhantomData<T>,
 }

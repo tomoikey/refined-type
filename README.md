@@ -13,7 +13,7 @@ type NonEmptyString = Refined<NonEmptyStringRule>;
 
 fn main() {
     let hello_world = NonEmptyString::new("hello world".to_string());
-    assert_eq!(hello_world.unwrap().deref(), "hello world");
+    assert_eq!(hello_world.unwrap().into_value(), "hello world");
 
     let empty_string = NonEmptyString::new("".to_string());
     assert!(empty_string.is_err());
@@ -183,6 +183,62 @@ fn main() {
     assert!(GreetingRule::validate("Bye! Have a good day John".to_string()).is_ok());
     assert!(GreetingRule::validate("How are you? Have a good day John".to_string()).is_err());
     assert!(GreetingRule::validate("Bye! Have a good day Tom".to_string()).is_err());
+}
+```
+
+# JSON
+`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize` and `Deserialize`.
+### Serialize
+```rust
+type NonEmptyString = Refined<NonEmptyStringRule>;
+
+#[derive(Serialize)]
+struct Human {
+    name: NonEmptyString,
+    age: u8,
+}
+
+fn main() -> anyhow::Result<()> {
+    let john = Human {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+
+    let actual = json!(john);
+    let expected = json! {{
+        "name": "john",
+        "age": 8
+    }};
+    assert_eq!(actual, expected);
+    Ok(())
+}
+```
+
+### Deserialize
+```rust
+type NonEmptyString = Refined<NonEmptyStringRule>;
+
+#[derive(Debug, Eq, PartialEq, Deserialize)]
+struct Human {
+    name: NonEmptyString,
+    age: u8,
+}
+
+fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "age": 8
+    }}
+    .to_string();
+
+    let actual = serde_json::from_str::<Human>(&json)?;
+
+    let expected = Human {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+    assert_eq!(actual, expected);
+    Ok(())
 }
 ```
 
