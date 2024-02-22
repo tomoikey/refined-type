@@ -5,8 +5,20 @@ use crate::Refined;
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
 use std::marker::PhantomData;
+use std::ops::Add;
 
 pub type Empty<T> = Refined<EmptyRule<T>>;
+
+impl<T> Add for Empty<T>
+where
+    T: EmptyDefinition,
+{
+    type Output = Self;
+
+    fn add(self, _rhs: Self) -> Self::Output {
+        self
+    }
+}
 
 /// Rule where the data is empty
 /// ```rust
@@ -167,5 +179,19 @@ where
         } else {
             Err(Error::new("The input value is not empty", target))
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::rule::Empty;
+
+    #[test]
+    fn test_add_empty() -> anyhow::Result<()> {
+        let empty_1 = Empty::new(0)?;
+        let empty_2 = Empty::new(0)?;
+        let empty = empty_1 + empty_2;
+        assert_eq!(empty.into_value(), 0);
+        Ok(())
     }
 }
