@@ -1,4 +1,4 @@
-use crate::rule::{EmptyDefinition, NonEmptyIntoIter, NonEmptyRule};
+use crate::rule::{EmptyDefinition, NonEmptyIntoIter, NonEmptyIter, NonEmptyRule};
 use crate::Refined;
 
 use std::ops::Add;
@@ -13,6 +13,13 @@ where
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmptyIntoIter<T> {
         Refined::new(self.into_value().into_iter())
+            .ok()
+            .expect("This error is always unreachable")
+    }
+
+    #[allow(clippy::should_implement_trait)]
+    pub fn iter(&self) -> NonEmptyIter<T> {
+        Refined::new(self.value().iter())
             .ok()
             .expect("This error is always unreachable")
     }
@@ -54,6 +61,14 @@ mod test {
     fn test_into_iter() -> anyhow::Result<()> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
         let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
+        assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+        Ok(())
+    }
+
+    #[test]
+    fn test_iter() -> anyhow::Result<()> {
+        let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
+        let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
         assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
         Ok(())
     }
