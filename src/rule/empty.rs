@@ -1,27 +1,12 @@
 use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
+
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
-use std::hash::Hash;
 use std::marker::PhantomData;
-use std::ops::Add;
 
 pub type Empty<T> = Refined<EmptyRule<T>>;
-
-impl<T> Add for Empty<T>
-where
-    T: EmptyDefinition,
-{
-    type Output = Self;
-
-    fn add(self, _rhs: Self) -> Self::Output {
-        // `T` implements `EmptyDefinition`. Therefore, this `expect` is safe.
-        Refined::new(self.into_value().empty())
-            .ok()
-            .expect("This error is always unreachable")
-    }
-}
 
 /// Rule where the data is empty
 /// ```rust
@@ -40,162 +25,144 @@ where
 pub struct EmptyRule<T> {
     _phantom_data: PhantomData<T>,
 }
-
-pub trait EmptyDefinition: PartialEq {
-    fn empty(&self) -> Self;
+pub trait EmptyDefinition {
+    fn empty(&self) -> bool;
 }
 
 impl EmptyDefinition for String {
-    fn empty(&self) -> Self {
-        "".to_string()
+    fn empty(&self) -> bool {
+        self == &"".to_string()
     }
 }
 
 impl EmptyDefinition for &str {
-    fn empty(&self) -> Self {
-        ""
+    fn empty(&self) -> bool {
+        self == &""
     }
 }
 
-impl<T> EmptyDefinition for Vec<T>
-where
-    T: PartialEq,
-{
-    fn empty(&self) -> Self {
-        Vec::new()
+impl<T> EmptyDefinition for Vec<T> {
+    fn empty(&self) -> bool {
+        self.is_empty()
     }
 }
 
-impl<T> EmptyDefinition for HashSet<T>
-where
-    T: PartialEq + Eq + Hash,
-{
-    fn empty(&self) -> Self {
-        HashSet::new()
+impl<T> EmptyDefinition for HashSet<T> {
+    fn empty(&self) -> bool {
+        self.is_empty()
     }
 }
 
-impl<K, V> EmptyDefinition for HashMap<K, V>
-where
-    K: PartialEq + Eq + Hash,
-    V: PartialEq,
-{
-    fn empty(&self) -> Self {
-        HashMap::new()
+impl<K, V> EmptyDefinition for HashMap<K, V> {
+    fn empty(&self) -> bool {
+        self.is_empty()
     }
 }
 
-impl<T> EmptyDefinition for BTreeSet<T>
-where
-    T: PartialEq,
-{
-    fn empty(&self) -> Self {
-        BTreeSet::new()
+impl<T> EmptyDefinition for BTreeSet<T> {
+    fn empty(&self) -> bool {
+        self.is_empty()
     }
 }
 
-impl<K, V> EmptyDefinition for BTreeMap<K, V>
-where
-    K: PartialEq,
-    V: PartialEq,
-{
-    fn empty(&self) -> Self {
-        BTreeMap::new()
+impl<K, V> EmptyDefinition for BTreeMap<K, V> {
+    fn empty(&self) -> bool {
+        self.is_empty()
     }
 }
 
 impl EmptyDefinition for u8 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for u16 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for u32 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for u64 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for u128 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for usize {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for i8 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for i16 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for i32 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for i64 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for i128 {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for isize {
-    fn empty(&self) -> Self {
-        0
+    fn empty(&self) -> bool {
+        *self == 0
     }
 }
 
 impl EmptyDefinition for f32 {
-    fn empty(&self) -> Self {
-        0f32
+    fn empty(&self) -> bool {
+        *self == 0f32
     }
 }
 
 impl EmptyDefinition for f64 {
-    fn empty(&self) -> Self {
-        0f64
+    fn empty(&self) -> bool {
+        *self == 0f64
     }
 }
 
 impl<T> Rule for EmptyRule<T>
 where
-    T: EmptyDefinition + PartialEq,
+    T: EmptyDefinition,
 {
     type Item = T;
 
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        if target == target.empty() {
+        if target.empty() {
             Ok(target)
         } else {
             Err(Error::new("The input value is not empty", target))
