@@ -6,9 +6,9 @@ use std::marker::PhantomData;
 /// # Example
 /// ```rust
 /// use refined_type::rule::composer::Or;
-/// use refined_type::rule::{AlphabetRule, Empty, Rule};
+/// use refined_type::rule::{AlphabetRule, EmptyRule, Rule};
 ///
-/// type EmptyOrAlphabetString = Or<Empty<String>, AlphabetRule>;
+/// type EmptyOrAlphabetString = Or<EmptyRule<String>, AlphabetRule>;
 ///
 /// assert!(EmptyOrAlphabetString::validate("".to_string()).is_ok());
 /// assert!(EmptyOrAlphabetString::validate("alphabet".to_string()).is_ok());
