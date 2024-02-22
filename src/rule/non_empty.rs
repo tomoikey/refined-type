@@ -1,3 +1,4 @@
+mod non_empty_iter;
 mod non_empty_string;
 mod non_empty_vec;
 
@@ -5,6 +6,7 @@ use crate::rule::composer::Not;
 use crate::rule::EmptyRule;
 use crate::Refined;
 
+pub use non_empty_iter::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
 
