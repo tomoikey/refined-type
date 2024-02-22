@@ -1,32 +1,10 @@
 use crate::rule::{EmptyDefinition, NonEmptyIntoIter, NonEmptyRule};
 use crate::Refined;
 
-use std::iter::Map;
 use std::ops::Add;
 
-impl<I: ExactSizeIterator + EmptyDefinition> Refined<NonEmptyRule<I>> {
-    pub fn map<B, F>(self, f: F) -> Refined<NonEmptyRule<Map<I, F>>>
-    where
-        Self: Sized,
-        F: FnMut(I::Item) -> B,
-    {
-        let map_into_iter = self.into_value().map(f);
-        Refined::new(map_into_iter)
-            .ok()
-            .expect("This error is always unreachable")
-    }
-
-    pub fn collect<B: FromIterator<I::Item> + EmptyDefinition>(self) -> Refined<NonEmptyRule<B>>
-    where
-        Self: Sized,
-    {
-        Refined::new(FromIterator::from_iter(self.into_value()))
-            .ok()
-            .expect("This error is always unreachable")
-    }
-}
-
 pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
+pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
 impl<T> NonEmptyVec<T>
 where
@@ -51,8 +29,6 @@ impl<T> Add for NonEmptyVec<T> {
             .expect("This error is always unreachable")
     }
 }
-
-pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
 #[cfg(test)]
 mod test {

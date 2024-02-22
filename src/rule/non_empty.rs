@@ -1,12 +1,14 @@
 mod non_empty_iter;
+mod non_empty_map;
 mod non_empty_string;
 mod non_empty_vec;
 
 use crate::rule::composer::Not;
-use crate::rule::EmptyRule;
+use crate::rule::{EmptyDefinition, EmptyRule};
 use crate::Refined;
 
 pub use non_empty_iter::*;
+pub use non_empty_map::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
 
@@ -25,3 +27,25 @@ pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 /// assert!(NonEmptyRule::<u8>::validate(0).is_err());
 /// ```
 pub type NonEmptyRule<T> = Not<EmptyRule<T>>;
+
+impl<I: ExactSizeIterator + EmptyDefinition> NonEmpty<I> {
+    pub fn map<B, F>(self, f: F) -> NonEmptyMap<I, F>
+    where
+        Self: Sized,
+        F: FnMut(I::Item) -> B,
+    {
+        let map_into_iter = self.into_value().map(f);
+        Refined::new(map_into_iter)
+            .ok()
+            .expect("This error is always unreachable")
+    }
+
+    pub fn collect<B: FromIterator<I::Item> + EmptyDefinition>(self) -> NonEmpty<B>
+    where
+        Self: Sized,
+    {
+        Refined::new(FromIterator::from_iter(self.into_value()))
+            .ok()
+            .expect("This error is always unreachable")
+    }
+}
