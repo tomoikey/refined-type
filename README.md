@@ -224,7 +224,7 @@ struct Human {
     age: u8,
 }
 
-fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "age": 8
@@ -238,6 +238,45 @@ fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
         age: 8,
     };
     assert_eq!(actual, expected);
+    Ok(())
+}
+```
+
+# Add Trait
+I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed without downgrading the type level.
+### NonEmptyString
+```rust
+fn main() -> anyhow::Result<()> {
+    let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
+    let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
+    let non_empty_string = non_empty_string_1 + non_empty_string_2; // This is also `NonEmptyString` type
+
+    assert_eq!(non_empty_string.into_value(), "HelloWorld");
+    Ok(())
+}
+```
+
+### NonEmptyVec
+```rust
+#[test]
+fn test_add_vec() -> anyhow::Result<()> {
+    let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
+    let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
+    let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
+
+    assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
+    Ok(())
+}
+```
+
+### Empty
+```rust
+fn test_add_empty() -> anyhow::Result<()> {
+    let empty_1 = Empty::new(0)?;
+    let empty_2 = Empty::new(0)?;
+    let empty = empty_1 + empty_2; // This is also `Empty` type
+
+    assert_eq!(empty.into_value(), 0);
     Ok(())
 }
 ```
