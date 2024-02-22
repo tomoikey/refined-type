@@ -53,11 +53,7 @@ mod test {
     #[test]
     fn test_into_iter() -> anyhow::Result<()> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-        let ne_vec = ne_vec
-            .into_iter()
-            .map(|n| n * 2)
-            .map(|n| n * 3)
-            .collect::<Vec<_>>();
+        let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
         assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
         Ok(())
     }
