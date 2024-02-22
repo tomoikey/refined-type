@@ -4,8 +4,10 @@ use crate::Refined;
 
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 use std::fmt::Debug;
+use std::iter::Map;
 use std::marker::PhantomData;
 use std::ops::Add;
+use std::vec::IntoIter;
 
 pub type Empty<T> = Refined<EmptyRule<T>>;
 
@@ -58,6 +60,37 @@ impl<T> EmptyDefinition for Vec<T> {
         self.is_empty()
     }
 }
+
+impl<'a, T> EmptyDefinition for std::slice::Iter<'a, T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<T> EmptyDefinition for IntoIter<T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<F, B, I: ExactSizeIterator> EmptyDefinition for Map<I, F>
+where
+    F: FnMut(I::Item) -> B,
+{
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+// impl<I, F> EmptyDefinition for std::iter::Map<I, F>
+// where
+//     Self: Sized,
+//     I: Iterator + EmptyDefinition,
+// {
+//     fn empty(&self) -> bool {
+//         true
+//     }
+// }
 
 impl<T> EmptyDefinition for HashSet<T> {
     fn empty(&self) -> bool {

@@ -3,17 +3,15 @@ use crate::rule::Rule;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
-use std::ops::Deref;
 
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example
 /// ```rust
-/// # use std::ops::Deref;
 /// use refined_type::rule::{NonEmptyString, NonEmptyStringRule};
 /// use refined_type::Refined;
 ///
 /// let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
-/// assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
+/// assert_eq!(non_empty_string_result.unwrap().into_value(), "Hello World");
 ///
 /// let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
 /// assert!(empty_string_result.is_err())
@@ -73,17 +71,6 @@ where
 
     pub fn into_value(self) -> RULE::Item {
         self.value
-    }
-}
-
-impl<RULE, T> Deref for Refined<RULE>
-where
-    RULE: Rule<Item = T>,
-{
-    type Target = T;
-
-    fn deref(&self) -> &Self::Target {
-        &self.value
     }
 }
 
