@@ -1,8 +1,8 @@
-use crate::rule::NonEmpty;
+use crate::rule::NonEmptyRule;
 use crate::Refined;
 
 pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
-pub type NonEmptyVecRule<T> = NonEmpty<Vec<T>>;
+pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
 #[cfg(test)]
 mod test {

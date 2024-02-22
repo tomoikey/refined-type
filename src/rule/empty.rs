@@ -19,7 +19,7 @@ where
         // `T` implements `EmptyDefinition`. Therefore, this `expect` is safe.
         Refined::new(self.into_value().empty())
             .ok()
-            .expect("unreachable")
+            .expect("This error is always unreachable")
     }
 }
 
