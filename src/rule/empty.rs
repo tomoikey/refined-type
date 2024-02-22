@@ -2,12 +2,11 @@ use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
 
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 use std::fmt::Debug;
 use std::iter::Map;
 use std::marker::PhantomData;
 use std::ops::Add;
-use std::vec::IntoIter;
 
 pub type Empty<T> = Refined<EmptyRule<T>>;
 
@@ -61,13 +60,31 @@ impl<T> EmptyDefinition for Vec<T> {
     }
 }
 
+impl<T> EmptyDefinition for std::vec::IntoIter<T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
 impl<'a, T> EmptyDefinition for std::slice::Iter<'a, T> {
     fn empty(&self) -> bool {
         self.len() == 0
     }
 }
 
-impl<T> EmptyDefinition for IntoIter<T> {
+impl<T> EmptyDefinition for VecDeque<T> {
+    fn empty(&self) -> bool {
+        self.is_empty()
+    }
+}
+
+impl<T> EmptyDefinition for std::collections::vec_deque::IntoIter<T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<'a, T> EmptyDefinition for std::collections::vec_deque::Iter<'a, T> {
     fn empty(&self) -> bool {
         self.len() == 0
     }
@@ -81,16 +98,6 @@ where
         self.len() == 0
     }
 }
-
-// impl<I, F> EmptyDefinition for std::iter::Map<I, F>
-// where
-//     Self: Sized,
-//     I: Iterator + EmptyDefinition,
-// {
-//     fn empty(&self) -> bool {
-//         true
-//     }
-// }
 
 impl<T> EmptyDefinition for HashSet<T> {
     fn empty(&self) -> bool {

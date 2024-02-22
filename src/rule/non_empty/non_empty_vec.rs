@@ -1,4 +1,4 @@
-use crate::rule::{EmptyDefinition, NonEmptyIntoIter, NonEmptyIter, NonEmptyRule};
+use crate::rule::{EmptyDefinition, NonEmpty, NonEmptyRule};
 use crate::Refined;
 
 use std::ops::Add;
@@ -11,14 +11,14 @@ where
     T: EmptyDefinition,
 {
     #[allow(clippy::should_implement_trait)]
-    pub fn into_iter(self) -> NonEmptyIntoIter<T> {
+    pub fn into_iter(self) -> NonEmpty<std::vec::IntoIter<T>> {
         Refined::new(self.into_value().into_iter())
             .ok()
             .expect("This error is always unreachable")
     }
 
     #[allow(clippy::should_implement_trait)]
-    pub fn iter(&self) -> NonEmptyIter<T> {
+    pub fn iter(&self) -> NonEmpty<std::slice::Iter<T>> {
         Refined::new(self.value().iter())
             .ok()
             .expect("This error is always unreachable")

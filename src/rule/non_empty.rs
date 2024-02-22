@@ -1,13 +1,12 @@
-mod non_empty_iter;
 mod non_empty_map;
 mod non_empty_string;
 mod non_empty_vec;
+mod non_empty_vec_deque;
 
 use crate::rule::composer::Not;
 use crate::rule::{EmptyDefinition, EmptyRule};
 use crate::Refined;
 
-pub use non_empty_iter::*;
 pub use non_empty_map::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;

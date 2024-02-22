@@ -241,6 +241,26 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 ```
+# Iterator
+### IntoIter
+```rust
+fn main() -> anyhow::Result<()> {
+    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
+    let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
+    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+    Ok(())
+}
+```
+
+### Iter
+```rust
+fn main() -> anyhow::Result<()> {
+    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
+    let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
+    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+    Ok(())
+}
+```
 
 # Add Trait
 I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed without downgrading the type level.
@@ -258,8 +278,7 @@ fn main() -> anyhow::Result<()> {
 
 ### NonEmptyVec
 ```rust
-#[test]
-fn test_add_vec() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
     let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
     let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
@@ -271,7 +290,7 @@ fn test_add_vec() -> anyhow::Result<()> {
 
 ### Empty
 ```rust
-fn test_add_empty() -> anyhow::Result<()> {
+fn main() -> anyhow::Result<()> {
     let empty_1 = Empty::new(0)?;
     let empty_2 = Empty::new(0)?;
     let empty = empty_1 + empty_2; // This is also `Empty` type
