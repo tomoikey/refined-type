@@ -81,6 +81,13 @@ mod test {
     use std::collections::HashSet;
 
     #[test]
+    fn test_err() -> anyhow::Result<()> {
+        let set_result = NonEmptyHashSet::new(HashSet::<u8>::new());
+        assert!(set_result.is_err());
+        Ok(())
+    }
+
+    #[test]
     fn test_len() -> anyhow::Result<()> {
         let mut set = HashSet::new();
         set.insert(1);
