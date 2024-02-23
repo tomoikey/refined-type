@@ -88,4 +88,54 @@ mod test {
         assert_eq!(set.len(), 1);
         Ok(())
     }
+
+    #[test]
+    fn test_is_empty() -> anyhow::Result<()> {
+        let mut set = HashSet::new();
+        set.insert(1);
+        let set = NonEmptyHashSet::new(set)?;
+        assert!(!set.is_empty());
+        Ok(())
+    }
+
+    #[test]
+    fn test_insert() -> anyhow::Result<()> {
+        let mut set_origin = HashSet::new();
+        set_origin.insert(1);
+
+        let set = NonEmptyHashSet::new(set_origin.clone())?.insert(2);
+
+        set_origin.insert(2);
+        assert_eq!(set.into_value(), set_origin);
+        Ok(())
+    }
+
+    #[test]
+    fn test_is_get() -> anyhow::Result<()> {
+        let mut set = HashSet::new();
+        set.insert(1);
+        let set = NonEmptyHashSet::new(set)?;
+        assert_eq!(set.get(&1), Some(&1));
+        Ok(())
+    }
+
+    #[test]
+    fn test_is_contains() -> anyhow::Result<()> {
+        let mut set_origin = HashSet::new();
+        set_origin.insert(1);
+        let set = NonEmptyHashSet::new(set_origin.clone())?.insert(2);
+        assert!(set.contains(&1));
+        Ok(())
+    }
+
+    #[test]
+    fn test_is_difference() -> anyhow::Result<()> {
+        let mut set_origin = HashSet::new();
+        set_origin.insert(1);
+        let set = NonEmptyHashSet::new(set_origin.clone())?.insert(2);
+        let difference = set.difference(&set_origin);
+        assert_eq!(difference.count(), 1);
+        assert_eq!(set.difference(&set_origin).next(), Some(&2));
+        Ok(())
+    }
 }
