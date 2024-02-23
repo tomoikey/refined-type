@@ -22,8 +22,8 @@ macro_rules! greater_rule {
         }
     };
     ($t: ty, $($ts: ty),+) => {
-        odd_rule! {$t}
-        odd_rule! {$($ts), +}
+        greater_rule! {$t}
+        greater_rule! {$($ts), +}
     };
 }
 
