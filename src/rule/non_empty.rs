@@ -1,4 +1,3 @@
-mod non_empty_map;
 mod non_empty_string;
 mod non_empty_vec;
 mod non_empty_vec_deque;
@@ -6,8 +5,8 @@ mod non_empty_vec_deque;
 use crate::rule::composer::Not;
 use crate::rule::{EmptyDefinition, EmptyRule};
 use crate::Refined;
+use std::iter::Map;
 
-pub use non_empty_map::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
 
@@ -28,7 +27,7 @@ pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 pub type NonEmptyRule<T> = Not<EmptyRule<T>>;
 
 impl<I: ExactSizeIterator + EmptyDefinition> NonEmpty<I> {
-    pub fn map<B, F>(self, f: F) -> NonEmptyMap<I, F>
+    pub fn map<B, F>(self, f: F) -> Refined<NonEmptyRule<Map<I, F>>>
     where
         Self: Sized,
         F: FnMut(I::Item) -> B,
