@@ -1,9 +1,18 @@
 use crate::refined::Refined;
+use crate::result::Error;
 use crate::rule::NonEmptyRule;
 use std::ops::Add;
+use std::str::FromStr;
 
 /// This is a predicate type representing a non-empty string
 pub type NonEmptyString = Refined<NonEmptyStringRule>;
+
+impl FromStr for NonEmptyString {
+    type Err = Error<String>;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Refined::new(s.to_string())
+    }
+}
 
 impl Add for NonEmptyString {
     type Output = Self;
@@ -19,6 +28,7 @@ pub type NonEmptyStringRule = NonEmptyRule<String>;
 #[cfg(test)]
 mod test {
     use crate::rule::{NonEmptyString, NonEmptyStringRule, Rule};
+    use std::str::FromStr;
 
     #[test]
     fn test_non_empty_string() {
@@ -33,6 +43,13 @@ mod test {
         let non_empty_string = non_empty_string_1 + non_empty_string_2;
 
         assert_eq!(non_empty_string.into_value(), "HelloWorld");
+        Ok(())
+    }
+
+    #[test]
+    fn test_from_str() -> anyhow::Result<()> {
+        let non_empty_string = NonEmptyString::from_str("Hello")?;
+        assert_eq!(non_empty_string.into_value(), "Hello");
         Ok(())
     }
 }
