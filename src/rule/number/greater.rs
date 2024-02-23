@@ -2,7 +2,10 @@
 macro_rules! greater_rule {
     (($e: literal, $t: ty)) => {
         paste::item! {
+            #[allow(dead_code)]
             pub type [<Greater $e $t>] = $crate::Refined<[<GreaterRule $e $t>]>;
+
+            #[allow(dead_code)]
             pub struct [<GreaterRule $e $t>];
 
             impl $crate::rule::Rule for [<GreaterRule $e $t>] {

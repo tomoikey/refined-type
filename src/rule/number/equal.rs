@@ -2,7 +2,10 @@
 macro_rules! equal_rule {
     (($e: literal, $t: ty)) => {
         paste::item! {
+            #[allow(dead_code)]
             pub type [<Equal $e $t>] = $crate::Refined<[<EqualRule $e $t>]>;
+
+            #[allow(dead_code)]
             pub struct [<EqualRule $e $t>];
 
             impl $crate::rule::Rule for [<EqualRule $e $t>] {
@@ -18,9 +21,9 @@ macro_rules! equal_rule {
             }
         }
     };
-    ($t: ty, $($ts: ty),+) => {
-        odd_rule! {$t}
-        odd_rule! {$($ts), +}
+    (($e: literal, $t: ty), $(($es: literal, $ts: ty)),+) => {
+        equal_rule!(($e, $t));
+        equal_rule!($(($es, $ts)), +);
     };
 }
 

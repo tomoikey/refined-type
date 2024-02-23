@@ -1,7 +1,10 @@
 macro_rules! even_rule {
     ($t: ty) => {
         paste::item! {
+            #[allow(dead_code)]
             pub type [<Even $t:upper>] = $crate::Refined<[<EvenRule $t:upper>]>;
+
+            #[allow(dead_code)]
             pub struct [<EvenRule $t:upper>];
 
             impl $crate::rule::Rule for [<EvenRule $t:upper>] {

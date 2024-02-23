@@ -2,7 +2,10 @@
 macro_rules! less_rule {
     (($e: literal, $t: ty)) => {
         paste::item! {
+            #[allow(dead_code)]
             pub type [<Less $e $t>] = $crate::Refined<[<LessRule $e $t>]>;
+
+            #[allow(dead_code)]
             pub struct [<LessRule $e $t>];
 
             impl $crate::rule::Rule for [<LessRule $e $t>] {
