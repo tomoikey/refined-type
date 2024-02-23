@@ -65,6 +65,15 @@ where
         })
     }
 
+    pub fn unsafe_new(value: T) -> Self {
+        Self {
+            value: RULE::validate(value)
+                .ok()
+                .expect("initialization by `unsafe_new` failed"),
+            _rule: Default::default(),
+        }
+    }
+
     pub fn value(&self) -> &RULE::Item {
         &self.value
     }
@@ -91,6 +100,19 @@ mod test {
     use crate::rule::NonEmptyStringRule;
     use serde::{Deserialize, Serialize};
     use serde_json::json;
+
+    #[test]
+    fn test_unsafe_new_success() {
+        let non_empty_string = Refined::<NonEmptyStringRule>::unsafe_new("Hello".to_string());
+        assert_eq!(non_empty_string.value, "Hello");
+    }
+
+    #[test]
+    #[should_panic(expected = "initialization by `unsafe_new` failed")]
+    fn test_unsafe_new_panic() {
+        let non_empty_string = Refined::<NonEmptyStringRule>::unsafe_new("".to_string());
+        assert_eq!(non_empty_string.value, ""); // unreachable
+    }
 
     #[test]
     fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
