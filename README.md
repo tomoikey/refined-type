@@ -241,6 +241,27 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 ```
+# Number
+You can also represent the size of numbers as types.
+I have prepared macros that can easily define the size of numbers.
+Let’s use them to define a `Age` type that is narrowed down to ages 18 to 80.
+```rust
+greater_rule!((18, u8));
+less_rule!((80, u8));
+equal_rule!((18, u8), (80, u8));
+
+type Age = Refined<TargetAgeRule>;
+
+// 18 <= age
+type TargetAge18OrMore = Or<EqualRule18u8, GreaterRule18u8>;
+
+// age <= 80
+type TargetAge80OrLess = Or<EqualRule80u8, LessRule80u8>;
+
+// 18 <= age <= 80
+type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
+```
+
 # Iterator
 The Iterator I’ve prepared has `into_iter` and `iter` implemented.
 Therefore, you can easily map or convert it to a different Iterator using `collect`.
