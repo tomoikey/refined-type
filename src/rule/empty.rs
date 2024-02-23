@@ -99,9 +99,21 @@ where
     }
 }
 
-impl<T> EmptyDefinition for HashSet<T> {
+impl<T, S> EmptyDefinition for HashSet<T, S> {
     fn empty(&self) -> bool {
         self.is_empty()
+    }
+}
+
+impl<T> EmptyDefinition for std::collections::hash_set::IntoIter<T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<'a, T> EmptyDefinition for std::collections::hash_set::Iter<'a, T> {
+    fn empty(&self) -> bool {
+        self.len() == 0
     }
 }
 
