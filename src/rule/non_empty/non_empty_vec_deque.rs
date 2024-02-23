@@ -68,17 +68,25 @@ impl<T> Add for NonEmptyVecDeque<T> {
 #[cfg(test)]
 mod test {
     use crate::rule::non_empty::non_empty_vec_deque::NonEmptyVecDeque;
+    use crate::rule::NonEmptyVec;
     use std::collections::VecDeque;
+
+    #[test]
+    fn test_collect_to_vec() -> anyhow::Result<()> {
+        let mut deque = VecDeque::new();
+        deque.push_front(1);
+        let deque = NonEmptyVecDeque::new(deque)?.push_front(2).push_back(3);
+        let ne_vec: NonEmptyVec<i32> = deque.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
+        assert_eq!(ne_vec.into_value(), vec![12, 6, 18]);
+        Ok(())
+    }
 
     #[test]
     fn test_vec_deque_push() -> anyhow::Result<()> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?.push_front(2).push_back(3);
-        assert_eq!(
-            deque.into_value().into_iter().collect::<Vec<_>>(),
-            vec![2, 1, 3]
-        );
+        assert_eq!(deque.into_value(), vec![2, 1, 3]);
         Ok(())
     }
 
