@@ -97,9 +97,8 @@ mod test {
     #[test]
     fn test_collect_to_deque() -> anyhow::Result<()> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-        let ne_vec: NonEmptyVecDeque<i32> =
-            ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
-        assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+        let ne_vec: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
+        assert_eq!(ne_vec.into_value(), vec![1, 2, 3]);
         Ok(())
     }
 

@@ -242,7 +242,11 @@ fn main() -> anyhow::Result<()> {
 }
 ```
 # Iterator
-### IntoIter
+The Iterator I’ve prepared has into_iter and iter implemented.
+Therefore, you can easily map or convert it to a different Iterator using collect.
+Feel free to explore the capabilities of the Iterator you’ve been given!
+
+### `into_iter()`
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
@@ -252,12 +256,22 @@ fn main() -> anyhow::Result<()> {
 }
 ```
 
-### Iter
+### `iter()`
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+    Ok(())
+}
+```
+
+### `NonEmptyVec` to `NonEmptyVecDeque` using `collect()`
+```rust
+fn main() -> anyhow::Result<()> {
+    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
+    let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
+    assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
     Ok(())
 }
 ```
