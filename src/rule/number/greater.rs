@@ -21,9 +21,9 @@ macro_rules! greater_rule {
             }
         }
     };
-    ($t: ty, $($ts: ty),+) => {
-        greater_rule! {$t}
-        greater_rule! {$($ts), +}
+    (($e: literal, $t: ty), $(($es: literal, $ts: ty)),+) => {
+        greater_rule!(($e, $t));
+        greater_rule!($(($es, $ts)), +);
     };
 }
 
