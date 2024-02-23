@@ -1,3 +1,4 @@
+mod equal;
 mod even;
 mod greater;
 mod less;
