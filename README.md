@@ -242,8 +242,8 @@ fn main() -> anyhow::Result<()> {
 }
 ```
 # Iterator
-The Iterator I’ve prepared has into_iter and iter implemented.
-Therefore, you can easily map or convert it to a different Iterator using collect.
+The Iterator I’ve prepared has `into_iter` and `iter` implemented.
+Therefore, you can easily map or convert it to a different Iterator using `collect`.
 Feel free to explore the capabilities of the Iterator you’ve been given!
 
 ### `into_iter()`
