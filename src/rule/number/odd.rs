@@ -1,7 +1,7 @@
 macro_rules! odd_rule {
     ($t: ty) => {
         paste::item! {
-            /// `Odd[TYPE]` is a type that represents that the number is  odd.
+            /// `Odd[TYPE]` is a type that represents that the number is odd.
             pub type [<Odd $t:upper>] = $crate::Refined<[<OddRule $t:upper>]>;
             pub struct [<OddRule $t:upper>];
 

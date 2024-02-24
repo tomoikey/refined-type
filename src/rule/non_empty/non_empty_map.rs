@@ -10,6 +10,7 @@ use std::hash::{BuildHasher, Hash, RandomState};
 /// ```rust
 /// # use std::collections::{HashMap, HashSet};
 /// # use refined_type::rule::{NonEmptyHashMap, NonEmptyVec};
+///
 /// let mut map = HashMap::new();
 /// map.insert("1", 1);
 /// map.insert("2", 2);

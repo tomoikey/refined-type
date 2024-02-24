@@ -3,7 +3,7 @@ use crate::Refined;
 
 use std::ops::Add;
 
-/// `NonEmptyHashMap` is a `HashMap` that follows the `NonEmptyRule`
+/// `NonEmptyVec` is a `Vec` that follows the `NonEmptyRule`
 ///
 /// # Example
 /// ```rust

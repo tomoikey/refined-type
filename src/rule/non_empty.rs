@@ -15,6 +15,8 @@ pub use non_empty_string::*;
 pub use non_empty_vec::*;
 pub use non_empty_vec_deque::*;
 
+/// The `NonEmpty` type is a type that negates `Empty` using the `Not` composer.  
+/// It represents data that does not match the empty definition
 pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 
 /// Rule where the data is non-empty

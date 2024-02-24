@@ -8,8 +8,8 @@ use std::iter::Map;
 use std::marker::PhantomData;
 use std::ops::Add;
 
-/// Empty is a type that indicates that its subject is empty.  
-/// The definition of empty is defined by EmptyDefinition.  
+/// The `Empty` type is a type that indicates that its subject is empty.  
+/// The definition of empty is defined by `EmptyDefinition`.  
 ///
 /// # Example
 /// ```rust

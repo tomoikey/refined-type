@@ -5,6 +5,7 @@ use std::ops::Add;
 use std::str::FromStr;
 
 /// This is a predicate type representing a non-empty string
+///
 /// # Example
 /// ```rust
 /// # use refined_type::rule::NonEmptyString;
