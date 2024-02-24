@@ -2,7 +2,7 @@ use crate::result::Error;
 use crate::rule::Rule;
 use std::marker::PhantomData;
 
-/// A binder that combines two rules to generate a new single `Rule`
+/// `Not` reverses the definition of a certain `Rule`.
 /// # Example
 /// ```rust
 /// use refined_type::rule::composer::Not;
