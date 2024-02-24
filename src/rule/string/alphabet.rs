@@ -3,6 +3,18 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
+/// The `Alphabet` type represents a type that can contain zero or more alphabetic characters.
+///
+/// # Example
+/// ```rust
+/// # use refined_type::rule::Alphabet;
+///
+/// let alphabet_result = Alphabet::new("alphabet".to_string());
+/// assert!(alphabet_result.is_ok());
+///
+/// let alphabet_result = Alphabet::new("I am the 1st".to_string());
+/// assert!(alphabet_result.is_err());
+/// ```
 pub type Alphabet = Refined<AlphabetRule>;
 
 /// A string consisting entirely of alphabetic characters
@@ -24,5 +36,28 @@ impl Rule for AlphabetRule {
                 target,
             ))
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::rule::Alphabet;
+
+    #[test]
+    fn test_alphabet_ok_empty() {
+        let alphabet_result = Alphabet::new("".to_string());
+        assert!(alphabet_result.is_ok());
+    }
+
+    #[test]
+    fn test_alphabet_ok_non_empty() {
+        let alphabet_result = Alphabet::new("alphabet".to_string());
+        assert!(alphabet_result.is_ok());
+    }
+
+    #[test]
+    fn test_alphabet_err() {
+        let alphabet_result = Alphabet::new("I am the 1st".to_string());
+        assert!(alphabet_result.is_err());
     }
 }
