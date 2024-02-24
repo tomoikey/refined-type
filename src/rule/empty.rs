@@ -117,9 +117,21 @@ impl<'a, T> EmptyDefinition for std::collections::hash_set::Iter<'a, T> {
     }
 }
 
-impl<K, V> EmptyDefinition for HashMap<K, V> {
+impl<K, V, S> EmptyDefinition for HashMap<K, V, S> {
     fn empty(&self) -> bool {
         self.is_empty()
+    }
+}
+
+impl<K, V> EmptyDefinition for std::collections::hash_map::IntoIter<K, V> {
+    fn empty(&self) -> bool {
+        self.len() == 0
+    }
+}
+
+impl<'a, K, V> EmptyDefinition for std::collections::hash_map::Iter<'a, K, V> {
+    fn empty(&self) -> bool {
+        self.len() == 0
     }
 }
 

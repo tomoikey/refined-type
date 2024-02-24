@@ -1,3 +1,4 @@
+mod non_empty_map;
 mod non_empty_set;
 mod non_empty_string;
 mod non_empty_vec;
@@ -8,6 +9,7 @@ use crate::rule::{EmptyDefinition, EmptyRule};
 use crate::Refined;
 use std::iter::Map;
 
+pub use non_empty_map::*;
 pub use non_empty_set::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
