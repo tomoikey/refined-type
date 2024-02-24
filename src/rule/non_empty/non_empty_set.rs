@@ -6,6 +6,20 @@ use std::collections::hash_set::Difference;
 use std::collections::HashSet;
 use std::hash::{BuildHasher, Hash, RandomState};
 
+/// `NonEmptyHashSet` is a `HashSet` that follows the `NonEmptyRule`
+/// # Example
+/// ```rust
+/// # use std::collections::HashSet;
+/// # use refined_type::rule::NonEmptyHashSet;
+///
+/// let mut set_origin = HashSet::new();
+/// set_origin.insert(1);
+///
+/// let set = NonEmptyHashSet::new(set_origin.clone()).unwrap().insert(2);
+/// set_origin.insert(2);
+///
+/// assert_eq!(set.into_value(), set_origin);
+/// ```
 pub type NonEmptyHashSet<T, S = RandomState> = Refined<NonEmptyRule<HashSet<T, S>>>;
 pub type NonEmptyHashSetRule<T, S = RandomState> = NonEmptyRule<HashSet<T, S>>;
 

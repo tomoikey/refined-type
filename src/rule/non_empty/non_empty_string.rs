@@ -5,7 +5,18 @@ use std::ops::Add;
 use std::str::FromStr;
 
 /// This is a predicate type representing a non-empty string
+/// # Example
+/// ```rust
+/// # use refined_type::rule::NonEmptyString;
+///
+/// let non_empty_string_1 = NonEmptyString::new("Hello".to_string()).unwrap();
+/// let non_empty_string_2 = NonEmptyString::new("World".to_string()).unwrap();
+/// let non_empty_string = non_empty_string_1 + non_empty_string_2;
+///
+/// assert_eq!(non_empty_string.into_value(), "HelloWorld");
+/// ```
 pub type NonEmptyString = Refined<NonEmptyStringRule>;
+pub type NonEmptyStringRule = NonEmptyRule<String>;
 
 impl FromStr for NonEmptyString {
     type Err = Error<String>;
@@ -22,8 +33,6 @@ impl Add for NonEmptyString {
             .expect("This error is always unreachable")
     }
 }
-
-pub type NonEmptyStringRule = NonEmptyRule<String>;
 
 #[cfg(test)]
 mod test {

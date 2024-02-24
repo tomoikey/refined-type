@@ -3,6 +3,19 @@ use crate::Refined;
 use std::collections::VecDeque;
 use std::ops::Add;
 
+/// `NonEmptyVecDeque` is a `VecDeque` that follows the `NonEmptyRule`
+///
+/// # Example
+/// ```rust
+/// # use std::collections::VecDeque;
+/// # use refined_type::rule::NonEmptyVecDeque;
+///
+/// let mut deque = VecDeque::new();
+/// deque.push_front(1);
+/// let deque = NonEmptyVecDeque::new(deque).unwrap().push_front(2).push_back(3);
+///
+/// assert_eq!(deque.into_value(), vec![2, 1, 3]);
+/// ```
 pub type NonEmptyVecDeque<T> = Refined<NonEmptyVecDequeRule<T>>;
 pub type NonEmptyVecDequeRule<T> = NonEmptyRule<VecDeque<T>>;
 

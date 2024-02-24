@@ -8,6 +8,18 @@ use std::iter::Map;
 use std::marker::PhantomData;
 use std::ops::Add;
 
+/// Empty is a type that indicates that its subject is empty.  
+/// The definition of empty is defined by EmptyDefinition.  
+///
+/// # Example
+/// ```rust
+/// # use refined_type::rule::Empty;
+/// let empty_1 = Empty::new(0).unwrap();
+/// let empty_2 = Empty::new(0).unwrap();
+/// let empty = empty_1 + empty_2;
+///
+/// assert_eq!(empty.into_value(), 0);
+/// ```
 pub type Empty<T> = Refined<EmptyRule<T>>;
 
 impl<T> Add for Empty<T>

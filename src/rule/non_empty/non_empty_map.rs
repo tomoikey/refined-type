@@ -5,6 +5,23 @@ use std::collections::hash_map::{IntoKeys, IntoValues, Keys, Values};
 use std::collections::HashMap;
 use std::hash::{BuildHasher, Hash, RandomState};
 
+/// `NonEmptyHashMap` is a `HashMap` that follows the `NonEmptyRule`
+/// # Example
+/// ```rust
+/// # use std::collections::{HashMap, HashSet};
+/// # use refined_type::rule::{NonEmptyHashMap, NonEmptyVec};
+/// let mut map = HashMap::new();
+/// map.insert("1", 1);
+/// map.insert("2", 2);
+///
+/// let map = NonEmptyHashMap::new(map).unwrap().insert("3", 3);
+/// let vec: NonEmptyVec<(&str, i32)> = map.into_iter().collect();
+///
+/// assert_eq!(
+///     vec.into_value().into_iter().collect::<HashSet<_>>(),
+///     vec![("1", 1), ("2", 2), ("3", 3)].into_iter().collect()
+/// );
+/// ```
 pub type NonEmptyHashMap<K, V, S = RandomState> = Refined<NonEmptyHashMapRule<K, V, S>>;
 pub type NonEmptyHashMapRule<K, V, S = RandomState> = NonEmptyRule<HashMap<K, V, S>>;
 

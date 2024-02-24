@@ -3,6 +3,15 @@ use crate::Refined;
 
 use std::ops::Add;
 
+/// `NonEmptyHashMap` is a `HashMap` that follows the `NonEmptyRule`
+///
+/// # Example
+/// ```rust
+/// # use refined_type::rule::NonEmptyVec;
+/// let vec = NonEmptyVec::new(vec![1]).unwrap().push(2).push(3);
+///
+/// assert_eq!(vec.into_value(), vec![1, 2, 3]);
+/// ```
 pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
 pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 

@@ -13,6 +13,7 @@ pub use non_empty_map::*;
 pub use non_empty_set::*;
 pub use non_empty_string::*;
 pub use non_empty_vec::*;
+pub use non_empty_vec_deque::*;
 
 pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 
