@@ -1,12 +1,17 @@
+mod empty_definition;
+mod iterator;
+mod number;
+mod string;
+
 use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
 
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet, VecDeque};
 use std::fmt::Debug;
-use std::iter::Map;
 use std::marker::PhantomData;
 use std::ops::Add;
+
+pub use empty_definition::EmptyDefinition;
 
 /// The `Empty` type is a type that indicates that its subject is empty.  
 /// The definition of empty is defined by `EmptyDefinition`.  
@@ -49,198 +54,6 @@ where
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct EmptyRule<T> {
     _phantom_data: PhantomData<T>,
-}
-pub trait EmptyDefinition {
-    fn empty(&self) -> bool;
-}
-
-impl EmptyDefinition for String {
-    fn empty(&self) -> bool {
-        self == &"".to_string()
-    }
-}
-
-impl EmptyDefinition for &str {
-    fn empty(&self) -> bool {
-        self == &""
-    }
-}
-
-impl<T> EmptyDefinition for Vec<T> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl<T> EmptyDefinition for std::vec::IntoIter<T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<'a, T> EmptyDefinition for std::slice::Iter<'a, T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<T> EmptyDefinition for VecDeque<T> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl<T> EmptyDefinition for std::collections::vec_deque::IntoIter<T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<'a, T> EmptyDefinition for std::collections::vec_deque::Iter<'a, T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<F, B, I: ExactSizeIterator> EmptyDefinition for Map<I, F>
-where
-    F: FnMut(I::Item) -> B,
-{
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<T, S> EmptyDefinition for HashSet<T, S> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl<T> EmptyDefinition for std::collections::hash_set::IntoIter<T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<'a, T> EmptyDefinition for std::collections::hash_set::Iter<'a, T> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<K, V, S> EmptyDefinition for HashMap<K, V, S> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl<K, V> EmptyDefinition for std::collections::hash_map::IntoIter<K, V> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<'a, K, V> EmptyDefinition for std::collections::hash_map::Iter<'a, K, V> {
-    fn empty(&self) -> bool {
-        self.len() == 0
-    }
-}
-
-impl<T> EmptyDefinition for BTreeSet<T> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl<K, V> EmptyDefinition for BTreeMap<K, V> {
-    fn empty(&self) -> bool {
-        self.is_empty()
-    }
-}
-
-impl EmptyDefinition for u8 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for u16 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for u32 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for u64 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for u128 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for usize {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for i8 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for i16 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for i32 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for i64 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for i128 {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for isize {
-    fn empty(&self) -> bool {
-        *self == 0
-    }
-}
-
-impl EmptyDefinition for f32 {
-    fn empty(&self) -> bool {
-        *self == 0f32
-    }
-}
-
-impl EmptyDefinition for f64 {
-    fn empty(&self) -> bool {
-        *self == 0f64
-    }
 }
 
 impl<T> Rule for EmptyRule<T>
