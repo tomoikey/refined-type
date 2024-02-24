@@ -3,6 +3,18 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
+/// The `Email` type represents a type that conforms to the format of an Email.
+///
+/// # Example
+/// ```rust
+/// # use refined_type::rule::Email;
+///
+/// let valid = "sample@example.com".to_string();
+/// assert!(Email::new(valid).is_ok());
+///
+/// let invalid = "example.com".to_string();
+/// assert!(Email::new(invalid).is_err());
+/// ```
 pub type Email = Refined<EmailRule>;
 
 pub struct EmailRule;
