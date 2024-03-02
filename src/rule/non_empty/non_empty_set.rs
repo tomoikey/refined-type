@@ -3,8 +3,9 @@ use crate::Refined;
 use std::borrow::Borrow;
 use std::collections::hash_set::Difference;
 
+use std::collections::hash_map::RandomState;
 use std::collections::HashSet;
-use std::hash::{BuildHasher, Hash, RandomState};
+use std::hash::{BuildHasher, Hash};
 
 /// `NonEmptyHashSet` is a `HashSet` that follows the `NonEmptyRule`
 /// # Example

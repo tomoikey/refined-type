@@ -1,9 +1,10 @@
 use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
 use std::borrow::Borrow;
+use std::collections::hash_map::RandomState;
 use std::collections::hash_map::{IntoKeys, IntoValues, Keys, Values};
 use std::collections::HashMap;
-use std::hash::{BuildHasher, Hash, RandomState};
+use std::hash::{BuildHasher, Hash};
 
 /// `NonEmptyHashMap` is a `HashMap` that follows the `NonEmptyRule`
 /// # Example
