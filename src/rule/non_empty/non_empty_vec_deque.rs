@@ -1,4 +1,4 @@
-use crate::rule::{EmptyDefinition, NonEmpty, NonEmptyRule};
+use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
 use std::collections::VecDeque;
 use std::ops::Add;
@@ -19,10 +19,7 @@ use std::ops::Add;
 pub type NonEmptyVecDeque<T> = Refined<NonEmptyVecDequeRule<T>>;
 pub type NonEmptyVecDequeRule<T> = NonEmptyRule<VecDeque<T>>;
 
-impl<T> NonEmptyVecDeque<T>
-where
-    T: EmptyDefinition,
-{
+impl<T> NonEmptyVecDeque<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::vec_deque::IntoIter<T>> {
         Refined::new(self.into_value().into_iter())

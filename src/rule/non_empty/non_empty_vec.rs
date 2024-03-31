@@ -1,4 +1,4 @@
-use crate::rule::{EmptyDefinition, NonEmpty, NonEmptyRule};
+use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
 
 use std::ops::Add;
@@ -15,10 +15,7 @@ use std::ops::Add;
 pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
 pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
-impl<T> NonEmptyVec<T>
-where
-    T: EmptyDefinition,
-{
+impl<T> NonEmptyVec<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::vec::IntoIter<T>> {
         Refined::new(self.into_value().into_iter())
