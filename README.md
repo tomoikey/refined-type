@@ -1,13 +1,18 @@
 # Refined-Type
-**refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the range of guarantees your applications can statically ensure.
+
+**refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
+range of guarantees your applications can statically ensure.
 
 # Overview
-You can create various rules for a certain type, such as phone numbers, addresses, times, and so on. 
-Once you have established the rules, you can easily combine them. 
-Specifically, if you create rules for 'non-empty strings' and 'strings composed only of alphabets,' you do not need to redefine a new rule for 'non-empty strings composed only of alphabets'. 
+
+You can create various rules for a certain type, such as phone numbers, addresses, times, and so on.
+Once you have established the rules, you can easily combine them.
+Specifically, if you create rules for 'non-empty strings' and 'strings composed only of alphabets,' you do not need to
+redefine a new rule for 'non-empty strings composed only of alphabets'.
 All rules can be arbitrarily combined and extended as long as the target type matches. Enjoy a wonderful type life!
 
 # Example Usage
+
 ```rust
 type NonEmptyString = Refined<NonEmptyStringRule>;
 
@@ -21,15 +26,17 @@ fn main() {
 ```
 
 # Installation
+
 ```shell
 cargo add refined-type
 ```
 
 # Custom Rule
-There are many situations where you may want to define custom rules. 
-To define rules for a specific target type, you first need to define a struct. 
-In the struct, define fields for specifying detailed conditions. 
-Once the definition is complete, all you need to do is implement the Rule trait. 
+
+There are many situations where you may want to define custom rules.
+To define rules for a specific target type, you first need to define a struct.
+In the struct, define fields for specifying detailed conditions.
+Once the definition is complete, all you need to do is implement the Rule trait.
 Add your preferred conditions as you like.
 
 ```rust
@@ -38,20 +45,23 @@ fn main() {
     assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
 
     let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
-    assert!(empty_string_result.is_err())   
+    assert!(empty_string_result.is_err())
 }
 ```
 
 # Compose Rules
-As mentioned earlier, it is possible to combine any rules as long as the target types match. 
-In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World'. 
-Since their target type is String, combining them is possible. 
-I have prepared something called Rule Composer (`And`, `Or`, `Not`). 
+
+As mentioned earlier, it is possible to combine any rules as long as the target types match.
+In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World'.
+Since their target type is String, combining them is possible.
+I have prepared something called Rule Composer (`And`, `Or`, `Not`).
 By using Rule Composer, composite rules can be easily created.
 
 ### Original Rules
+
 ```rust
 struct ContainsHelloRule;
+
 struct ContainsWorldRule;
 
 impl Rule for ContainsHelloRule {
@@ -60,8 +70,7 @@ impl Rule for ContainsHelloRule {
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("Hello") {
             Ok(target)
-        }
-        else {
+        } else {
             Err(Error::new(format!("{} does not contain `Hello`", target)))
         }
     }
@@ -73,8 +82,7 @@ impl Rule for ContainsWorldRule {
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.contains("World") {
             Ok(target)
-        }
-        else {
+        } else {
             Err(Error::new(format!("{} does not contain `World`", target)))
         }
     }
@@ -82,8 +90,10 @@ impl Rule for ContainsWorldRule {
 ```
 
 ### 1: `And` Rule Composer
-`And` Rule Composer is a rule that satisfies both of the two rules. 
+
+`And` Rule Composer is a rule that satisfies both of the two rules.
 It is generally effective when you want to narrow down the condition range.
+
 ```rust
 fn main() {
     type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
@@ -97,8 +107,10 @@ fn main() {
 ```
 
 ### 2: `Or` Rule Composer
-`Or` Rule Composer is a rule that satisfies either of the two rules. 
+
+`Or` Rule Composer is a rule that satisfies either of the two rules.
 It is generally effective when you want to expand the condition range.
+
 ```rust
 fn main() {
     type HelloOrWorldRule = Or<ContainsHelloRule, ContainsWorldRule>;
@@ -115,8 +127,10 @@ fn main() {
 ```
 
 ### 3: `Not` Rule Composer
-`Not` Rule Composer is a rule that does not satisfy a specific condition. 
+
+`Not` Rule Composer is a rule that does not satisfy a specific condition.
 It is generally effective when you want to discard only certain situations.
+
 ```rust
 fn main() {
     type NotHelloRule = Not<ContainsHelloRule>;
@@ -130,11 +144,15 @@ fn main() {
 ```
 
 ### 4: Compose Rule Composer
-Rule Composer is also a rule. 
+
+Rule Composer is also a rule.
 Therefore, it can be treated much like a composite function
+
 ```rust
 struct StartWithHelloRule;
+
 struct StartWithByeRule;
+
 struct EndWithJohnRule;
 
 impl Rule for StartsWithHelloRule {
@@ -143,8 +161,7 @@ impl Rule for StartsWithHelloRule {
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.starts_with("Hello") {
             Ok(target)
-        }
-        else {
+        } else {
             Err(Error::new(format!("{} does not start with `Hello`", target)))
         }
     }
@@ -156,8 +173,7 @@ impl Rule for StartsWithByeRule {
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.starts_with("Bye") {
             Ok(target)
-        }
-        else {
+        } else {
             Err(Error::new(format!("{} does not start with `Bye`", target)))
         }
     }
@@ -169,8 +185,7 @@ impl Rule for EndWithJohnRule {
     fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
         if target.ends_with("John") {
             Ok(target)
-        }
-        else {
+        } else {
             Err(Error::new(format!("{} does not end with `John`", target)))
         }
     }
@@ -187,8 +202,13 @@ fn main() {
 ```
 
 # JSON
-`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize` and `Deserialize`.
+
+`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write
+new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize`
+and `Deserialize`.
+
 ### Serialize
+
 ```rust
 type NonEmptyString = Refined<NonEmptyStringRule>;
 
@@ -215,6 +235,7 @@ fn main() -> anyhow::Result<()> {
 ```
 
 ### Deserialize
+
 ```rust
 type NonEmptyString = Refined<NonEmptyStringRule>;
 
@@ -229,7 +250,7 @@ fn main() -> anyhow::Result<()> {
         "name": "john",
         "age": 8
     }}
-    .to_string();
+        .to_string();
 
     let actual = serde_json::from_str::<Human>(&json)?;
 
@@ -241,10 +262,13 @@ fn main() -> anyhow::Result<()> {
     Ok(())
 }
 ```
+
 # Number
+
 You can also represent the size of numbers as types.
 I have prepared macros that can easily define the size of numbers.
 Let’s use them to define a `Age` type that is narrowed down to ages 18 to 80.
+
 ```rust
 greater_rule!((18, u8));
 less_rule!((80, u8));
@@ -263,11 +287,13 @@ type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
 ```
 
 # Iterator
+
 The Iterator I’ve prepared has `into_iter` and `iter` implemented.
 Therefore, you can easily map or convert it to a different Iterator using `collect`.
 Feel free to explore the capabilities of the Iterator you’ve been given!
 
 ### `into_iter()`
+
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
@@ -278,6 +304,7 @@ fn main() -> anyhow::Result<()> {
 ```
 
 ### `iter()`
+
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
@@ -288,6 +315,7 @@ fn main() -> anyhow::Result<()> {
 ```
 
 ### `NonEmptyVec` to `NonEmptyVecDeque` using `collect()`
+
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
@@ -298,8 +326,12 @@ fn main() -> anyhow::Result<()> {
 ```
 
 # Add Trait
-I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed without downgrading the type level.
+
+I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed
+without downgrading the type level.
+
 ### NonEmptyString
+
 ```rust
 fn main() -> anyhow::Result<()> {
     let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
@@ -312,6 +344,7 @@ fn main() -> anyhow::Result<()> {
 ```
 
 ### NonEmptyVec
+
 ```rust
 fn main() -> anyhow::Result<()> {
     let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
@@ -323,20 +356,9 @@ fn main() -> anyhow::Result<()> {
 }
 ```
 
-### Empty
-```rust
-fn main() -> anyhow::Result<()> {
-    let empty_1 = Empty::new(0)?;
-    let empty_2 = Empty::new(0)?;
-    let empty = empty_1 + empty_2; // This is also `Empty` type
-
-    assert_eq!(empty.into_value(), 0);
-    Ok(())
-}
-```
-
 # Tips
-Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability. 
+
+Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability.
 Therefore, using **type aliases** can help make your code clearer.
 
 ```rust
@@ -346,6 +368,7 @@ type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
 ```
 
 # License
+
 MIT License
 
 Copyright (c) 2024 Tomoki Someya
