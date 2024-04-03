@@ -28,7 +28,7 @@ fn main() {
 # Installation
 
 ```shell
-cargo add refined-type
+cargo add refined_type
 ```
 
 # Custom Rule
@@ -98,7 +98,7 @@ It is generally effective when you want to narrow down the condition range.
 fn main() {
     type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
-    let rule_ok = Refind::<HelloAndWorldRule>::new("Hello! World!".to_string());
+    let rule_ok = Refined::<HelloAndWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok.is_ok());
 
     let rule_err = Refined::<HelloAndWorldRule>::new("Hello, world!".to_string());
