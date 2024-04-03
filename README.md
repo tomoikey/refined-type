@@ -13,15 +13,66 @@ All rules can be arbitrarily combined and extended as long as the target type ma
 
 # Example Usage
 
+As an example, let's convert from JSON to a struct.
+
 ```rust
-type NonEmptyString = Refined<NonEmptyStringRule>;
+use refined_type::Refined;
+use refined_type::rule::NonEmptyRule;
+use serde::Deserialize;
+use serde_json::json;
 
-fn main() {
-    let hello_world = NonEmptyString::new("hello world".to_string());
-    assert_eq!(hello_world.unwrap().into_value(), "hello world");
+// define the constraints you expect by combining 'Refined' and 'Rule'.
+pub type MyNonEmptyString = Refined<NonEmptyRule<String>>;
+pub type MyNonEmptyVec<T> = Refined<NonEmptyRule<Vec<T>>>;
 
-    let empty_string = NonEmptyString::new("".to_string());
-    assert!(empty_string.is_err());
+// define a struct for converting from JSON.
+#[derive(Debug, Eq, PartialEq, Deserialize)]
+struct Human {
+    name: MyNonEmptyString,
+    friends: MyNonEmptyVec<String>
+}
+
+// In the first example, both 'name' and 'friends' satisfy the rule, so the conversion from JSON will succeed.
+fn example_1() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "friends": ["tom", "taro"]
+    }}
+        .to_string();
+
+    let actual = serde_json::from_str::<Human>(&json)?;
+    let expected = Human {
+        name: MyNonEmptyString::new("john".to_string())?,
+        friends: MyNonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])?
+    };
+    assert_eq!(actual, expected);
+    Ok(())
+}
+
+// In the second example, while `friends` meets the rule, `name` does not, causing the conversion from JSON to fail
+fn example_2() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "",
+        "friends": ["tom", "taro"]
+    }}
+        .to_string();
+
+    // because `name` is empty
+    assert!(serde_json::from_str::<Human>(&json).is_err());
+    Ok(())
+}
+
+// In the third example, while `name` satisfies the rule, `friends` does not, causing the conversion from JSON to fail.
+fn example_3() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "friends": []
+    }}
+        .to_string();
+
+    // because `friends` is empty
+    assert!(serde_json::from_str::<Human>(&json).is_err());
+    Ok(())
 }
 ```
 

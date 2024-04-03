@@ -97,7 +97,7 @@ where
 mod test {
     use crate::refined::Refined;
     use crate::result::Error;
-    use crate::rule::NonEmptyStringRule;
+    use crate::rule::{NonEmptyString, NonEmptyStringRule, NonEmptyVec};
     use serde::{Deserialize, Serialize};
     use serde_json::json;
 
@@ -180,15 +180,16 @@ mod test {
     }
 
     #[test]
-    fn test_refined_deserialize_json_ok_struct() -> anyhow::Result<()> {
-        type NonEmptyString = Refined<NonEmptyStringRule>;
+    fn test_refined_deserialize_json_ok_1() -> anyhow::Result<()> {
         #[derive(Debug, Eq, PartialEq, Deserialize)]
         struct Human {
             name: NonEmptyString,
+            friends: NonEmptyVec<String>,
             age: u8,
         }
         let json = json! {{
             "name": "john",
+            "friends": ["tom", "taro"],
             "age": 8
         }}
         .to_string();
@@ -197,6 +198,7 @@ mod test {
 
         let expected = Human {
             name: NonEmptyString::new("john".to_string())?,
+            friends: NonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])?,
             age: 8,
         };
         assert_eq!(actual, expected);
@@ -204,7 +206,47 @@ mod test {
     }
 
     #[test]
-    fn test_refined_deserialize_json_err() -> anyhow::Result<()> {
+    fn test_refined_deserialize_json_err_1() -> anyhow::Result<()> {
+        #[derive(Debug, Eq, PartialEq, Deserialize)]
+        struct Human {
+            name: NonEmptyString,
+            friends: NonEmptyVec<String>,
+            age: u8,
+        }
+        let json = json! {{
+            "name": "john",
+            "friends": [],
+            "age": 8
+        }}
+        .to_string();
+
+        // because `friends` is empty vec
+        assert!(serde_json::from_str::<Human>(&json).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_err_2() -> anyhow::Result<()> {
+        #[derive(Debug, Eq, PartialEq, Deserialize)]
+        struct Human {
+            name: NonEmptyString,
+            friends: NonEmptyVec<String>,
+            age: u8,
+        }
+        let json = json! {{
+            "name": "",
+            "friends": ["tom", "taro"],
+            "age": 8
+        }}
+        .to_string();
+
+        // because `name` is empty string
+        assert!(serde_json::from_str::<Human>(&json).is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn test_refined_deserialize_json_err_3() -> anyhow::Result<()> {
         let json = json!("").to_string();
         let result = serde_json::from_str::<Refined<NonEmptyStringRule>>(&json);
         assert!(result.is_err());
