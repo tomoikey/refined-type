@@ -22,7 +22,7 @@ where
         if target.as_ref().iter().all(|item| RULE::validate(item).is_ok()) {
             Ok(())
         }
-        else { 
+        else {
             Err(Error::new("not all items satisfy the condition"))
         }
     }

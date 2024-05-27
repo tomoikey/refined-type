@@ -3,6 +3,7 @@ use crate::rule::Rule;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
+use std::ops::Deref;
 
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example
@@ -92,6 +93,17 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
+    }
+}
+
+impl<RULE> Deref for Refined<RULE>
+where
+    RULE: Rule,
+{
+    type Target = RULE::Item;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
     }
 }
 
