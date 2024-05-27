@@ -1,7 +1,7 @@
 use crate::result::Error;
 use crate::rule::Rule;
-use std::marker::PhantomData;
 use crate::Refined;
+use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `ExistsRule`
 pub type Exists<RULE, ITERATOR> = Refined<ExistsRule<RULE, ITERATOR>>;

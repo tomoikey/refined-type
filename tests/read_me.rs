@@ -1,6 +1,9 @@
 use refined_type::result::Error;
 use refined_type::rule::composer::{And, Not, Or};
-use refined_type::rule::{Exists, ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule};
+use refined_type::rule::{
+    Exists, ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
+    NonEmptyVecDeque, Rule,
+};
 use refined_type::{equal_rule, greater_rule, less_rule, Refined};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -263,7 +266,7 @@ fn example_12() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "".to_string()];
     let exists_ok = Exists::<NonEmptyStringRule, _>::new(vec.clone())?;
     assert_eq!(vec, exists_ok.into_value());
-    
+
     let vec = vec!["".to_string(), "".to_string()];
     let exists_err = Exists::<NonEmptyStringRule, _>::new(vec.clone());
     assert!(exists_err.is_err());
