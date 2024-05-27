@@ -6,7 +6,7 @@ repository = "https://github.com/tomoikey/refined-type"
 readme = "README.md"
 categories = ["accessibility", "development-tools"]
 license = "MIT"
-version = "0.4.16"
+version = "0.5.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
