@@ -8,11 +8,11 @@ macro_rules! odd_rule {
             impl $crate::rule::Rule for [<OddRule $t:upper>] {
                 type Item = $t;
 
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if target % 2 == 1 {
-                        Ok(target)
+                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                    if *target % 2 == 1 {
+                        Ok(())
                     } else {
-                        Err($crate::result::Error::new(format!("{} is not odd number", target), target))
+                        Err($crate::result::Error::new(format!("{} is not odd number", target)))
                     }
                 }
             }

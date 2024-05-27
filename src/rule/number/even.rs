@@ -11,11 +11,11 @@ macro_rules! even_rule {
             impl $crate::rule::Rule for [<EvenRule $t:upper>] {
                 type Item = $t;
 
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if target % 2 == 0 {
-                        Ok(target)
+                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                    if *target % 2 == 0 {
+                        Ok(())
                     } else {
-                        Err($crate::result::Error::new(format!("{} is not even number", target), target))
+                        Err($crate::result::Error::new(format!("{} is not even number", target)))
                     }
                 }
             }

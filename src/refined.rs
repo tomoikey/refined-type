@@ -58,18 +58,20 @@ impl<RULE, T> Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
-    pub fn new(value: T) -> Result<Self, Error<T>> {
+    pub fn new(value: T) -> Result<Self, Error> {
+        let _ = RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
         Ok(Self {
-            value: RULE::validate(value)?,
+            value,
             _rule: Default::default(),
         })
     }
 
     pub fn unsafe_new(value: T) -> Self {
+        let _ = RULE::validate(&value)
+            .ok()
+            .expect("initialization by `unsafe_new` failed");
         Self {
-            value: RULE::validate(value)
-                .ok()
-                .expect("initialization by `unsafe_new` failed"),
+            value,
             _rule: Default::default(),
         }
     }
@@ -115,7 +117,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
+    fn test_refined_non_empty_string_ok() -> Result<(), Error> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
@@ -129,7 +131,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_display() -> Result<(), Error<String>> {
+    fn test_refined_display() -> Result<(), Error> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())

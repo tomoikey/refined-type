@@ -12,11 +12,11 @@ macro_rules! greater_rule {
             impl $crate::rule::Rule for [<GreaterRule $e $t>] {
                 type Item = $t;
 
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if target > $e {
-                        Ok(target)
+                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                    if *target > $e {
+                        Ok(())
                     } else {
-                        Err($crate::result::Error::new(format!("{} is not greater than {}", target, $e), target))
+                        Err($crate::result::Error::new(format!("{} is not greater than {}", target, $e)))
                     }
                 }
             }

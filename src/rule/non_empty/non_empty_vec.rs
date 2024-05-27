@@ -71,8 +71,8 @@ mod test {
 
     #[test]
     fn test_non_empty_vec() {
-        assert!(NonEmptyVecRule::validate(vec![1, 2, 3]).is_ok());
-        assert!(NonEmptyVecRule::<u8>::validate(vec![]).is_err());
+        assert!(NonEmptyVecRule::validate(&vec![1, 2, 3]).is_ok());
+        assert!(NonEmptyVecRule::<u8>::validate(&vec![]).is_err());
     }
 
     #[test]

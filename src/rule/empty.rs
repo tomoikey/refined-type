@@ -42,14 +42,14 @@ where
 /// ```rust
 /// use refined_type::rule::{EmptyRule, Rule};
 ///
-/// assert!(EmptyRule::<String>::validate("".to_string()).is_ok());
-/// assert!(EmptyRule::<String>::validate("non empty".to_string()).is_err());
+/// assert!(EmptyRule::<String>::validate(&"".to_string()).is_ok());
+/// assert!(EmptyRule::<String>::validate(&"non empty".to_string()).is_err());
 ///
-/// assert!(EmptyRule::<Vec<u8>>::validate(Vec::<u8>::new()).is_ok());
-/// assert!(EmptyRule::<Vec<u8>>::validate(vec![1, 2, 3]).is_err());
+/// assert!(EmptyRule::<Vec<u8>>::validate(&Vec::<u8>::new()).is_ok());
+/// assert!(EmptyRule::<Vec<u8>>::validate(&vec![1, 2, 3]).is_err());
 ///
-/// assert!(EmptyRule::<u8>::validate(0).is_ok());
-/// assert!(EmptyRule::<u8>::validate(1).is_err());
+/// assert!(EmptyRule::<u8>::validate(&0).is_ok());
+/// assert!(EmptyRule::<u8>::validate(&1).is_err());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct EmptyRule<T> {
@@ -62,11 +62,11 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: &Self::Item) -> Result<(), Error> {
         if target.empty() {
-            Ok(target)
+            Ok(())
         } else {
-            Err(Error::new("The input value is not empty", target))
+            Err(Error::new("The input value is not empty"))
         }
     }
 }
