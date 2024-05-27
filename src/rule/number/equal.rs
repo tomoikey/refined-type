@@ -6,6 +6,7 @@ macro_rules! equal_rule {
             #[allow(dead_code)]
             pub type [<Equal $e $t>] = $crate::Refined<[<EqualRule $e $t>]>;
 
+            /// Rule where the number is equal to `N`
             #[allow(dead_code)]
             pub struct [<EqualRule $e $t>];
 

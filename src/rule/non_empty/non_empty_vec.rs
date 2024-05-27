@@ -3,7 +3,7 @@ use crate::Refined;
 
 use std::ops::Add;
 
-/// `NonEmptyVec` is a `Vec` that follows the `NonEmptyRule`
+/// A type that holds a value satisfying the `NonEmptyVecRule`
 ///
 /// # Example
 /// ```rust
@@ -13,6 +13,8 @@ use std::ops::Add;
 /// assert_eq!(vec.into_value(), vec![1, 2, 3]);
 /// ```
 pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
+
+/// Rule where the input `Vec` is not empty
 pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
 impl<T> NonEmptyVec<T> {

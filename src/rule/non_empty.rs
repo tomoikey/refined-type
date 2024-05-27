@@ -15,11 +15,11 @@ pub use non_empty_string::*;
 pub use non_empty_vec::*;
 pub use non_empty_vec_deque::*;
 
-/// The `NonEmpty` type is a type that negates `Empty` using the `Not` composer.  
-/// It represents data that does not match the empty definition
+/// Refined type where the input value is not empty
+/// The definition of empty is defined by `EmptyDefinition`.
 pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 
-/// Rule where the data is non-empty
+/// Rule where the input value is not empty
 /// ```rust
 /// use refined_type::rule::{NonEmptyRule, Rule};
 /// assert!(NonEmptyRule::<String>::validate(&"non empty".to_string()).is_ok());

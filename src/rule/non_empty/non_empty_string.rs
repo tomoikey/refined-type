@@ -4,7 +4,7 @@ use crate::rule::{NonEmptyRule, NonEmptyVec};
 use std::ops::Add;
 use std::str::FromStr;
 
-/// This is a predicate type representing a non-empty string
+/// A type that holds a value satisfying the `NonEmptyStringRule`
 ///
 /// # Example
 /// ```rust
@@ -17,6 +17,8 @@ use std::str::FromStr;
 /// assert_eq!(non_empty_string.into_value(), "HelloWorld");
 /// ```
 pub type NonEmptyString = Refined<NonEmptyStringRule>;
+
+/// Rule where the input `String` is not empty
 pub type NonEmptyStringRule = NonEmptyRule<String>;
 
 impl NonEmptyString {

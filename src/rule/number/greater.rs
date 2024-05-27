@@ -6,6 +6,7 @@ macro_rules! greater_rule {
             #[allow(dead_code)]
             pub type [<Greater $e $t>] = $crate::Refined<[<GreaterRule $e $t>]>;
 
+            /// Rule where the number is greater than `N`
             #[allow(dead_code)]
             pub struct [<GreaterRule $e $t>];
 

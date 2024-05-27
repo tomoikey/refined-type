@@ -6,6 +6,7 @@ macro_rules! less_rule {
             #[allow(dead_code)]
             pub type [<Less $e $t>] = $crate::Refined<[<LessRule $e $t>]>;
 
+            /// Rule where the number is less than `N`
             #[allow(dead_code)]
             pub struct [<LessRule $e $t>];
 

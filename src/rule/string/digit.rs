@@ -3,7 +3,9 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
+/// A type that holds a value satisfying the `DigitRule`
 pub type Digit = Refined<DigitRule>;
+/// Rule where the input `String` contains only digit characters
 pub struct DigitRule;
 
 impl Rule for DigitRule {
