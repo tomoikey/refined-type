@@ -7,7 +7,6 @@ use refined_type::rule::{
 use refined_type::{equal_rule, greater_rule, less_rule, Refined};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::ops::Deref;
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
@@ -66,12 +65,13 @@ fn example_3() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_4() {
-    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
-    assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
+fn example_4() -> anyhow::Result<()> {
+    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string())?;
+    assert_eq!(non_empty_string_result.into_value(), "Hello World");
 
     let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
-    assert!(empty_string_result.is_err())
+    assert!(empty_string_result.is_err());
+    Ok(())
 }
 
 struct ContainsHelloRule;

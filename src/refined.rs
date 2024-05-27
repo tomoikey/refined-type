@@ -94,17 +94,6 @@ where
     }
 }
 
-impl<RULE> Deref for Refined<RULE>
-where
-    RULE: Rule,
-{
-    type Target = RULE::Item;
-
-    fn deref(&self) -> &Self::Target {
-        &self.value
-    }
-}
-
 #[cfg(test)]
 mod test {
     use crate::refined::Refined;

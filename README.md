@@ -85,12 +85,13 @@ Once the definition is complete, all you need to do is implement the Rule trait.
 Add your preferred conditions as you like.
 
 ```rust
-fn example_4() {
-    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
-    assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
+fn example_4() -> anyhow::Result<()> {
+    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string())?;
+    assert_eq!(non_empty_string_result.into_value(), "Hello World");
 
     let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
     assert!(empty_string_result.is_err())
+    Ok(())
 }
 ```
 
