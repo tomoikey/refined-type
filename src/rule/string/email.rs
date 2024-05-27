@@ -26,7 +26,7 @@ impl Rule for EmailRule {
         let regex =
             Regex::new(r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$")
                 .expect("[BUG] Unreachable");
-        if regex.is_match(&target) {
+        if regex.is_match(target) {
             Ok(())
         } else {
             Err(Error::new(format!("{target} is not a valid email format")))

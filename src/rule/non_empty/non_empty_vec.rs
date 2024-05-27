@@ -18,16 +18,12 @@ pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 impl<T> NonEmptyVec<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::vec::IntoIter<T>> {
-        Refined::new(self.into_value().into_iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
     }
 
     #[allow(clippy::should_implement_trait)]
     pub fn iter(&self) -> NonEmpty<std::slice::Iter<T>> {
-        Refined::new(self.value().iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.value().iter()).expect("This error is always unreachable")
     }
 
     pub fn get(&self, index: usize) -> Option<&T> {
@@ -45,9 +41,7 @@ impl<T> NonEmptyVec<T> {
     pub fn push(self, value: T) -> Self {
         let mut result = self.into_value();
         result.push(value);
-        Refined::new(result)
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(result).expect("This error is always unreachable")
     }
 }
 
@@ -57,9 +51,7 @@ impl<T> Add for NonEmptyVec<T> {
     fn add(self, rhs: Self) -> Self::Output {
         let mut result = self.into_value();
         result.append(&mut rhs.into_value());
-        Refined::new(result)
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(result).expect("This error is always unreachable")
     }
 }
 

@@ -60,7 +60,7 @@ where
     RULE: Rule<Item = T>,
 {
     pub fn new(value: T) -> Result<Self, Error> {
-        let _ = RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
+        RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
         Ok(Self {
             value,
             _rule: Default::default(),
@@ -68,9 +68,7 @@ where
     }
 
     pub fn unsafe_new(value: T) -> Self {
-        let _ = RULE::validate(&value)
-            .ok()
-            .expect("initialization by `unsafe_new` failed");
+        RULE::validate(&value).expect("initialization by `unsafe_new` failed");
         Self {
             value,
             _rule: Default::default(),

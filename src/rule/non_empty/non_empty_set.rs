@@ -27,16 +27,12 @@ pub type NonEmptyHashSetRule<T, S = RandomState> = NonEmptyRule<HashSet<T, S>>;
 impl<T, S> NonEmptyHashSet<T, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_set::IntoIter<T>> {
-        Refined::new(self.into_value().into_iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
     }
 
     #[allow(clippy::should_implement_trait)]
     pub fn iter(&self) -> NonEmpty<std::collections::hash_set::Iter<T>> {
-        Refined::new(self.value().iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.value().iter()).expect("This error is always unreachable")
     }
 
     pub fn len(&self) -> usize {
@@ -64,12 +60,10 @@ where
     pub fn insert(self, value: T) -> Self {
         let mut result = self.into_value();
         result.insert(value);
-        Refined::new(result)
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(result).expect("This error is always unreachable")
     }
 
-    pub fn get<Q: ?Sized>(&self, value: &Q) -> Option<&T>
+    pub fn get<Q>(&self, value: &Q) -> Option<&T>
     where
         T: Borrow<Q>,
         Q: Hash + Eq,
@@ -77,7 +71,7 @@ where
         self.value().get(value)
     }
 
-    pub fn contains<Q: ?Sized>(&self, value: &Q) -> bool
+    pub fn contains<Q>(&self, value: &Q) -> bool
     where
         T: Borrow<Q>,
         Q: Hash + Eq,
