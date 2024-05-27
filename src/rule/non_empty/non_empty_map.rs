@@ -6,7 +6,7 @@ use std::collections::hash_map::{IntoKeys, IntoValues, Keys, Values};
 use std::collections::HashMap;
 use std::hash::{BuildHasher, Hash};
 
-/// `NonEmptyHashMap` is a `HashMap` that follows the `NonEmptyRule`
+/// A type that holds a value satisfying the `NonEmptyHashMapRule`
 /// # Example
 /// ```rust
 /// # use std::collections::{HashMap, HashSet};
@@ -25,6 +25,8 @@ use std::hash::{BuildHasher, Hash};
 /// );
 /// ```
 pub type NonEmptyHashMap<K, V, S = RandomState> = Refined<NonEmptyHashMapRule<K, V, S>>;
+
+/// Rule where the input `HashMap` is not empty
 pub type NonEmptyHashMapRule<K, V, S = RandomState> = NonEmptyRule<HashMap<K, V, S>>;
 
 impl<K, V, S> NonEmptyHashMap<K, V, S> {

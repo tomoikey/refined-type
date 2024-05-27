@@ -3,7 +3,7 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
-/// The `Email` type represents a type that conforms to the format of an Email.
+/// A type that holds a value satisfying the `EmailRule`
 ///
 /// # Example
 /// ```rust
@@ -17,6 +17,7 @@ use regex::Regex;
 /// ```
 pub type Email = Refined<EmailRule>;
 
+/// Rule where the input `String` is a valid email format
 pub struct EmailRule;
 
 impl Rule for EmailRule {

@@ -3,7 +3,7 @@ use crate::Refined;
 use std::collections::VecDeque;
 use std::ops::Add;
 
-/// `NonEmptyVecDeque` is a `VecDeque` that follows the `NonEmptyRule`
+/// A type that holds a value satisfying the `NonEmptyVecDequeRule`
 ///
 /// # Example
 /// ```rust
@@ -17,6 +17,8 @@ use std::ops::Add;
 /// assert_eq!(deque.into_value(), vec![2, 1, 3]);
 /// ```
 pub type NonEmptyVecDeque<T> = Refined<NonEmptyVecDequeRule<T>>;
+
+/// Rule where the input `VecDeque` is not empty
 pub type NonEmptyVecDequeRule<T> = NonEmptyRule<VecDeque<T>>;
 
 impl<T> NonEmptyVecDeque<T> {

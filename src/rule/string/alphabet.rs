@@ -3,7 +3,7 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
-/// The `Alphabet` type represents a type that can contain zero or more alphabetic characters.
+/// A type that holds a value satisfying the `AlphabetRule`
 ///
 /// # Example
 /// ```rust
@@ -17,7 +17,7 @@ use regex::Regex;
 /// ```
 pub type Alphabet = Refined<AlphabetRule>;
 
-/// A string consisting entirely of alphabetic characters
+/// Rule where the input `String` contains only alphabet characters
 pub struct AlphabetRule;
 
 impl Rule for AlphabetRule {
