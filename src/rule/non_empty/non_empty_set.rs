@@ -7,7 +7,7 @@ use std::collections::hash_map::RandomState;
 use std::collections::HashSet;
 use std::hash::{BuildHasher, Hash};
 
-/// `NonEmptyHashSet` is a `HashSet` that follows the `NonEmptyRule`
+/// A type that holds a value satisfying the `NonEmptyHashSetRule`
 /// # Example
 /// ```rust
 /// # use std::collections::HashSet;
@@ -22,6 +22,8 @@ use std::hash::{BuildHasher, Hash};
 /// assert_eq!(set.into_value(), set_origin);
 /// ```
 pub type NonEmptyHashSet<T, S = RandomState> = Refined<NonEmptyRule<HashSet<T, S>>>;
+
+/// Rule where the input `HashSet` is not empty
 pub type NonEmptyHashSetRule<T, S = RandomState> = NonEmptyRule<HashSet<T, S>>;
 
 impl<T, S> NonEmptyHashSet<T, S> {

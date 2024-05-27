@@ -5,6 +5,7 @@ macro_rules! even_rule {
             #[allow(dead_code)]
             pub type [<Even $t:upper>] = $crate::Refined<[<EvenRule $t:upper>]>;
 
+            /// Rule where the number is even
             #[allow(dead_code)]
             pub struct [<EvenRule $t:upper>];
 

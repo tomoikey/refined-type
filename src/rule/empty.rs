@@ -13,7 +13,7 @@ use std::ops::Add;
 
 pub use empty_definition::EmptyDefinition;
 
-/// The `Empty` type is a type that indicates that its subject is empty.  
+/// A type that holds a value satisfying the `EmptyRule`
 /// The definition of empty is defined by `EmptyDefinition`.  
 ///
 /// # Example
@@ -38,7 +38,7 @@ where
     }
 }
 
-/// Rule where the data is empty
+/// Rule where the input value is empty
 /// ```rust
 /// use refined_type::rule::{EmptyRule, Rule};
 ///

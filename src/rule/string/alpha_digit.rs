@@ -3,7 +3,10 @@ use crate::rule::Rule;
 use crate::Refined;
 use regex::Regex;
 
+/// A type that holds a value satisfying the `AlphaDigitRule`
 pub type AlphaDigit = Refined<AlphaDigitRule>;
+
+/// Rule where the input `String` contains only alphabet and digit characters
 pub struct AlphaDigitRule;
 
 impl Rule for AlphaDigitRule {

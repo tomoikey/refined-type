@@ -3,6 +3,7 @@ macro_rules! odd_rule {
         paste::item! {
             /// `Odd[TYPE]` is a type that represents that the number is odd.
             pub type [<Odd $t:upper>] = $crate::Refined<[<OddRule $t:upper>]>;
+            /// Rule where the number is odd
             pub struct [<OddRule $t:upper>];
 
             impl $crate::rule::Rule for [<OddRule $t:upper>] {
