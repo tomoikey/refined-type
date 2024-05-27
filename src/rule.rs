@@ -1,5 +1,6 @@
 pub mod composer;
 mod empty;
+mod exists;
 mod for_all;
 mod non_empty;
 mod number;
@@ -7,6 +8,7 @@ mod string;
 
 use crate::result::Error;
 pub use empty::*;
+pub use exists::*;
 pub use for_all::*;
 pub use non_empty::*;
 pub use number::*;

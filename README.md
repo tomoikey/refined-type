@@ -319,6 +319,7 @@ type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
 ```
 
 # Iterator
+I have also prepared several useful refined types for Iterators.
 ## `ForAll`
 `ForAll` is a rule that applies a specific rule to all elements in the Iterator.
 ```rust
@@ -337,9 +338,18 @@ fn example_11() -> anyhow::Result<()> {
 ## `Exists`
 `Exists` is a rule that applies a specific rule to at least one element in the Iterator.
 ```rust
-// Coming soon
-```
+fn example_12() -> anyhow::Result<()> {
+    let vec = vec!["Hello".to_string(), "".to_string()];
+    let exists_ok = Exists::<NonEmptyStringRule, _>::new(vec.clone())?;
+    assert_eq!(vec, exists_ok.into_value());
 
+    let vec = vec!["".to_string(), "".to_string()];
+    let exists_err = Exists::<NonEmptyStringRule, _>::new(vec.clone());
+    assert!(exists_err.is_err());
+    Ok(())
+}
+```
+---
 ## `into_iter()` and `iter()`
 The Iterator I’ve prepared has `into_iter` and `iter` implemented.
 Therefore, you can easily map or convert it to a different Iterator using `collect`.

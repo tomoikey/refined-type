@@ -4,6 +4,7 @@ use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
 
+/// A type that holds a value satisfying the `ForAllRule`
 pub type ForAll<RULE, ITERATOR> = Refined<ForAllRule<RULE, ITERATOR>>;
 
 /// Rule where all the data in the collection satisfies the condition
