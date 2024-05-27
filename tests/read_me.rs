@@ -1,5 +1,5 @@
 use refined_type::result::Error;
-use refined_type::rule::{NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule};
+use refined_type::rule::{ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule};
 use refined_type::{equal_rule, greater_rule, less_rule, Refined};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -245,6 +245,24 @@ type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
 
 #[test]
 fn example_11() -> anyhow::Result<()> {
+    let vec = vec!["Hello".to_string(), "World".to_string()];
+    let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
+    assert_eq!(vec, for_all_ok.into_value());
+    
+    let vec = vec!["Hello".to_string(), "".to_string()];
+    let for_all_err = ForAll::<NonEmptyStringRule, _>::new(vec.clone());
+    assert!(for_all_err.is_err());
+    Ok(())
+}
+
+#[test]
+fn example_12() -> anyhow::Result<()> {
+    // `Exists` coming soon
+    Ok(())
+}
+
+#[test]
+fn example_13() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -252,7 +270,7 @@ fn example_11() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_12() -> anyhow::Result<()> {
+fn example_14() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -260,7 +278,7 @@ fn example_12() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_13() -> anyhow::Result<()> {
+fn example_15() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
@@ -268,7 +286,7 @@ fn example_13() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_14() -> anyhow::Result<()> {
+fn example_16() -> anyhow::Result<()> {
     let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
     let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
     let non_empty_string = non_empty_string_1 + non_empty_string_2; // This is also `NonEmptyString` type
@@ -278,7 +296,7 @@ fn example_14() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_15() -> anyhow::Result<()> {
+fn example_17() -> anyhow::Result<()> {
     let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
     let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type

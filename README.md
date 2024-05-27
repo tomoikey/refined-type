@@ -319,7 +319,28 @@ type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
 ```
 
 # Iterator
+## `ForAll`
+`ForAll` is a rule that applies a specific rule to all elements in the Iterator.
+```rust
+fn example_11() -> anyhow::Result<()> {
+    let vec = vec!["Hello".to_string(), "World".to_string()];
+    let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
+    assert_eq!(vec, for_all_ok.into_value());
+    
+    let vec = vec!["Hello".to_string(), "".to_string()];
+    let for_all_err = ForAll::<NonEmptyStringRule, _>::new(vec.clone());
+    assert!(for_all_err.is_err());
+    Ok(())
+}
+```
 
+## `Exists`
+`Exists` is a rule that applies a specific rule to at least one element in the Iterator.
+```rust
+// Coming soon
+```
+
+## `into_iter()` and `iter()`
 The Iterator I’ve prepared has `into_iter` and `iter` implemented.
 Therefore, you can easily map or convert it to a different Iterator using `collect`.
 Feel free to explore the capabilities of the Iterator you’ve been given!
