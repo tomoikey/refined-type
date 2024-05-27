@@ -15,7 +15,7 @@ pub use non_empty_string::*;
 pub use non_empty_vec::*;
 pub use non_empty_vec_deque::*;
 
-/// Refined type where the input value is not empty
+/// A type that holds a value satisfying the `NonEmptyRule`
 /// The definition of empty is defined by `EmptyDefinition`.
 pub type NonEmpty<T> = Refined<NonEmptyRule<T>>;
 
