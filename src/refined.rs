@@ -3,6 +3,7 @@ use crate::rule::Rule;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
+use std::ops::Deref;
 
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example
@@ -58,18 +59,18 @@ impl<RULE, T> Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
-    pub fn new(value: T) -> Result<Self, Error<T>> {
+    pub fn new(value: T) -> Result<Self, Error> {
+        RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
         Ok(Self {
-            value: RULE::validate(value)?,
+            value,
             _rule: Default::default(),
         })
     }
 
     pub fn unsafe_new(value: T) -> Self {
+        RULE::validate(&value).expect("initialization by `unsafe_new` failed");
         Self {
-            value: RULE::validate(value)
-                .ok()
-                .expect("initialization by `unsafe_new` failed"),
+            value,
             _rule: Default::default(),
         }
     }
@@ -90,6 +91,17 @@ where
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.value)
+    }
+}
+
+impl<RULE> Deref for Refined<RULE>
+where
+    RULE: Rule,
+{
+    type Target = RULE::Item;
+
+    fn deref(&self) -> &Self::Target {
+        &self.value
     }
 }
 
@@ -115,7 +127,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
+    fn test_refined_non_empty_string_ok() -> Result<(), Error> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
@@ -129,7 +141,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_display() -> Result<(), Error<String>> {
+    fn test_refined_display() -> Result<(), Error> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())

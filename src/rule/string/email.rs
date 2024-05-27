@@ -22,17 +22,14 @@ pub struct EmailRule;
 impl Rule for EmailRule {
     type Item = String;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: &Self::Item) -> Result<(), Error> {
         let regex =
             Regex::new(r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$")
-                .unwrap();
-        if regex.is_match(&target) {
-            Ok(target)
+                .expect("[BUG] Unreachable");
+        if regex.is_match(target) {
+            Ok(())
         } else {
-            Err(Error::new(
-                format!("{target} is not a valid email format"),
-                target,
-            ))
+            Err(Error::new(format!("{target} is not a valid email format")))
         }
     }
 }
@@ -45,18 +42,18 @@ mod test {
     #[test]
     fn test_valid_email() {
         let valid = "sample@example.com".to_string();
-        assert!(EmailRule::validate(valid).is_ok())
+        assert!(EmailRule::validate(&valid).is_ok())
     }
 
     #[test]
     fn test_invalid_email_1() {
         let invalid = "example.com".to_string();
-        assert!(EmailRule::validate(invalid).is_err())
+        assert!(EmailRule::validate(&invalid).is_err())
     }
 
     #[test]
     fn test_invalid_email_2() {
         let invalid = "@".to_string();
-        assert!(EmailRule::validate(invalid).is_err())
+        assert!(EmailRule::validate(&invalid).is_err())
     }
 }

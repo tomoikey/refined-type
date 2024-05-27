@@ -10,8 +10,8 @@ use std::marker::PhantomData;
 ///
 ///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule, AlphabetRule>;
 ///
-///  let actual = NonEmptyAlphabetString::validate("Hello".to_string());
-///  assert!(actual.is_ok_and(|n| n.as_str() == "Hello"));
+///  let actual = NonEmptyAlphabetString::validate(&"Hello".to_string());
+///  assert!(actual.is_ok());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct And<RULE1, RULE2> {
@@ -45,8 +45,8 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        let bounded_rule = move |t: T| RULE1::validate(t).and_then(|t| RULE2::validate(t));
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        let bounded_rule = |t: &T| RULE1::validate(t).and_then(|_| RULE2::validate(t));
         bounded_rule(target)
     }
 }
@@ -60,11 +60,11 @@ mod test {
 
     #[test]
     fn test_rule_binder_ok() {
-        assert!(NonEmptyAlphabetString::validate("Hello".to_string()).is_ok());
+        assert!(NonEmptyAlphabetString::validate(&"Hello".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_err() {
-        assert!(NonEmptyAlphabetString::validate("Hello1".to_string()).is_err());
+        assert!(NonEmptyAlphabetString::validate(&"Hello1".to_string()).is_err());
     }
 }

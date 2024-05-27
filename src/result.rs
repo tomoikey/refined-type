@@ -2,27 +2,21 @@ use std::fmt::{Debug, Display, Formatter};
 
 /// A type indicating a failure to convert to `Refined`
 #[derive(Debug)]
-pub struct Error<T: Sized> {
+pub struct Error {
     message: String,
-    target: T,
 }
 
-impl<T> std::error::Error for Error<T> where T: Debug {}
+impl std::error::Error for Error {}
 
-impl<T> Error<T> {
-    pub fn new(message: impl Into<String>, target: T) -> Self {
+impl Error {
+    pub fn new(message: impl Into<String>) -> Self {
         Self {
             message: message.into(),
-            target,
         }
-    }
-
-    pub fn into_target(self) -> T {
-        self.target
     }
 }
 
-impl<T> Display for Error<T> {
+impl Display for Error {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.message)
     }

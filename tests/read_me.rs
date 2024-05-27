@@ -1,21 +1,14 @@
-# Refined-Type
+use refined_type::result::Error;
+use refined_type::rule::composer::{And, Not, Or};
+use refined_type::rule::{
+    Exists, ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
+    NonEmptyVecDeque, Rule,
+};
+use refined_type::{equal_rule, greater_rule, less_rule, Refined};
+use serde::{Deserialize, Serialize};
+use serde_json::json;
+use std::ops::Deref;
 
-**refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
-range of guarantees your applications can statically ensure.
-
-# Overview
-
-You can create various rules for a certain type, such as phone numbers, addresses, times, and so on.
-Once you have established the rules, you can easily combine them.
-Specifically, if you create rules for 'non-empty strings' and 'strings composed only of alphabets,' you do not need to
-redefine a new rule for 'non-empty strings composed only of alphabets'.
-All rules can be arbitrarily combined and extended as long as the target type matches. Enjoy a wonderful type life!
-
-# Example Usage
-
-As an example, let's convert from JSON to a struct.
-
-```rust
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
 type MyNonEmptyVec<T> = Refined<NonEmptyRule<Vec<T>>>;
@@ -27,12 +20,13 @@ struct Human {
     friends: MyNonEmptyVec<String>,
 }
 
+#[test]
 fn example_1() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "friends": ["tom", "taro"]
     }}
-        .to_string();
+    .to_string();
 
     let actual = serde_json::from_str::<Human>(&json)?;
     let expected = Human {
@@ -44,12 +38,13 @@ fn example_1() -> anyhow::Result<()> {
 }
 
 // In the second example, while `friends` meets the rule, `name` does not, causing the conversion from JSON to fail
+#[test]
 fn example_2() -> anyhow::Result<()> {
     let json = json! {{
         "name": "",
         "friends": ["tom", "taro"]
     }}
-        .to_string();
+    .to_string();
 
     // because `name` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
@@ -57,34 +52,20 @@ fn example_2() -> anyhow::Result<()> {
 }
 
 // In the third example, while `name` satisfies the rule, `friends` does not, causing the conversion from JSON to fail.
+#[test]
 fn example_3() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "friends": []
     }}
-        .to_string();
+    .to_string();
 
     // because `friends` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
     Ok(())
 }
-```
 
-# Installation
-
-```shell
-cargo add refined_type
-```
-
-# Custom Rule
-
-There are many situations where you may want to define custom rules.
-To define rules for a specific target type, you first need to define a struct.
-In the struct, define fields for specifying detailed conditions.
-Once the definition is complete, all you need to do is implement the Rule trait.
-Add your preferred conditions as you like.
-
-```rust
+#[test]
 fn example_4() {
     let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string());
     assert_eq!(non_empty_string_result.unwrap().deref(), "Hello World");
@@ -92,19 +73,7 @@ fn example_4() {
     let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
     assert!(empty_string_result.is_err())
 }
-```
 
-# Compose Rules
-
-As mentioned earlier, it is possible to combine any rules as long as the target types match.
-In the example below, there are standalone rules for 'strings containing Hello' and 'strings containing World'.
-Since their target type is String, combining them is possible.
-I have prepared something called Rule Composer (`And`, `Or`, `Not`).
-By using Rule Composer, composite rules can be easily created.
-
-### Original Rules
-
-```rust
 struct ContainsHelloRule;
 struct ContainsWorldRule;
 
@@ -131,14 +100,8 @@ impl Rule for ContainsWorldRule {
         }
     }
 }
-```
 
-### 1: `And` Rule Composer
-
-`And` Rule Composer is a rule that satisfies both of the two rules.
-It is generally effective when you want to narrow down the condition range.
-
-```rust
+#[test]
 fn example_5() {
     type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
@@ -148,14 +111,8 @@ fn example_5() {
     let rule_err = Refined::<HelloAndWorldRule>::new("Hello, world!".to_string());
     assert!(rule_err.is_err());
 }
-```
 
-### 2: `Or` Rule Composer
-
-`Or` Rule Composer is a rule that satisfies either of the two rules.
-It is generally effective when you want to expand the condition range.
-
-```rust
+#[test]
 fn example_6() {
     type HelloOrWorldRule = Or<ContainsHelloRule, ContainsWorldRule>;
 
@@ -168,14 +125,8 @@ fn example_6() {
     let rule_err = Refined::<HelloOrWorldRule>::new("hello, world!".to_string());
     assert!(rule_err.is_err());
 }
-```
 
-### 3: `Not` Rule Composer
-
-`Not` Rule Composer is a rule that does not satisfy a specific condition.
-It is generally effective when you want to discard only certain situations.
-
-```rust
+#[test]
 fn example_7() {
     type NotHelloRule = Not<ContainsHelloRule>;
 
@@ -185,14 +136,7 @@ fn example_7() {
     let rule_err = Refined::<NotHelloRule>::new("Hello, World!".to_string());
     assert!(rule_err.is_err());
 }
-```
 
-### 4: Compose Rule Composer
-
-Rule Composer is also a rule.
-Therefore, it can be treated much like a composite function
-
-```rust
 struct StartsWithHelloRule;
 struct StartsWithByeRule;
 struct EndsWithJohnRule;
@@ -204,7 +148,10 @@ impl Rule for StartsWithHelloRule {
         if target.starts_with("Hello") {
             Ok(())
         } else {
-            Err(Error::new(format!("{} does not start with `Hello`", target)))
+            Err(Error::new(format!(
+                "{} does not start with `Hello`",
+                target
+            )))
         }
     }
 }
@@ -233,6 +180,7 @@ impl Rule for EndsWithJohnRule {
     }
 }
 
+#[test]
 fn example_8() {
     type GreetingRule = And<Or<StartsWithHelloRule, StartsWithByeRule>, EndsWithJohnRule>;
 
@@ -241,23 +189,14 @@ fn example_8() {
     assert!(GreetingRule::validate(&"How are you? Have a good day John".to_string()).is_err());
     assert!(GreetingRule::validate(&"Bye! Have a good day Tom".to_string()).is_err());
 }
-```
 
-# JSON
-
-`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write
-new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize`
-and `Deserialize`.
-
-### Serialize
-
-```rust
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
 struct Human2 {
     name: NonEmptyString,
     age: u8,
 }
 
+#[test]
 fn example_9() -> anyhow::Result<()> {
     let john = Human2 {
         name: NonEmptyString::new("john".to_string())?,
@@ -272,17 +211,14 @@ fn example_9() -> anyhow::Result<()> {
     assert_eq!(actual, expected);
     Ok(())
 }
-```
 
-### Deserialize
-
-```rust
+#[test]
 fn example_10() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "age": 8
     }}
-        .to_string();
+    .to_string();
 
     let actual = serde_json::from_str::<Human2>(&json)?;
 
@@ -293,51 +229,39 @@ fn example_10() -> anyhow::Result<()> {
     assert_eq!(actual, expected);
     Ok(())
 }
-```
 
-# Number
-
-You can also represent the size of numbers as types.
-I have prepared macros that can easily define the size of numbers.
-Let’s use them to define a `Age` type that is narrowed down to ages 18 to 80.
-
-```rust
 greater_rule!((18, u8));
 less_rule!((80, u8));
 equal_rule!((18, u8), (80, u8));
 
+#[allow(dead_code)]
 type Age = Refined<TargetAgeRule>;
 
 // 18 <= age
+#[allow(dead_code)]
 type TargetAge18OrMore = Or<EqualRule18u8, GreaterRule18u8>;
 
 // age <= 80
+#[allow(dead_code)]
 type TargetAge80OrLess = Or<EqualRule80u8, LessRule80u8>;
 
 // 18 <= age <= 80
+#[allow(dead_code)]
 type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
-```
 
-# Iterator
-I have also prepared several useful refined types for Iterators.
-## `ForAll`
-`ForAll` is a rule that applies a specific rule to all elements in the Iterator.
-```rust
+#[test]
 fn example_11() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "World".to_string()];
     let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
     assert_eq!(vec, for_all_ok.into_value());
-    
+
     let vec = vec!["Hello".to_string(), "".to_string()];
     let for_all_err = ForAll::<NonEmptyStringRule, _>::new(vec.clone());
     assert!(for_all_err.is_err());
     Ok(())
 }
-```
 
-## `Exists`
-`Exists` is a rule that applies a specific rule to at least one element in the Iterator.
-```rust
+#[test]
 fn example_12() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "".to_string()];
     let exists_ok = Exists::<NonEmptyStringRule, _>::new(vec.clone())?;
@@ -348,55 +272,33 @@ fn example_12() -> anyhow::Result<()> {
     assert!(exists_err.is_err());
     Ok(())
 }
-```
----
-## `into_iter()` and `iter()`
-The Iterator I’ve prepared has `into_iter` and `iter` implemented.
-Therefore, you can easily map or convert it to a different Iterator using `collect`.
-Feel free to explore the capabilities of the Iterator you’ve been given!
 
-### `into_iter()`
-
-```rust
-fn example_11() -> anyhow::Result<()> {
+#[test]
+fn example_13() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
     Ok(())
 }
-```
 
-### `iter()`
-
-```rust
-fn example_12() -> anyhow::Result<()> {
+#[test]
+fn example_14() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
     Ok(())
 }
-```
 
-### `NonEmptyVec` to `NonEmptyVecDeque` using `collect()`
-
-```rust
-fn example_13() -> anyhow::Result<()> {
+#[test]
+fn example_15() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
     Ok(())
 }
-```
 
-# Add Trait
-
-I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed
-without downgrading the type level.
-
-### NonEmptyString
-
-```rust
-fn example_14() -> anyhow::Result<()> {
+#[test]
+fn example_16() -> anyhow::Result<()> {
     let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
     let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
     let non_empty_string = non_empty_string_1 + non_empty_string_2; // This is also `NonEmptyString` type
@@ -404,12 +306,9 @@ fn example_14() -> anyhow::Result<()> {
     assert_eq!(non_empty_string.into_value(), "HelloWorld");
     Ok(())
 }
-```
 
-### NonEmptyVec
-
-```rust
-fn example_15() -> anyhow::Result<()> {
+#[test]
+fn example_17() -> anyhow::Result<()> {
     let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
     let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
@@ -417,39 +316,8 @@ fn example_15() -> anyhow::Result<()> {
     assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
     Ok(())
 }
-```
 
-# Tips
-
-Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability.
-Therefore, using **type aliases** can help make your code clearer.
-
-```rust
 type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
+#[allow(dead_code)]
 type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
-```
-
-# License
-
-MIT License
-
-Copyright (c) 2024 Tomoki Someya
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.

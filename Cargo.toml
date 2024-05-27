@@ -4,9 +4,9 @@ description = "A library for imbuing rules into types and elevating them to more
 authors = ["Tomoikey"]
 repository = "https://github.com/tomoikey/refined-type"
 readme = "README.md"
-categories = ["accessibility", "development-tools"]
+categories = ["accessibility", "development-tools", "rust-patterns"]
 license = "MIT"
-version = "0.4.16"
+version = "0.5.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

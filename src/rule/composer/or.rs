@@ -10,9 +10,9 @@ use std::marker::PhantomData;
 ///
 /// type EmptyOrAlphabetString = Or<EmptyRule<String>, AlphabetRule>;
 ///
-/// assert!(EmptyOrAlphabetString::validate("".to_string()).is_ok());
-/// assert!(EmptyOrAlphabetString::validate("alphabet".to_string()).is_ok());
-/// assert!(EmptyOrAlphabetString::validate("1".to_string()).is_err());
+/// assert!(EmptyOrAlphabetString::validate(&"".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate(&"alphabet".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate(&"1".to_string()).is_err());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Or<RULE1, RULE2> {
@@ -27,9 +27,8 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
-        let bounded_rule =
-            move |t: T| RULE1::validate(t).or_else(|e| RULE2::validate(e.into_target()));
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        let bounded_rule = |t: &T| RULE1::validate(t).or_else(|_| RULE2::validate(t));
         bounded_rule(target)
     }
 }
@@ -42,8 +41,8 @@ mod test {
     #[test]
     fn test_or() {
         type NonEmptyOrAlphabetString = Or<NonEmptyStringRule, AlphabetRule>;
-        assert!(NonEmptyOrAlphabetString::validate("hello".to_string()).is_ok());
-        assert!(NonEmptyOrAlphabetString::validate("12345".to_string()).is_ok());
-        assert!(NonEmptyOrAlphabetString::validate("".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate(&"hello".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate(&"12345".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate(&"".to_string()).is_ok());
     }
 }

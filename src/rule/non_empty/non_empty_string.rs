@@ -72,7 +72,7 @@ impl NonEmptyString {
 }
 
 impl FromStr for NonEmptyString {
-    type Err = Error<String>;
+    type Err = Error;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Refined::new(s.to_string())
     }
@@ -94,8 +94,8 @@ mod test {
 
     #[test]
     fn test_non_empty_string() {
-        assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
-        assert!(NonEmptyStringRule::validate("".to_string()).is_err());
+        assert!(NonEmptyStringRule::validate(&"hello".to_string()).is_ok());
+        assert!(NonEmptyStringRule::validate(&"".to_string()).is_err());
     }
 
     #[test]

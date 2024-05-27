@@ -30,16 +30,12 @@ pub type NonEmptyHashMapRule<K, V, S = RandomState> = NonEmptyRule<HashMap<K, V,
 impl<K, V, S> NonEmptyHashMap<K, V, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_map::IntoIter<K, V>> {
-        Refined::new(self.into_value().into_iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
     }
 
     #[allow(clippy::should_implement_trait)]
     pub fn iter(&self) -> NonEmpty<std::collections::hash_map::Iter<K, V>> {
-        Refined::new(self.value().iter())
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(self.value().iter()).expect("This error is always unreachable")
     }
 
     pub fn hasher(&self) -> &S {
@@ -80,7 +76,7 @@ where
     K: Eq + Hash,
     S: BuildHasher,
 {
-    pub fn get<Q: ?Sized>(&self, k: &Q) -> Option<&V>
+    pub fn get<Q>(&self, k: &Q) -> Option<&V>
     where
         K: Borrow<Q>,
         Q: Hash + Eq,
@@ -91,9 +87,7 @@ where
     pub fn insert(self, k: K, v: V) -> Self {
         let mut result = self.into_value();
         result.insert(k, v);
-        Refined::new(result)
-            .ok()
-            .expect("This error is always unreachable")
+        Refined::new(result).expect("This error is always unreachable")
     }
 }
 
@@ -178,7 +172,7 @@ mod test {
         map.insert("1", 1);
         map.insert("2", 2);
         let map = NonEmptyHashMap::new(map)?;
-        assert_eq!(map.get("1"), Some(&1));
+        assert_eq!(map.get(&"1"), Some(&1));
         Ok(())
     }
 
