@@ -1,3 +1,4 @@
+/// This macro generates a rule that checks if the number is less than `N`
 #[macro_export]
 macro_rules! less_rule {
     (($e: literal, $t: ty)) => {

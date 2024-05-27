@@ -1,3 +1,4 @@
+/// This macro generates a rule that checks if the number is greater than `N`
 #[macro_export]
 macro_rules! greater_rule {
     (($e: literal, $t: ty)) => {

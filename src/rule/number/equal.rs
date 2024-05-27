@@ -1,3 +1,4 @@
+/// This macro generates a rule that checks if the number is equal to `N`
 #[macro_export]
 macro_rules! equal_rule {
     (($e: literal, $t: ty)) => {
