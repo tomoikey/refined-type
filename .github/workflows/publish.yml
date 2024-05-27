@@ -1,0 +1,34 @@
+name: Publish to crates.io
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build the project
+        run: cargo build --release
+
+      - name: Run tests
+        run: cargo test --release
+
+      - name: Publish to crates.io
+        if: success()
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish
