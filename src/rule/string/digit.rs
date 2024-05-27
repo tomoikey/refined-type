@@ -16,9 +16,7 @@ impl Rule for DigitRule {
         if is_valid {
             Ok(())
         } else {
-            Err(Error::new(
-                "The input `String` have some digit characters",
-            ))
+            Err(Error::new("The input `String` have some digit characters"))
         }
     }
 }

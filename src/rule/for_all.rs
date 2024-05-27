@@ -19,10 +19,13 @@ where
     type Item = ITERATOR;
 
     fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.as_ref().iter().all(|item| RULE::validate(item).is_ok()) {
+        if target
+            .as_ref()
+            .iter()
+            .all(|item| RULE::validate(item).is_ok())
+        {
             Ok(())
-        }
-        else {
+        } else {
             Err(Error::new("not all items satisfy the condition"))
         }
     }

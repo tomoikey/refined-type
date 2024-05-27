@@ -1,10 +1,12 @@
 use refined_type::result::Error;
-use refined_type::rule::{ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule};
+use refined_type::rule::composer::{And, Not, Or};
+use refined_type::rule::{
+    ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule,
+};
 use refined_type::{equal_rule, greater_rule, less_rule, Refined};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use std::ops::Deref;
-use refined_type::rule::composer::{And, Not, Or};
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
@@ -145,7 +147,10 @@ impl Rule for StartsWithHelloRule {
         if target.starts_with("Hello") {
             Ok(())
         } else {
-            Err(Error::new(format!("{} does not start with `Hello`", target)))
+            Err(Error::new(format!(
+                "{} does not start with `Hello`",
+                target
+            )))
         }
     }
 }
@@ -212,7 +217,7 @@ fn example_10() -> anyhow::Result<()> {
         "name": "john",
         "age": 8
     }}
-        .to_string();
+    .to_string();
 
     let actual = serde_json::from_str::<Human2>(&json)?;
 
@@ -248,7 +253,7 @@ fn example_11() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "World".to_string()];
     let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
     assert_eq!(vec, for_all_ok.into_value());
-    
+
     let vec = vec!["Hello".to_string(), "".to_string()];
     let for_all_err = ForAll::<NonEmptyStringRule, _>::new(vec.clone());
     assert!(for_all_err.is_err());
@@ -304,7 +309,6 @@ fn example_17() -> anyhow::Result<()> {
     assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
     Ok(())
 }
-
 
 type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
