@@ -1,10 +1,25 @@
 #[macro_export]
-macro_rules! length_equal_rule {
+macro_rules! length_equal {
     ($length:literal) => {
         paste::item! {
+            /// A type that holds a value satisfying the LengthEqualN rule.
+            /// # Example
+            /// ```rust
+            /// use refined_type::length_equal;
+            /// length_equal!(5);
+            ///
+            /// let target = "12345";
+            /// let refined = LengthEqual5::new(target).unwrap();
+            /// assert_eq!(refined.into_value(), "12345");
+            ///
+            /// let target = "1234";
+            /// let refined = LengthEqual5::new(target);
+            /// assert!(refined.is_err());
+            /// ```
             #[allow(dead_code)]
             pub type [<LengthEqual $length>]<ITEM> = $crate::Refined<[<LengthEqualRule $length>]<ITEM>>;
 
+            /// Rule where the length of the input value is equal to N
             #[allow(dead_code)]
             pub struct [<LengthEqualRule $length>]<ITEM> {
                 _phantom: ::std::marker::PhantomData<ITEM>,
@@ -23,8 +38,8 @@ macro_rules! length_equal_rule {
         }
     };
     ($length:literal, $($lengths:literal),+) => {
-        length_equal_rule!($length);
-        length_equal_rule!($($lengths),+);
+        length_equal!($length);
+        length_equal!($($lengths),+);
     };
 }
 
@@ -32,7 +47,7 @@ macro_rules! length_equal_rule {
 mod tests {
     use crate::result::Error;
 
-    length_equal_rule!(5, 10);
+    length_equal!(5, 10);
 
     #[test]
     fn test_length_equal_5() -> Result<(), Error> {
