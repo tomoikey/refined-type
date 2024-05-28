@@ -1,9 +1,10 @@
-use crate::result::Error;
-use crate::rule::Rule;
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
-use std::ops::Deref;
+
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use crate::result::Error;
+use crate::rule::Rule;
 
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example
@@ -96,11 +97,12 @@ where
 
 #[cfg(test)]
 mod test {
+    use serde::{Deserialize, Serialize};
+    use serde_json::json;
+
     use crate::refined::Refined;
     use crate::result::Error;
     use crate::rule::{NonEmptyString, NonEmptyStringRule, NonEmptyVec};
-    use serde::{Deserialize, Serialize};
-    use serde_json::json;
 
     #[test]
     fn test_unsafe_new_success() {
