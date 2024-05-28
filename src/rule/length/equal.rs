@@ -1,3 +1,17 @@
+/// This macro generates a rule that checks if the length of the target is equal to `N`
+/// # Example
+/// ```rust
+/// use refined_type::length_equal;
+/// length_equal!(5);
+///
+/// let target = "12345";
+/// let refined = LengthEqual5::new(target).unwrap();
+/// assert_eq!(refined.into_value(), "12345");
+///
+/// let target = "1234";
+/// let refined = LengthEqual5::new(target);
+/// assert!(refined.is_err());
+/// ```
 #[macro_export]
 macro_rules! length_equal {
     ($length:literal) => {
@@ -31,7 +45,7 @@ macro_rules! length_equal {
                     if target.length() == $length {
                         Ok(())
                     } else {
-                        Err(Error::new(format!("target length is not equal to {}", $length)))
+                        Err($crate::result::Error::new(format!("target length is not equal to {}", $length)))
                     }
                 }
             }

@@ -1,3 +1,16 @@
+/// This macro generates a rule that checks if the length of the target is greater than `N`
+/// # Example
+/// ```rust
+/// use refined_type::length_greater_than;
+/// length_greater_than!(5);
+///
+/// let target = "123456";
+/// let refined = LengthGreaterThan5::new(target).unwrap();
+/// assert_eq!(refined.into_value(), "123456");
+///
+/// let target = "12345";
+/// let refined = LengthGreaterThan5::new(target);
+/// assert!(refined.is_err());
 #[macro_export]
 macro_rules! length_greater_than {
     ($length:literal) => {
@@ -30,7 +43,7 @@ macro_rules! length_greater_than {
                     if target.length() > $length {
                         Ok(())
                     } else {
-                        Err(Error::new(format!("target length is not greater than {}", $length)))
+                        Err($crate::result::Error::new(format!("target length is not greater than {}", $length)))
                     }
                 }
             }

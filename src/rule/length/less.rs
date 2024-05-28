@@ -1,3 +1,17 @@
+/// This macro generates a rule that checks if the length of the target is less than `N`
+/// # Example
+/// ```rust
+/// use refined_type::length_less_than;
+/// length_less_than!(5);
+///
+/// let target = "1234";
+/// let refined = LengthLessThan5::new(target).unwrap();
+/// assert_eq!(refined.into_value(), "1234");
+///
+/// let target = "12345";
+/// let refined = LengthLessThan5::new(target);
+/// assert!(refined.is_err());
+/// ```
 #[macro_export]
 macro_rules! length_less_than {
     ($length:literal) => {
@@ -31,7 +45,7 @@ macro_rules! length_less_than {
                     if target.length() < $length {
                         Ok(())
                     } else {
-                        Err(Error::new(format!("target length is not less than {}", $length)))
+                        Err($crate::result::Error::new(format!("target length is not less than {}", $length)))
                     }
                 }
             }
