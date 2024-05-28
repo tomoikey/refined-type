@@ -6,16 +6,16 @@ repository = "https://github.com/tomoikey/refined-type"
 readme = "README.md"
 categories = ["accessibility", "development-tools", "rust-patterns"]
 license = "MIT"
-version = "0.5.1"
+version = "0.5.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-paste = "1.0.14"
-regex = "1.10.3"
-serde = { version = "1.0.197", features = ["derive"] }
+paste = "1.0.15"
+regex = "1.10.4"
+serde = { version = "1.0.203", features = ["derive"] }
 
 [dev-dependencies]
-anyhow = "1.0.80"
-serde_json = "1.0.114"
+anyhow = "1.0.86"
+serde_json = "1.0.117"

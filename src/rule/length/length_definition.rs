@@ -33,7 +33,6 @@ impl<T> LengthDefinition for Vec<T> {
     }
 }
 
-// Implementions of Iteration
 impl<T> LengthDefinition for [T] {
     fn length(&self) -> usize {
         self.len()

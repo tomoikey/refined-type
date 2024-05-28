@@ -107,6 +107,7 @@ By using Rule Composer, composite rules can be easily created.
 
 ```rust
 struct ContainsHelloRule;
+
 struct ContainsWorldRule;
 
 impl Rule for ContainsHelloRule {
@@ -195,7 +196,9 @@ Therefore, it can be treated much like a composite function
 
 ```rust
 struct StartsWithHelloRule;
+
 struct StartsWithByeRule;
+
 struct EndsWithJohnRule;
 
 impl Rule for StartsWithHelloRule {
@@ -320,15 +323,19 @@ type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
 ```
 
 # Iterator
+
 I have also prepared several useful refined types for Iterators.
+
 ## `ForAll`
+
 `ForAll` is a rule that applies a specific rule to all elements in the Iterator.
+
 ```rust
 fn example_11() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "World".to_string()];
     let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
     assert_eq!(vec, for_all_ok.into_value());
-    
+
     let vec = vec!["Hello".to_string(), "".to_string()];
     let for_all_err = ForAll::<NonEmptyStringRule, _>::new(vec.clone());
     assert!(for_all_err.is_err());
@@ -337,7 +344,9 @@ fn example_11() -> anyhow::Result<()> {
 ```
 
 ## `Exists`
+
 `Exists` is a rule that applies a specific rule to at least one element in the Iterator.
+
 ```rust
 fn example_12() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "".to_string()];
@@ -350,8 +359,11 @@ fn example_12() -> anyhow::Result<()> {
     Ok(())
 }
 ```
+
 ---
+
 ## `into_iter()` and `iter()`
+
 The Iterator I’ve prepared has `into_iter` and `iter` implemented.
 Therefore, you can easily map or convert it to a different Iterator using `collect`.
 Feel free to explore the capabilities of the Iterator you’ve been given!
@@ -416,6 +428,122 @@ fn example_15() -> anyhow::Result<()> {
     let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
 
     assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
+    Ok(())
+}
+```
+
+# Length
+
+You can impose constraints on objects that have a length, such as `String` or `Vec`.
+
+### String
+
+```rust
+fn example_16() -> Result<(), Error> {
+    length_greater_than!(5);
+    length_equal!(5, 10);
+    length_less_than!(10);
+
+    type Password = Refined<From5To10Rule<String>>;
+
+    type From5To10Rule<T> = And<
+        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
+        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
+    >;
+
+    // length is 8. so, this is valid
+    let raw_password = "password";
+    let password = Password::new(raw_password.to_string())?;
+    assert_eq!(password.into_value(), "password");
+
+    // length is 4. so, this is invalid
+    let raw_password = "pswd";
+    let password = Password::new(raw_password.to_string());
+    assert!(password.is_err());
+
+    // length is 17. so, this is invalid
+    let raw_password = "password password";
+    let password = Password::new(raw_password.to_string());
+    assert!(password.is_err());
+
+    Ok(())
+}
+```
+
+### Vec
+
+```rust
+#[test]
+fn example_17() -> anyhow::Result<()> {
+    length_greater_than!(5);
+    length_equal!(5, 10);
+    length_less_than!(10);
+
+    type Friends = Refined<From5To10Rule<Vec<String>>>;
+
+    type From5To10Rule<T> = And<
+        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
+        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
+    >;
+
+    // length is 6. so, this is valid
+    let raw_friends = vec![
+        "Tom".to_string(),
+        "Taro".to_string(),
+        "Jiro".to_string(),
+        "Hanako".to_string(),
+        "Sachiko".to_string(),
+        "Yoshiko".to_string(),
+    ];
+    let friends = Friends::new(raw_friends.clone())?;
+    assert_eq!(friends.into_value(), raw_friends);
+
+    // length is 2. so, this is invalid
+    let raw_friends = vec!["Tom".to_string(), "Taro".to_string()];
+    let friends = Friends::new(raw_friends.clone());
+    assert!(friends.is_err());
+
+    // length is 11. so, this is invalid
+    let raw_friends = vec![
+        "Tom".to_string(),
+        "Taro".to_string(),
+        "Jiro".to_string(),
+        "Hanako".to_string(),
+        "Sachiko".to_string(),
+        "Yuiko".to_string(),
+        "Taiko".to_string(),
+        "John".to_string(),
+        "Jane".to_string(),
+        "Jack".to_string(),
+        "Jill".to_string(),
+    ];
+    let friends = Friends::new(raw_friends.clone());
+    assert!(friends.is_err());
+
+    Ok(())
+}
+```
+
+### Custom Length
+
+You can define a length for any type. Therefore, if you want to implement a length that is not provided
+by `refined_type`, you can easily do so using `LengthDefinition`.
+
+```rust
+#[test]
+fn example_18() -> anyhow::Result<()> {
+    length_equal!(5);
+
+    #[derive(Debug, PartialEq)]
+    struct Hello;
+    impl LengthDefinition for Hello {
+        fn length(&self) -> usize {
+            5
+        }
+    }
+
+    let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
+    assert_eq!(hello.into_value(), Hello);
     Ok(())
 }
 ```

@@ -1,12 +1,16 @@
-use refined_type::result::Error;
-use refined_type::rule::composer::{And, Not, Or};
-use refined_type::rule::{
-    Exists, ForAll, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
-    NonEmptyVecDeque, Rule,
-};
-use refined_type::{equal_rule, greater_rule, less_rule, Refined};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+
+use refined_type::{
+    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule,
+    Refined,
+};
+use refined_type::result::Error;
+use refined_type::rule::{
+    Exists, ForAll, LengthDefinition, NonEmptyRule, NonEmptyString, NonEmptyStringRule,
+    NonEmptyVec, NonEmptyVecDeque, Rule,
+};
+use refined_type::rule::composer::{And, Not, Or};
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
@@ -298,22 +302,99 @@ fn example_15() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_16() -> anyhow::Result<()> {
-    let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
-    let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
-    let non_empty_string = non_empty_string_1 + non_empty_string_2; // This is also `NonEmptyString` type
+fn example_16() -> Result<(), Error> {
+    length_greater_than!(5);
+    length_equal!(5, 10);
+    length_less_than!(10);
 
-    assert_eq!(non_empty_string.into_value(), "HelloWorld");
+    type Password = Refined<From5To10Rule<String>>;
+
+    type From5To10Rule<T> = And<
+        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
+        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
+    >;
+
+    // length is 8. so, this is valid
+    let raw_password = "password";
+    let password = Password::new(raw_password.to_string())?;
+    assert_eq!(password.into_value(), "password");
+
+    // length is 4. so, this is invalid
+    let raw_password = "pswd";
+    let password = Password::new(raw_password.to_string());
+    assert!(password.is_err());
+
+    // length is 17. so, this is invalid
+    let raw_password = "password password";
+    let password = Password::new(raw_password.to_string());
+    assert!(password.is_err());
+
     Ok(())
 }
 
 #[test]
 fn example_17() -> anyhow::Result<()> {
-    let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
-    let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
+    length_greater_than!(5);
+    length_equal!(5, 10);
+    length_less_than!(10);
 
-    assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
+    type Friends = Refined<From5To10Rule<Vec<String>>>;
+
+    type From5To10Rule<T> = And<
+        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
+        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
+    >;
+
+    // length is 6. so, this is valid
+    let raw_friends = vec![
+        "Tom".to_string(),
+        "Taro".to_string(),
+        "Jiro".to_string(),
+        "Hanako".to_string(),
+        "Sachiko".to_string(),
+        "Yoshiko".to_string(),
+    ];
+    let friends = Friends::new(raw_friends.clone())?;
+    assert_eq!(friends.into_value(), raw_friends);
+
+    // length is 2. so, this is invalid
+    let raw_friends = vec!["Tom".to_string(), "Taro".to_string()];
+    let friends = Friends::new(raw_friends.clone());
+    assert!(friends.is_err());
+
+    // length is 11. so, this is invalid
+    let raw_friends = vec![
+        "Tom".to_string(),
+        "Taro".to_string(),
+        "Jiro".to_string(),
+        "Hanako".to_string(),
+        "Sachiko".to_string(),
+        "Yuiko".to_string(),
+        "Taiko".to_string(),
+        "John".to_string(),
+        "Jane".to_string(),
+        "Jack".to_string(),
+        "Jill".to_string(),
+    ];
+    let friends = Friends::new(raw_friends.clone());
+    assert!(friends.is_err());
+
+    Ok(())
+}
+
+#[test]
+fn example_18() -> anyhow::Result<()> {
+    #[derive(Debug, PartialEq)]
+    struct Hello;
+    impl LengthDefinition for Hello {
+        fn length(&self) -> usize {
+            5
+        }
+    }
+
+    length_equal!(5);
+    let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
+    assert_eq!(hello.into_value(), Hello);
     Ok(())
 }
 
