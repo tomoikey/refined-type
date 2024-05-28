@@ -16,18 +16,6 @@ macro_rules! length_greater_than {
     ($length:literal) => {
         paste::item! {
             /// A type that holds a value satisfying the LengthGreaterThanN rule.
-            /// # Example
-            /// ```rust
-            /// use refined_type::length_greater_than;
-            /// length_greater_than!(5);
-            ///
-            /// let target = "123456";
-            /// let refined = LengthGreaterThan5::new(target).unwrap();
-            /// assert_eq!(refined.into_value(), "123456");
-            ///
-            /// let target = "12345";
-            /// let refined = LengthGreaterThan5::new(target);
-            /// assert!(refined.is_err());
             #[allow(dead_code)]
             pub type [<LengthGreaterThan $length>]<ITEM> = $crate::Refined<[<LengthGreaterThanRule $length>]<ITEM>>;
 

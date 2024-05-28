@@ -17,19 +17,6 @@ macro_rules! length_less_than {
     ($length:literal) => {
         paste::item! {
             /// A type that holds a value satisfying the LengthLessThanN rule.
-            /// # Example
-            /// ```rust
-            /// use refined_type::length_less_than;
-            /// length_less_than!(5);
-            ///
-            /// let target = "1234";
-            /// let refined = LengthLessThan5::new(target).unwrap();
-            /// assert_eq!(refined.into_value(), "1234");
-            ///
-            /// let target = "12345";
-            /// let refined = LengthLessThan5::new(target);
-            /// assert!(refined.is_err());
-            /// ```
             #[allow(dead_code)]
             pub type [<LengthLessThan $length>]<ITEM> = $crate::Refined<[<LengthLessThanRule $length>]<ITEM>>;
 

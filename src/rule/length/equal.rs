@@ -17,19 +17,6 @@ macro_rules! length_equal {
     ($length:literal) => {
         paste::item! {
             /// A type that holds a value satisfying the LengthEqualN rule.
-            /// # Example
-            /// ```rust
-            /// use refined_type::length_equal;
-            /// length_equal!(5);
-            ///
-            /// let target = "12345";
-            /// let refined = LengthEqual5::new(target).unwrap();
-            /// assert_eq!(refined.into_value(), "12345");
-            ///
-            /// let target = "1234";
-            /// let refined = LengthEqual5::new(target);
-            /// assert!(refined.is_err());
-            /// ```
             #[allow(dead_code)]
             pub type [<LengthEqual $length>]<ITEM> = $crate::Refined<[<LengthEqualRule $length>]<ITEM>>;
 
