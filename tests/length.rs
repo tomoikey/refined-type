@@ -7,12 +7,13 @@ length_less_than!(10);
 
 #[test]
 fn test_length() -> Result<(), refined_type::result::Error> {
-    type Password = Refined<
-        And<
-            Or<LengthEqualRule5<String>, LengthGreaterThanRule5<String>>,
-            Or<LengthLessThanRule10<String>, LengthEqualRule10<String>>,
-        >,
+    type Password = Refined<From5To10Rule<String>>;
+
+    type From5To10Rule<T> = And<
+        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
+        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
     >;
+
     let raw_password = "password";
     let password = Password::new(raw_password.to_string())?;
     assert_eq!(password.into_value(), "password");
