@@ -1,5 +1,5 @@
-use refined_type::{length_equal, length_greater_than, length_less_than, Refined};
 use refined_type::rule::composer::{And, Or};
+use refined_type::{length_equal, length_greater_than, length_less_than, Refined};
 
 length_greater_than!(5);
 length_equal!(5, 10);
