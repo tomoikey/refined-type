@@ -9,6 +9,7 @@ macro_rules! equal_rule {
 
             /// Rule where the number is equal to `N`
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<EqualRule $e $t>];
 
             impl $crate::rule::Rule for [<EqualRule $e $t>] {

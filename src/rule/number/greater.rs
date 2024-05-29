@@ -9,6 +9,7 @@ macro_rules! greater_rule {
 
             /// Rule where the number is greater than `N`
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<GreaterRule $e $t>];
 
             impl $crate::rule::Rule for [<GreaterRule $e $t>] {

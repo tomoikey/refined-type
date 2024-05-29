@@ -22,6 +22,7 @@ macro_rules! length_equal {
 
             /// Rule where the length of the input value is equal to N
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<LengthEqualRule $length>]<ITEM> {
                 _phantom: ::std::marker::PhantomData<ITEM>,
             }

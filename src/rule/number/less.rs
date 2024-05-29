@@ -9,6 +9,7 @@ macro_rules! less_rule {
 
             /// Rule where the number is less than `N`
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<LessRule $e $t>];
 
             impl $crate::rule::Rule for [<LessRule $e $t>] {

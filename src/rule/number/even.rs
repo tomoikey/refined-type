@@ -7,6 +7,7 @@ macro_rules! even_rule {
 
             /// Rule where the number is even
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<EvenRule $t:upper>];
 
             impl $crate::rule::Rule for [<EvenRule $t:upper>] {

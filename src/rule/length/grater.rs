@@ -21,6 +21,7 @@ macro_rules! length_greater_than {
 
             /// Rule where the length of the input value is greater than N
             #[allow(dead_code)]
+            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
             pub struct [<LengthGreaterThanRule $length>]<ITEM> {
                 _phantom: ::std::marker::PhantomData<ITEM>,
             }
