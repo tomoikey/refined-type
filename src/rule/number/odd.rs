@@ -1,6 +1,6 @@
 macro_rules! odd_rule {
     ($t: ty) => {
-        paste::item! {
+        $crate::paste::item! {
             /// `Odd[TYPE]` is a type that represents that the number is odd.
             pub type [<Odd $t:upper>] = $crate::Refined<[<OddRule $t:upper>]>;
             /// Rule where the number is odd

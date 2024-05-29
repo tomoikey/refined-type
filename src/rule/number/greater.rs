@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! greater_rule {
     (($e: literal, $t: ty)) => {
-        paste::item! {
+        $crate::paste::item! {
             /// `Greater[N][TYPE]` is a type that indicates that the number is greater than `N`.
             #[allow(dead_code)]
             pub type [<Greater $e $t>] = $crate::Refined<[<GreaterRule $e $t>]>;

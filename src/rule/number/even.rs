@@ -1,6 +1,6 @@
 macro_rules! even_rule {
     ($t: ty) => {
-        paste::item! {
+        $crate::paste::item! {
             /// `Even[TYPE]` is a type that represents that the number is even.
             #[allow(dead_code)]
             pub type [<Even $t:upper>] = $crate::Refined<[<EvenRule $t:upper>]>;

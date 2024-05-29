@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! less_rule {
     (($e: literal, $t: ty)) => {
-        paste::item! {
+        $crate::paste::item! {
             /// `Less[N][TYPE]` is a type that indicates that the number is less than `N`.
             #[allow(dead_code)]
             pub type [<Less $e $t>] = $crate::Refined<[<LessRule $e $t>]>;

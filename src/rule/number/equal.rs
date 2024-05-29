@@ -2,7 +2,7 @@
 #[macro_export]
 macro_rules! equal_rule {
     (($e: literal, $t: ty)) => {
-        paste::item! {
+        $crate::paste::item! {
             /// `Equal[N][TYPE]` is a type that indicates that the number is equal to `N`.
             #[allow(dead_code)]
             pub type [<Equal $e $t>] = $crate::Refined<[<EqualRule $e $t>]>;

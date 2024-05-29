@@ -15,7 +15,7 @@
 #[macro_export]
 macro_rules! length_less_than {
     ($length:literal) => {
-        paste::item! {
+        $crate::paste::item! {
             /// A type that holds a value satisfying the LengthLessThanN rule.
             #[allow(dead_code)]
             pub type [<LengthLessThan $length>]<ITEM> = $crate::Refined<[<LengthLessThanRule $length>]<ITEM>>;

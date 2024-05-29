@@ -15,7 +15,7 @@
 #[macro_export]
 macro_rules! length_equal {
     ($length:literal) => {
-        paste::item! {
+        $crate::paste::item! {
             /// A type that holds a value satisfying the LengthEqualN rule.
             #[allow(dead_code)]
             pub type [<LengthEqual $length>]<ITEM> = $crate::Refined<[<LengthEqualRule $length>]<ITEM>>;
