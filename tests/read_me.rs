@@ -79,6 +79,7 @@ fn example_4() -> anyhow::Result<()> {
 }
 
 struct ContainsHelloRule;
+struct ContainsCommaRule;
 struct ContainsWorldRule;
 
 impl Rule for ContainsHelloRule {
@@ -89,6 +90,18 @@ impl Rule for ContainsHelloRule {
             Ok(())
         } else {
             Err(Error::new(format!("{} does not contain `Hello`", target)))
+        }
+    }
+}
+
+impl Rule for ContainsCommaRule {
+    type Item = String;
+
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        if target.contains(",") {
+            Ok(())
+        } else {
+            Err(Error::new(format!("{} does not contain `,`", target)))
         }
     }
 }
@@ -405,16 +418,28 @@ type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
 
 #[test]
 fn example_19() -> anyhow::Result<()> {
-    type Sample = Refined<A![ContainsHelloRule, ContainsHelloRule]>;
-    let sample = Sample::new("Hello! World!".to_string())?;
-    assert_eq!(sample.into_value(), "Hello! World!");
+    type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
+    let sample = Sample::new("Hello, World!".to_string())?;
+    assert_eq!(sample.into_value(), "Hello, World!");
+
+    let sample = Sample::new("Hello World!".to_string());
+    assert!(sample.is_err());
     Ok(())
 }
 
 #[test]
 fn example_20() -> anyhow::Result<()> {
-    type Sample = Refined<O![ContainsHelloRule, ContainsWorldRule]>;
+    type Sample = Refined<O![ContainsHelloRule, ContainsCommaRule, ContainsWorldRule]>;
     let sample = Sample::new("Foo! World!".to_string())?;
     assert_eq!(sample.into_value(), "Foo! World!");
+
+    let sample = Sample::new("Hello World!".to_string())?;
+    assert_eq!(sample.into_value(), "Hello World!");
+
+    let sample = Sample::new("World!".to_string())?;
+    assert_eq!(sample.into_value(), "World!");
+
+    let sample = Sample::new("".to_string());
+    assert!(sample.is_err());
     Ok(())
 }

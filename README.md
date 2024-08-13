@@ -548,6 +548,47 @@ fn example_18() -> anyhow::Result<()> {
 }
 ```
 
+### `A!`(And), `O!`(Or) macro
+
+`And` and `Or` should occasionally combine multiple rules.
+However, defining deeply nested types each time is not an ideal approach.  
+Therefore, I have defined the `A!` macro and the `O!` macro, so that even when combining three or more rules, the code
+can
+be written concisely.  
+The usage is as follows:
+
+```rust
+fn example_19() -> anyhow::Result<()> {
+    type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
+
+    let sample = Sample::new("Hello, World!".to_string())?;
+    assert_eq!(sample.into_value(), "Hello, World!");
+
+    let sample = Sample::new("Hello World!".to_string());
+    assert!(sample.is_err());
+    Ok(())
+}
+```
+
+```rust
+fn example_20() -> anyhow::Result<()> {
+    type Sample = Refined<O![ContainsHelloRule, ContainsCommaRule, ContainsWorldRule]>;
+
+    let sample = Sample::new("Foo! World!".to_string())?;
+    assert_eq!(sample.into_value(), "Foo! World!");
+
+    let sample = Sample::new("Hello World!".to_string())?;
+    assert_eq!(sample.into_value(), "Hello World!");
+
+    let sample = Sample::new("World!".to_string())?;
+    assert_eq!(sample.into_value(), "World!");
+
+    let sample = Sample::new("".to_string());
+    assert!(sample.is_err());
+    Ok(())
+}
+```
+
 # Tips
 
 Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability.
