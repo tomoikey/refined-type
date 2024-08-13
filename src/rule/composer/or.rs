@@ -1,6 +1,27 @@
+use std::marker::PhantomData;
+
 use crate::result::Error;
 use crate::rule::Rule;
-use std::marker::PhantomData;
+
+/// A macro to generate a `Rule` that combines multiple rules
+/// # Example
+/// ```rust
+/// use refined_type::rule::{NonEmptyStringRule, Rule, EmailRule};
+/// use refined_type::O;
+///
+/// type NewRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+///
+/// let actual = NewRule::validate(&"sample@example.com".to_string());
+/// assert!(actual.is_ok());
+#[macro_export]
+macro_rules! O {
+    ($rule1:ty, $rule2:ty) => {
+        $crate::rule::composer::Or<$rule1, $rule2>
+    };
+    ($rule1:ty, $($rule2: ty), +) => {
+        $crate::rule::composer::Or<$rule1, O![$($rule2), +]>
+    }
+}
 
 /// A binder that combines two rules to generate a new single `Rule`
 /// # Example
@@ -35,8 +56,8 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
     use crate::rule::composer::Or;
-    use crate::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 
     #[test]
     fn test_or() {
@@ -44,5 +65,17 @@ mod test {
         assert!(NonEmptyOrAlphabetString::validate(&"hello".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate(&"12345".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate(&"".to_string()).is_ok());
+    }
+
+    #[test]
+    fn test_rule_binder_macro_ok() {
+        type SampleRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+        assert!(SampleRule::validate(&"hoge".to_string()).is_ok());
+    }
+
+    #[test]
+    fn test_rule_binder_macro_err() {
+        type SampleRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+        assert!(SampleRule::validate(&"".to_string()).is_err());
     }
 }
