@@ -56,8 +56,8 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
     use crate::rule::composer::Or;
+    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
 
     #[test]
     fn test_or() {

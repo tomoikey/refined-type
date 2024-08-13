@@ -75,8 +75,8 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
     use crate::rule::composer::And;
+    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
 
     type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule>;
 

@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use refined_type::{
-    A, equal_rule, greater_rule, length_equal, length_greater_than, length_less_than,
-    less_rule, O, Refined,
-};
 use refined_type::result::Error;
+use refined_type::rule::composer::{And, Not, Or};
 use refined_type::rule::{
     Exists, ForAll, LengthDefinition, NonEmptyRule, NonEmptyString, NonEmptyStringRule,
     NonEmptyVec, NonEmptyVecDeque, Rule,
 };
-use refined_type::rule::composer::{And, Not, Or};
+use refined_type::{
+    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule,
+    Refined, A, O,
+};
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
