@@ -1,16 +1,16 @@
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use refined_type::{
+    A, equal_rule, greater_rule, length_equal, length_greater_than, length_less_than,
+    less_rule, O, Refined,
+};
 use refined_type::result::Error;
-use refined_type::rule::composer::{And, Not, Or};
 use refined_type::rule::{
     Exists, ForAll, LengthDefinition, NonEmptyRule, NonEmptyString, NonEmptyStringRule,
     NonEmptyVec, NonEmptyVecDeque, Rule,
 };
-use refined_type::{
-    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule,
-    Refined,
-};
+use refined_type::rule::composer::{And, Not, Or};
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
 type MyNonEmptyString = Refined<NonEmptyRule<String>>;
@@ -402,3 +402,19 @@ type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 
 #[allow(dead_code)]
 type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
+
+#[test]
+fn example_19() -> anyhow::Result<()> {
+    type Sample = Refined<A![ContainsHelloRule, ContainsHelloRule]>;
+    let sample = Sample::new("Hello! World!".to_string())?;
+    assert_eq!(sample.into_value(), "Hello! World!");
+    Ok(())
+}
+
+#[test]
+fn example_20() -> anyhow::Result<()> {
+    type Sample = Refined<O![ContainsHelloRule, ContainsWorldRule]>;
+    let sample = Sample::new("Foo! World!".to_string())?;
+    assert_eq!(sample.into_value(), "Foo! World!");
+    Ok(())
+}
