@@ -1,20 +1,109 @@
-use crate::{declare_regex_rule, Refined};
+use crate::result::Error;
+use crate::rule::Rule;
+use crate::Refined;
+use std::str::FromStr;
 
-/// A type that holds a value satisfying the `Ipv4Rule`
+/// A type that holds a value satisfying the `Ipv4AddrRule`
+pub type Ipv4Addr<T> = Refined<Ipv4AddrRule<T>>;
+
+/// Rule where the target value must be a valid IPv4 address
+pub struct Ipv4AddrRule<T> {
+    _phantom: std::marker::PhantomData<T>,
+}
+
+impl<T: AsRef<str>> Rule for Ipv4AddrRule<T> {
+    type Item = T;
+
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        std::net::Ipv4Addr::from_str(target.as_ref())
+            .map_err(|e| Error::new(e.to_string()))
+            .map(|_| ())
+    }
+}
+
+/// A type that holds a value satisfying the `PublicIpv4AddrRule`
+pub type PublicIpv4Addr<T> = Refined<PublicIpv4AddrRule<T>>;
+
+pub struct PublicIpv4AddrRule<T> {
+    _phantom: std::marker::PhantomData<T>,
+}
+
+impl<T: AsRef<str>> Rule for PublicIpv4AddrRule<T> {
+    type Item = T;
+
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        let target = target.as_ref();
+        if std::net::Ipv4Addr::from_str(target)
+            .map_err(|e| Error::new(e.to_string()))?
+            .is_private()
+        {
+            Err(Error::new(format!("{} is a private IP address", target)))
+        } else {
+            Ok(())
+        }
+    }
+}
+
+/// A type that holds a value satisfying the `PrivateIpv4Rule`
 pub type PrivateIpv4Addr<T> = Refined<PrivateIpv4AddrRule<T>>;
 
-declare_regex_rule![
-    pub PrivateIpv4AddrRule,
-    r"^10\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$|^172\.(1[6-9]|2[0-9]|3[0-1])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$|^192\.168\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])$"
-];
+pub struct PrivateIpv4AddrRule<T> {
+    _phantom: std::marker::PhantomData<T>,
+}
+
+impl<T: AsRef<str>> Rule for PrivateIpv4AddrRule<T> {
+    type Item = T;
+
+    fn validate(target: &Self::Item) -> Result<(), Error> {
+        let target = target.as_ref();
+        if std::net::Ipv4Addr::from_str(target)
+            .map_err(|e| Error::new(e.to_string()))?
+            .is_private()
+        {
+            Ok(())
+        } else {
+            Err(Error::new(format!("{} is a public IP address", target)))
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
     use crate::rule::string::ipv4::PrivateIpv4AddrRule;
-    use crate::rule::Rule;
+    use crate::rule::{Ipv4AddrRule, PublicIpv4AddrRule, Rule};
 
     #[test]
     fn test_valid_ipv4() {
+        let valid = String::from("100.0.0.1");
+        assert!(Ipv4AddrRule::validate(&valid).is_ok());
+
+        let valid = "192.168.0.1";
+        assert!(Ipv4AddrRule::validate(&valid).is_ok());
+    }
+
+    #[test]
+    fn test_invalid_ipv4() {
+        let invalid = String::from("256.0.0.1");
+        assert!(Ipv4AddrRule::validate(&invalid).is_err());
+
+        let invalid = String::from("127.0.0.256");
+        assert!(Ipv4AddrRule::validate(&invalid).is_err());
+    }
+
+    #[test]
+    fn test_valid_public_ipv4() {
+        let valid = String::from("100.0.0.1");
+        assert!(PublicIpv4AddrRule::validate(&valid).is_ok());
+    }
+
+    #[test]
+    fn test_invalid_public_ipv4() {
+        let invalid = String::from("192.168.0.1");
+        assert!(PublicIpv4AddrRule::validate(&invalid).is_err());
+    }
+
+    #[test]
+    fn test_valid_private_ipv4() {
         let valid = String::from("10.0.0.0");
         assert!(PrivateIpv4AddrRule::validate(&valid).is_ok());
 
@@ -26,7 +115,7 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_ipv4() {
+    fn test_invalid_private_ipv4() {
         let invalid = String::from("256.0.0.1");
         assert!(PrivateIpv4AddrRule::validate(&invalid).is_err());
 
