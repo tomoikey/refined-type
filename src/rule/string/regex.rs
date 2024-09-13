@@ -23,12 +23,15 @@ pub use regex::Regex;
 macro_rules! declare_regex_rule {
     ($vis:vis $rule:ident, $regex:literal) => {
         $crate::paste::item! {
-            $vis struct $rule;
+            $vis struct $rule<T> {
+                _phantom: std::marker::PhantomData<T>,
+            }
 
-            impl $crate::rule::Rule for $rule {
-                type Item = String;
+            impl<T: AsRef<str>> $crate::rule::Rule for $rule<T> {
+                type Item = T;
 
                 fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                    let target = target.as_ref();
                     let regex = $crate::rule::Regex::new($regex).expect("invalid regex pattern");
                     if regex.is_match(target) {
                         Ok(())
@@ -57,19 +60,19 @@ mod tests {
 
     #[test]
     fn test_valid_email() {
-        let valid = String::from("sample@example.com");
+        let valid = "sample@example.com";
         assert!(EmailRule::validate(&valid).is_ok())
     }
 
     #[test]
     fn test_invalid_email() {
-        let invalid = String::from("example.com");
+        let invalid = "example.com";
         assert!(EmailRule::validate(&invalid).is_err())
     }
 
     #[test]
     fn test_valid_foo() {
-        let valid = String::from("foo");
+        let valid = "foo";
         assert!(FooRule::validate(&valid).is_ok())
     }
 

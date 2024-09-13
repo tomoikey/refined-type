@@ -9,7 +9,7 @@ use crate::rule::Rule;
 /// use refined_type::rule::{NonEmptyStringRule, Rule, EmailRule};
 /// use refined_type::A;
 ///
-/// type NonEmptyAlphabetString<'a> = A![EmailRule, NonEmptyStringRule, EmailRule];
+/// type NonEmptyAlphabetString = A![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
 /// let actual = NonEmptyAlphabetString::validate(&"sample@example.com".to_string());
 /// assert!(actual.is_ok());
@@ -30,7 +30,7 @@ macro_rules! A {
 ///  use refined_type::rule::{AlphabetRule, NonEmptyStringRule, Rule};
 ///  use refined_type::rule::composer::And;
 ///
-///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule, AlphabetRule>;
+///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule, AlphabetRule<String>>;
 ///
 ///  let actual = NonEmptyAlphabetString::validate(&"Hello".to_string());
 ///  assert!(actual.is_ok());
@@ -78,7 +78,7 @@ mod test {
     use crate::rule::composer::And;
     use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
 
-    type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule>;
+    type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule<String>>;
 
     #[test]
     fn test_rule_binder_ok() {
@@ -92,13 +92,13 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_ok() {
-        type SampleRule = A![EmailRule, NonEmptyStringRule, EmailRule];
+        type SampleRule = A![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"sample@example.com".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = A![AlphabetRule, NonEmptyStringRule, EmailRule];
+        type SampleRule = A![AlphabetRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"Hello".to_string()).is_err());
     }
 }

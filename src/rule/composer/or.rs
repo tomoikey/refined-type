@@ -9,7 +9,7 @@ use crate::rule::Rule;
 /// use refined_type::rule::{NonEmptyStringRule, Rule, EmailRule};
 /// use refined_type::O;
 ///
-/// type NewRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+/// type NewRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
 /// let actual = NewRule::validate(&"sample@example.com".to_string());
 /// assert!(actual.is_ok());
@@ -29,7 +29,7 @@ macro_rules! O {
 /// use refined_type::rule::composer::Or;
 /// use refined_type::rule::{AlphabetRule, EmptyRule, Rule};
 ///
-/// type EmptyOrAlphabetString = Or<EmptyRule<String>, AlphabetRule>;
+/// type EmptyOrAlphabetString = Or<EmptyRule<String>, AlphabetRule<String>>;
 ///
 /// assert!(EmptyOrAlphabetString::validate(&"".to_string()).is_ok());
 /// assert!(EmptyOrAlphabetString::validate(&"alphabet".to_string()).is_ok());
@@ -61,7 +61,7 @@ mod test {
 
     #[test]
     fn test_or() {
-        type NonEmptyOrAlphabetString = Or<NonEmptyStringRule, AlphabetRule>;
+        type NonEmptyOrAlphabetString = Or<NonEmptyStringRule, AlphabetRule<String>>;
         assert!(NonEmptyOrAlphabetString::validate(&"hello".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate(&"12345".to_string()).is_ok());
         assert!(NonEmptyOrAlphabetString::validate(&"".to_string()).is_ok());
@@ -69,13 +69,13 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_ok() {
-        type SampleRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+        type SampleRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"hoge".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = O![EmailRule, NonEmptyStringRule, EmailRule];
+        type SampleRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"".to_string()).is_err());
     }
 }

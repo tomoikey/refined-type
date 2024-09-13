@@ -12,7 +12,7 @@ use crate::{declare_regex_rule, Refined};
 /// let invalid = "example.com".to_string();
 /// assert!(Email::new(invalid).is_err());
 /// ```
-pub type Email = Refined<EmailRule>;
+pub type Email<T> = Refined<EmailRule<T>>;
 
 declare_regex_rule![
     pub EmailRule,
