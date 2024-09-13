@@ -1,30 +1,9 @@
-use crate::result::Error;
-use crate::rule::Rule;
-use crate::Refined;
-use regex::Regex;
+use crate::{declare_regex_rule, Refined};
 
 /// A type that holds a value satisfying the `AlphaDigitRule`
 pub type AlphaDigit = Refined<AlphaDigitRule>;
 
-/// Rule where the input `String` contains only alphabet and digit characters
-pub struct AlphaDigitRule;
-
-impl Rule for AlphaDigitRule {
-    type Item = String;
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let regex = Regex::new(r"[0-9a-zA-Z]*").expect("Invalid regex");
-        let is_valid = regex
-            .find(target.as_str())
-            .is_some_and(|matched| matched.as_str() == target.as_str());
-        if is_valid {
-            Ok(())
-        } else {
-            Err(Error::new(
-                "The input `String` have some alpha_digit characters",
-            ))
-        }
-    }
-}
+declare_regex_rule![pub AlphaDigitRule, r"^[0-9a-zA-Z]*$"];
 
 #[cfg(test)]
 mod test {

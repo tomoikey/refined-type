@@ -1,7 +1,4 @@
-use crate::result::Error;
-use crate::rule::Rule;
-use crate::Refined;
-use regex::Regex;
+use crate::{declare_regex_rule, Refined};
 
 /// A type that holds a value satisfying the `EmailRule`
 ///
@@ -17,23 +14,10 @@ use regex::Regex;
 /// ```
 pub type Email = Refined<EmailRule>;
 
-/// Rule where the input `String` is a valid email format
-pub struct EmailRule;
-
-impl Rule for EmailRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let regex =
-            Regex::new(r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$")
-                .expect("[BUG] Unreachable");
-        if regex.is_match(target) {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{target} is not a valid email format")))
-        }
-    }
-}
+declare_regex_rule![
+    pub EmailRule,
+    r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$"
+];
 
 #[cfg(test)]
 mod test {

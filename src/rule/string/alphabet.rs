@@ -1,7 +1,4 @@
-use crate::result::Error;
-use crate::rule::Rule;
-use crate::Refined;
-use regex::Regex;
+use crate::{declare_regex_rule, Refined};
 
 /// A type that holds a value satisfying the `AlphabetRule`
 ///
@@ -17,26 +14,7 @@ use regex::Regex;
 /// ```
 pub type Alphabet = Refined<AlphabetRule>;
 
-/// Rule where the input `String` contains only alphabet characters
-pub struct AlphabetRule;
-
-impl Rule for AlphabetRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let regex = Regex::new(r"[a-zA-Z]*").expect("Invalid regex");
-        let is_valid = regex
-            .find(target.as_str())
-            .is_some_and(|matched| matched.as_str() == target.as_str());
-        if is_valid {
-            Ok(())
-        } else {
-            Err(Error::new(
-                "The input `String` have some non-alphabet characters",
-            ))
-        }
-    }
-}
+declare_regex_rule![pub AlphabetRule, r"^[a-zA-Z]*$"];
 
 #[cfg(test)]
 mod test {
