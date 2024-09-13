@@ -6,7 +6,7 @@ use crate::{declare_regex_rule, Refined};
 /// ```rust
 /// # use refined_type::rule::Alphabet;
 ///
-/// let alphabet_result = Alphabet::new("alphabet".to_string());
+/// let alphabet_result = Alphabet::new("alphabet");
 /// assert!(alphabet_result.is_ok());
 ///
 /// let alphabet_result = Alphabet::new("I am the 1st".to_string());
