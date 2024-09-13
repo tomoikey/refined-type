@@ -1,7 +1,7 @@
 use crate::{declare_regex_rule, Refined};
 
 /// A type that holds a value satisfying the `DigitRule`
-pub type Digit = Refined<DigitRule>;
+pub type Digit<T> = Refined<DigitRule<T>>;
 
 declare_regex_rule![pub DigitRule,r"^[0-9]*$"];
 

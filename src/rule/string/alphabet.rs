@@ -12,7 +12,7 @@ use crate::{declare_regex_rule, Refined};
 /// let alphabet_result = Alphabet::new("I am the 1st".to_string());
 /// assert!(alphabet_result.is_err());
 /// ```
-pub type Alphabet = Refined<AlphabetRule>;
+pub type Alphabet<T> = Refined<AlphabetRule<T>>;
 
 declare_regex_rule![pub AlphabetRule, r"^[a-zA-Z]*$"];
 
