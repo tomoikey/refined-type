@@ -1,3 +1,6 @@
+mod string;
+
+use std::collections::{HashSet, VecDeque};
 use std::marker::PhantomData;
 
 use crate::result::Error;
@@ -15,37 +18,28 @@ where
     _phantom_data: PhantomData<(RULE, ITERABLE)>,
 }
 
-impl<RULE, ITEM> Rule for ForAllRule<RULE, Vec<RULE::Item>>
-where
-    RULE: Rule<Item = ITEM>,
-{
-    type Item = Vec<RULE::Item>;
+macro_rules! impl_for_all {
+    ($($t:ty),*) => {
+        $(
+            impl<RULE> Rule for ForAllRule<RULE, $t>
+            where
+                RULE: Rule,
+            {
+                type Item = $t;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.iter().all(|item| RULE::validate(item).is_ok()) {
-            Ok(())
-        } else {
-            Err(Error::new("not all items satisfy the condition"))
-        }
-    }
+                fn validate(target: &Self::Item) -> Result<(), Error> {
+                    if target.iter().all(|item| RULE::validate(item).is_ok()) {
+                        Ok(())
+                    } else {
+                        Err(Error::new("not all items satisfy the condition"))
+                    }
+                }
+            }
+        )*
+    };
 }
 
-impl<RULE> Rule for ForAllRule<RULE, String>
-where
-    RULE: Rule<Item = char>,
-{
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.chars().all(|item| RULE::validate(&item).is_ok()) {
-            Ok(())
-        } else {
-            Err(Error::new(format!(
-                "{target} does not satisfy the condition"
-            )))
-        }
-    }
-}
+impl_for_all![Vec<RULE::Item>, VecDeque<RULE::Item>, HashSet<RULE::Item>];
 
 #[cfg(test)]
 mod tests {
@@ -56,7 +50,7 @@ mod tests {
     #[test]
     fn for_all_1() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
-        let for_all: ForAll<NonEmptyStringRule, _> = ForAll::new(value.clone())?;
+        let for_all: ForAll<NonEmptyStringRule, Vec<_>> = ForAll::new(value.clone())?;
         assert_eq!(for_all.into_value(), value);
         Ok(())
     }
@@ -64,7 +58,7 @@ mod tests {
     #[test]
     fn for_all_2() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "".to_string()];
-        let for_all_result = ForAll::<NonEmptyStringRule, _>::new(value.clone());
+        let for_all_result = ForAll::<NonEmptyStringRule, Vec<_>>::new(value.clone());
         assert!(for_all_result.is_err());
         Ok(())
     }

@@ -1,7 +1,6 @@
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
 use std::marker::PhantomData;
-
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use crate::result::Error;
 use crate::rule::Rule;
