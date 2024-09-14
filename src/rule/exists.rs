@@ -3,10 +3,10 @@ use crate::rule::ForAllRule;
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ExistsRule`
-pub type Exists<RULE, T> = Refined<ExistsRule<RULE, T>>;
+pub type Exists<RULE, ITERABLE> = Refined<ExistsRule<RULE, ITERABLE>>;
 
 /// Rule where at least one data in the collection satisfies the condition
-pub type ExistsRule<RULE, T> = Not<ForAllRule<Not<RULE>, T>>;
+pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
 
 #[cfg(test)]
 mod tests {
