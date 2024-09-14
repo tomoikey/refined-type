@@ -1,9 +1,8 @@
+mod collection;
 mod string;
 
-use std::collections::{HashSet, VecDeque};
 use std::marker::PhantomData;
 
-use crate::result::Error;
 use crate::rule::Rule;
 use crate::Refined;
 
@@ -17,29 +16,6 @@ where
 {
     _phantom_data: PhantomData<(RULE, ITERABLE)>,
 }
-
-macro_rules! impl_for_all {
-    ($($t:ty),*) => {
-        $(
-            impl<RULE> Rule for ForAllRule<RULE, $t>
-            where
-                RULE: Rule,
-            {
-                type Item = $t;
-
-                fn validate(target: &Self::Item) -> Result<(), Error> {
-                    if target.iter().all(|item| RULE::validate(item).is_ok()) {
-                        Ok(())
-                    } else {
-                        Err(Error::new("not all items satisfy the condition"))
-                    }
-                }
-            }
-        )*
-    };
-}
-
-impl_for_all![Vec<RULE::Item>, VecDeque<RULE::Item>, HashSet<RULE::Item>];
 
 #[cfg(test)]
 mod tests {
