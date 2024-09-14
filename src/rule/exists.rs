@@ -1,35 +1,12 @@
-use crate::result::Error;
-use crate::rule::Rule;
+use crate::rule::composer::Not;
+use crate::rule::ForAllRule;
 use crate::Refined;
-use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `ExistsRule`
 pub type Exists<RULE, ITERATOR> = Refined<ExistsRule<RULE, ITERATOR>>;
 
 /// Rule where at least one data in the collection satisfies the condition
-pub struct ExistsRule<RULE, ITERATOR> {
-    _phantom_data: PhantomData<(RULE, ITERATOR)>,
-}
-
-impl<RULE, ITERATOR, ITEM> Rule for ExistsRule<RULE, ITERATOR>
-where
-    ITERATOR: AsRef<[ITEM]>,
-    RULE: Rule<Item = ITEM>,
-{
-    type Item = ITERATOR;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target
-            .as_ref()
-            .iter()
-            .any(|item| RULE::validate(item).is_ok())
-        {
-            Ok(())
-        } else {
-            Err(Error::new("no item satisfies the condition"))
-        }
-    }
-}
+pub type ExistsRule<RULE, ITERATOR> = Not<ForAllRule<Not<RULE>, ITERATOR>>;
 
 #[cfg(test)]
 mod tests {
