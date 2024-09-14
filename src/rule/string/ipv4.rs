@@ -4,7 +4,7 @@ use crate::Refined;
 use std::str::FromStr;
 
 /// A type that holds a value satisfying the `Ipv4AddrRule`
-pub type Ipv4Addr<T> = Refined<Ipv4AddrRule<T>>;
+pub type Ipv4Addr<STRING> = Refined<Ipv4AddrRule<STRING>>;
 
 /// Rule where the target value must be a valid IPv4 address
 pub struct Ipv4AddrRule<T> {
@@ -15,9 +15,15 @@ impl<T: AsRef<str>> Rule for Ipv4AddrRule<T> {
     type Item = T;
 
     fn validate(target: &Self::Item) -> Result<(), Error> {
-        std::net::Ipv4Addr::from_str(target.as_ref())
-            .map_err(|e| Error::new(e.to_string()))
-            .map(|_| ())
+        let target = target.as_ref();
+        if std::net::Ipv4Addr::from_str(target).is_ok() {
+            Ok(())
+        } else {
+            Err(Error::new(format!(
+                "{} is not a valid IPv4 address",
+                target
+            )))
+        }
     }
 }
 

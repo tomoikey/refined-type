@@ -1,7 +1,7 @@
 use crate::{declare_regex_rule, Refined};
 
 /// A type that holds a value satisfying the `AlphaDigitRule`
-pub type AlphaDigit<T> = Refined<AlphaDigitRule<T>>;
+pub type AlphaDigit<STRING> = Refined<AlphaDigitRule<STRING>>;
 
 declare_regex_rule![pub AlphaDigitRule, r"^[0-9a-zA-Z]*$"];
 

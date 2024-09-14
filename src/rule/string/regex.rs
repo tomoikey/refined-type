@@ -23,12 +23,12 @@ pub use regex::Regex;
 macro_rules! declare_regex_rule {
     ($vis:vis $rule:ident, $regex:literal) => {
         $crate::paste::item! {
-            $vis struct $rule<T> {
-                _phantom: std::marker::PhantomData<T>,
+            $vis struct $rule<STRING> {
+                _phantom: std::marker::PhantomData<STRING>,
             }
 
-            impl<T: AsRef<str>> $crate::rule::Rule for $rule<T> {
-                type Item = T;
+            impl<STRING: AsRef<str>> $crate::rule::Rule for $rule<STRING> {
+                type Item = STRING;
 
                 fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
                     let target = target.as_ref();
