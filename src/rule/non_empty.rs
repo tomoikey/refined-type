@@ -40,14 +40,15 @@ impl<I: ExactSizeIterator + EmptyDefinition> NonEmpty<I> {
         F: FnMut(I::Item) -> B,
     {
         let map_into_iter = self.into_value().map(f);
-        Refined::new(map_into_iter).expect("This error is always unreachable")
+        Refined::<NonEmptyRule<Map<I, F>>>::new(map_into_iter)
+            .expect("This error is always unreachable")
     }
 
     pub fn collect<B: FromIterator<I::Item> + EmptyDefinition>(self) -> NonEmpty<B>
     where
         Self: Sized,
     {
-        Refined::new(FromIterator::from_iter(self.into_value()))
+        NonEmpty::<B>::new(FromIterator::from_iter(self.into_value()))
             .expect("This error is always unreachable")
     }
 }

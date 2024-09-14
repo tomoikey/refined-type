@@ -1,6 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt::{Display, Formatter};
-use std::marker::PhantomData;
 
 use crate::result::Error;
 use crate::rule::Rule;
@@ -23,7 +22,6 @@ where
     RULE: Rule,
 {
     value: RULE::Item,
-    _rule: PhantomData<RULE>,
 }
 
 impl<RULE, T> Serialize for Refined<RULE>
@@ -61,18 +59,12 @@ where
 {
     pub fn new(value: T) -> Result<Self, Error> {
         RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
-        Ok(Self {
-            value,
-            _rule: Default::default(),
-        })
+        Ok(Self { value })
     }
 
     pub fn unsafe_new(value: T) -> Self {
         RULE::validate(&value).expect("initialization by `unsafe_new` failed");
-        Self {
-            value,
-            _rule: Default::default(),
-        }
+        Self { value }
     }
 
     pub fn value(&self) -> &RULE::Item {
