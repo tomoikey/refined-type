@@ -5,26 +5,21 @@ use crate::rule::Rule;
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ForAllRule`
-pub type ForAll<RULE, ITERATOR> = Refined<ForAllRule<RULE, ITERATOR>>;
+pub type ForAll<RULE> = Refined<ForAllRule<RULE>>;
 
 /// Rule where all the data in the collection satisfies the condition
-pub struct ForAllRule<RULE, ITERATOR> {
-    _phantom_data: PhantomData<(RULE, ITERATOR)>,
+pub struct ForAllRule<RULE> {
+    _phantom_data: PhantomData<RULE>,
 }
 
-impl<RULE, ITERATOR, ITEM> Rule for ForAllRule<RULE, ITERATOR>
+impl<RULE, ITEM> Rule for ForAllRule<RULE>
 where
-    ITERATOR: AsRef<[ITEM]>,
     RULE: Rule<Item = ITEM>,
 {
-    type Item = ITERATOR;
+    type Item = Vec<ITEM>;
 
     fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target
-            .as_ref()
-            .iter()
-            .all(|item| RULE::validate(item).is_ok())
-        {
+        if target.iter().all(|item| RULE::validate(item).is_ok()) {
             Ok(())
         } else {
             Err(Error::new("not all items satisfy the condition"))
@@ -40,7 +35,7 @@ mod tests {
     #[test]
     fn for_all_1() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
-        let for_all: ForAll<NonEmptyStringRule, _> = ForAll::new(value.clone())?;
+        let for_all: ForAll<NonEmptyStringRule> = ForAll::new(value.clone())?;
         assert_eq!(for_all.into_value(), value);
         Ok(())
     }
@@ -48,7 +43,7 @@ mod tests {
     #[test]
     fn for_all_2() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "".to_string()];
-        let for_all_result = ForAll::<NonEmptyStringRule, _>::new(value.clone());
+        let for_all_result = ForAll::<NonEmptyStringRule>::new(value.clone());
         assert!(for_all_result.is_err());
         Ok(())
     }
