@@ -16,22 +16,6 @@ pub trait Iterable<'a> {
     fn into_iterator(self) -> Box<dyn Iterator<Item = Self::Item> + 'a>;
 }
 
-impl<'a, T: 'a> Iterable<'a> for Vec<T> {
-    type Item = T;
-
-    fn into_iterator(self) -> Box<dyn Iterator<Item = Self::Item> + 'a> {
-        Box::new(self.into_iter())
-    }
-}
-
-impl<'a> Iterable<'a> for String {
-    type Item = char;
-
-    fn into_iterator(self) -> Box<dyn Iterator<Item = Self::Item> + 'a> {
-        Box::new(self.chars().collect::<Vec<_>>().into_iter())
-    }
-}
-
 /// Rule where all the data in the collection satisfies the condition
 pub struct ForAllRule<RULE, ITERABLE>
 where
