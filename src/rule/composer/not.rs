@@ -10,8 +10,8 @@ use std::marker::PhantomData;
 ///
 /// type NonEmptyString = Not<EmptyRule<String>>;
 ///
-/// assert!(NonEmptyString::validate(&"non empty".to_string()).is_ok());
-/// assert!(NonEmptyString::validate(&"".to_string()).is_err());
+/// assert!(NonEmptyString::validate("non empty".to_string()).is_ok());
+/// assert!(NonEmptyString::validate("".to_string()).is_err());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Not<RULE> {
@@ -24,10 +24,10 @@ where
 {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let bounded_rule = |t: &T| match RULE::validate(t) {
-            Ok(_) => Err(Error::new("Target satisfies the `Not` rule")),
-            Err(_) => Ok(()),
+    fn validate(target: Self::Item) -> Result<T, Error<T>> {
+        let bounded_rule = |t: T| match RULE::validate(t) {
+            Ok(value) => Err(Error::new(value, "Target satisfies the `Not` rule")),
+            Err(err) => Ok(err.into_value()),
         };
         bounded_rule(target)
     }
@@ -41,7 +41,7 @@ mod test {
     #[test]
     fn test_not() {
         type NonNonEmptyString = Not<NonEmptyStringRule>;
-        assert!(NonNonEmptyString::validate(&"".to_string()).is_ok());
-        assert!(NonNonEmptyString::validate(&"Hello".to_string()).is_err())
+        assert!(NonNonEmptyString::validate("".to_string()).is_ok());
+        assert!(NonNonEmptyString::validate("Hello".to_string()).is_err())
     }
 }

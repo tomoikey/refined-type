@@ -1,5 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::fmt::{Display, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 
 use crate::result::Error;
 use crate::rule::Rule;
@@ -57,13 +57,16 @@ impl<RULE, T> Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
-    pub fn new(value: T) -> Result<Self, Error> {
-        RULE::validate(&value).map_err(|e| Error::new(e.to_string()))?;
+    pub fn new(value: T) -> Result<Self, Error<T>> {
+        let value = RULE::validate(value)?;
         Ok(Self { value })
     }
 
-    pub fn unsafe_new(value: T) -> Self {
-        RULE::validate(&value).expect("initialization by `unsafe_new` failed");
+    pub fn unsafe_new(value: T) -> Self
+    where
+        T: Debug,
+    {
+        let value = RULE::validate(value).expect("initialization by `unsafe_new` failed");
         Self { value }
     }
 
@@ -109,7 +112,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_non_empty_string_ok() -> Result<(), Error> {
+    fn test_refined_non_empty_string_ok() -> Result<(), Error<String>> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(non_empty_string.value, "Hello");
         Ok(())
@@ -123,14 +126,14 @@ mod test {
     }
 
     #[test]
-    fn test_refined_display() -> Result<(), Error> {
+    fn test_refined_display() -> Result<(), Error<String>> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string())?;
         assert_eq!(format!("{}", non_empty_string), "Hello");
         Ok(())
     }
 
     #[test]
-    fn test_refined_serialize_json_string() -> anyhow::Result<()> {
+    fn test_refined_serialize_json_string() -> Result<(), Error<String>> {
         let non_empty_string = Refined::<NonEmptyStringRule>::new("hello".to_string())?;
 
         let actual = json!(non_empty_string);
@@ -140,7 +143,7 @@ mod test {
     }
 
     #[test]
-    fn test_refined_serialize_json_struct() -> anyhow::Result<()> {
+    fn test_refined_serialize_json_struct() -> Result<(), Error<String>> {
         type NonEmptyString = Refined<NonEmptyStringRule>;
         #[derive(Serialize)]
         struct Human {
@@ -188,11 +191,12 @@ mod test {
         }}
         .to_string();
 
-        let actual = serde_json::from_str::<Human>(&json)?;
+        let actual = serde_json::from_str::<Human>(&json).expect("unreachable");
 
         let expected = Human {
-            name: NonEmptyString::new("john".to_string())?,
-            friends: NonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])?,
+            name: NonEmptyString::new("john".to_string()).expect("unreachable"),
+            friends: NonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])
+                .expect("unreachable"),
             age: 8,
         };
         assert_eq!(actual, expected);

@@ -4,6 +4,7 @@ use std::borrow::Borrow;
 use std::collections::hash_map::RandomState;
 use std::collections::hash_map::{IntoKeys, IntoValues, Keys, Values};
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::hash::{BuildHasher, Hash};
 
 /// A type that holds a value satisfying the `NonEmptyHashMapRule`
@@ -29,7 +30,7 @@ pub type NonEmptyHashMap<K, V, S = RandomState> = Refined<NonEmptyHashMapRule<K,
 /// Rule where the input `HashMap` is not empty
 pub type NonEmptyHashMapRule<K, V, S = RandomState> = NonEmptyRule<HashMap<K, V, S>>;
 
-impl<K, V, S> NonEmptyHashMap<K, V, S> {
+impl<K: Debug, V: Debug, S> NonEmptyHashMap<K, V, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_map::IntoIter<K, V>> {
         Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
@@ -86,7 +87,11 @@ where
         self.value().get(k)
     }
 
-    pub fn insert(self, k: K, v: V) -> Self {
+    pub fn insert(self, k: K, v: V) -> Self
+    where
+        K: Debug,
+        V: Debug,
+    {
         let mut result = self.into_value();
         result.insert(k, v);
         Refined::new(result).expect("This error is always unreachable")
@@ -95,11 +100,12 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::result::Error;
     use crate::rule::{NonEmptyHashMap, NonEmptyVec};
     use std::collections::{HashMap, HashSet};
 
     #[test]
-    fn test_map_len() -> anyhow::Result<()> {
+    fn test_map_len() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         let map = NonEmptyHashMap::new(map)?;
@@ -108,7 +114,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_is_empty() -> anyhow::Result<()> {
+    fn test_map_is_empty() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         let map = NonEmptyHashMap::new(map)?;
@@ -117,7 +123,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_keys() -> anyhow::Result<()> {
+    fn test_map_keys() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);
@@ -130,7 +136,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_into_keys() -> anyhow::Result<()> {
+    fn test_map_into_keys() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);
@@ -143,7 +149,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_values() -> anyhow::Result<()> {
+    fn test_map_values() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);
@@ -156,7 +162,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_into_values() -> anyhow::Result<()> {
+    fn test_map_into_values() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);
@@ -169,7 +175,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_get() -> anyhow::Result<()> {
+    fn test_map_get() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);
@@ -179,7 +185,7 @@ mod test {
     }
 
     #[test]
-    fn test_map_insert() -> anyhow::Result<()> {
+    fn test_map_insert() -> Result<(), Error<HashMap<&'static str, i32>>> {
         let mut map = HashMap::new();
         map.insert("1", 1);
         map.insert("2", 2);

@@ -33,8 +33,9 @@ fn example_1() -> anyhow::Result<()> {
 
     let actual = serde_json::from_str::<Human>(&json)?;
     let expected = Human {
-        name: MyNonEmptyString::new("john".to_string())?,
-        friends: MyNonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])?,
+        name: MyNonEmptyString::new("john".to_string()).expect("unreachable"),
+        friends: MyNonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])
+            .expect("unreachable"),
     };
     assert_eq!(actual, expected);
     Ok(())
@@ -69,7 +70,7 @@ fn example_3() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_4() -> anyhow::Result<()> {
+fn example_4() -> Result<(), Error<String>> {
     let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string())?;
     assert_eq!(non_empty_string_result.into_value(), "Hello World");
 
@@ -78,18 +79,22 @@ fn example_4() -> anyhow::Result<()> {
     Ok(())
 }
 
+#[derive(Debug)]
 struct ContainsHelloRule;
+#[derive(Debug)]
 struct ContainsCommaRule;
+#[derive(Debug)]
 struct ContainsWorldRule;
 
 impl Rule for ContainsHelloRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.contains("Hello") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!("{} does not contain `Hello`", target)))
+            let message = format!("{} does not contain `Hello`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -97,11 +102,12 @@ impl Rule for ContainsHelloRule {
 impl Rule for ContainsCommaRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.contains(",") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!("{} does not contain `,`", target)))
+            let message = format!("{} does not contain `,`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -109,11 +115,12 @@ impl Rule for ContainsCommaRule {
 impl Rule for ContainsWorldRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.contains("World") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!("{} does not contain `World`", target)))
+            let message = format!("{} does not contain `World`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -161,14 +168,12 @@ struct EndsWithJohnRule;
 impl Rule for StartsWithHelloRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.starts_with("Hello") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!(
-                "{} does not start with `Hello`",
-                target
-            )))
+            let message = format!("{} does not start with `Hello`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -176,11 +181,12 @@ impl Rule for StartsWithHelloRule {
 impl Rule for StartsWithByeRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.starts_with("Bye") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!("{} does not start with `Bye`", target)))
+            let message = format!("{} does not start with `Bye`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -188,11 +194,12 @@ impl Rule for StartsWithByeRule {
 impl Rule for EndsWithJohnRule {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
+    fn validate(target: Self::Item) -> Result<String, Error<String>> {
         if target.ends_with("John") {
-            Ok(())
+            Ok(target)
         } else {
-            Err(Error::new(format!("{} does not end with `John`", target)))
+            let message = format!("{} does not end with `John`", target);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -201,10 +208,10 @@ impl Rule for EndsWithJohnRule {
 fn example_8() {
     type GreetingRule = And<Or<StartsWithHelloRule, StartsWithByeRule>, EndsWithJohnRule>;
 
-    assert!(GreetingRule::validate(&"Hello! Nice to meet you John".to_string()).is_ok());
-    assert!(GreetingRule::validate(&"Bye! Have a good day John".to_string()).is_ok());
-    assert!(GreetingRule::validate(&"How are you? Have a good day John".to_string()).is_err());
-    assert!(GreetingRule::validate(&"Bye! Have a good day Tom".to_string()).is_err());
+    assert!(GreetingRule::validate("Hello! Nice to meet you John".to_string()).is_ok());
+    assert!(GreetingRule::validate("Bye! Have a good day John".to_string()).is_ok());
+    assert!(GreetingRule::validate("How are you? Have a good day John".to_string()).is_err());
+    assert!(GreetingRule::validate("Bye! Have a good day Tom".to_string()).is_err());
 }
 
 #[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
@@ -216,7 +223,7 @@ struct Human2 {
 #[test]
 fn example_9() -> anyhow::Result<()> {
     let john = Human2 {
-        name: NonEmptyString::new("john".to_string())?,
+        name: NonEmptyString::new("john".to_string()).expect("unreachable"),
         age: 8,
     };
 
@@ -240,7 +247,7 @@ fn example_10() -> anyhow::Result<()> {
     let actual = serde_json::from_str::<Human2>(&json)?;
 
     let expected = Human2 {
-        name: NonEmptyString::new("john".to_string())?,
+        name: NonEmptyString::unsafe_new("john".to_string()),
         age: 8,
     };
     assert_eq!(actual, expected);
@@ -291,7 +298,7 @@ fn example_12() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_13() -> anyhow::Result<()> {
+fn example_13() -> Result<(), Error<Vec<i32>>> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -299,7 +306,7 @@ fn example_13() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_14() -> anyhow::Result<()> {
+fn example_14() -> Result<(), Error<Vec<i32>>> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -307,7 +314,7 @@ fn example_14() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_15() -> anyhow::Result<()> {
+fn example_15() -> Result<(), Error<Vec<i32>>> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
@@ -315,7 +322,7 @@ fn example_15() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_16() -> Result<(), Error> {
+fn example_16() -> Result<(), Error<String>> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -346,7 +353,7 @@ fn example_16() -> Result<(), Error> {
 }
 
 #[test]
-fn example_17() -> anyhow::Result<()> {
+fn example_17() -> Result<(), Error<Vec<String>>> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -395,16 +402,16 @@ fn example_17() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[test]
-fn example_18() -> anyhow::Result<()> {
-    #[derive(Debug, PartialEq)]
-    struct Hello;
-    impl LengthDefinition for Hello {
-        fn length(&self) -> usize {
-            5
-        }
+#[derive(Debug, PartialEq)]
+struct Hello;
+impl LengthDefinition for Hello {
+    fn length(&self) -> usize {
+        5
     }
+}
 
+#[test]
+fn example_18() -> Result<(), Error<Hello>> {
     length_equal!(5);
     let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
@@ -416,9 +423,9 @@ type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
 #[allow(dead_code)]
 type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
 
+type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
 #[test]
-fn example_19() -> anyhow::Result<()> {
-    type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
+fn example_19() -> Result<(), Error<String>> {
     let sample = Sample::new("Hello, World!".to_string())?;
     assert_eq!(sample.into_value(), "Hello, World!");
 
@@ -428,7 +435,7 @@ fn example_19() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_20() -> anyhow::Result<()> {
+fn example_20() -> Result<(), Error<String>> {
     type Sample = Refined<O![ContainsHelloRule, ContainsCommaRule, ContainsWorldRule]>;
     let sample = Sample::new("Foo! World!".to_string())?;
     assert_eq!(sample.into_value(), "Foo! World!");

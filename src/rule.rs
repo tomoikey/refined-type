@@ -20,5 +20,5 @@ mod string;
 /// This is a `trait` that specifies the conditions a type `T` should satisfy
 pub trait Rule {
     type Item;
-    fn validate(target: &Self::Item) -> Result<(), Error>;
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>>;
 }

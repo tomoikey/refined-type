@@ -28,11 +28,11 @@ macro_rules! length_greater_than {
 
             impl<ITEM> $crate::rule::Rule for [<LengthGreaterThanRule $length>]<ITEM> where ITEM: $crate::rule::LengthDefinition {
                 type Item = ITEM;
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if target.length() > $length {
-                        Ok(())
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("target length is not greater than {}", $length)))
+                        Err($crate::result::Error::new(target, format!("target length is not greater than {}", $length)))
                     }
                 }
             }
@@ -51,7 +51,7 @@ mod tests {
     length_greater_than!(5, 10);
 
     #[test]
-    fn test_length_greater_than_5() -> Result<(), Error> {
+    fn test_length_greater_than_5() -> Result<(), Error<&'static str>> {
         let target = "123456";
         let refined = LengthGreaterThan5::new(target)?;
         assert_eq!(refined.into_value(), "123456");
@@ -66,7 +66,7 @@ mod tests {
     }
 
     #[test]
-    fn test_length_greater_than_10() -> Result<(), Error> {
+    fn test_length_greater_than_10() -> Result<(), Error<&'static str>> {
         let target = "12345678901";
         let refined = LengthGreaterThan10::new(target)?;
         assert_eq!(refined.into_value(), "12345678901");

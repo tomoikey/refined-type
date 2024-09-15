@@ -1,5 +1,6 @@
 use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
+use std::fmt::Debug;
 
 use std::ops::Add;
 
@@ -17,7 +18,7 @@ pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
 /// Rule where the input `Vec` is not empty
 pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
-impl<T> NonEmptyVec<T> {
+impl<T: Debug> NonEmptyVec<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::vec::IntoIter<T>> {
         Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
@@ -47,7 +48,7 @@ impl<T> NonEmptyVec<T> {
     }
 }
 
-impl<T> Add for NonEmptyVec<T> {
+impl<T: Debug> Add for NonEmptyVec<T> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -59,18 +60,19 @@ impl<T> Add for NonEmptyVec<T> {
 
 #[cfg(test)]
 mod test {
+    use crate::result::Error;
     use crate::rule::non_empty::non_empty_vec_deque::NonEmptyVecDeque;
     use crate::rule::non_empty::NonEmptyVecRule;
     use crate::rule::{NonEmptyVec, Rule};
 
     #[test]
     fn test_non_empty_vec() {
-        assert!(NonEmptyVecRule::validate(&vec![1, 2, 3]).is_ok());
-        assert!(NonEmptyVecRule::<u8>::validate(&vec![]).is_err());
+        assert!(NonEmptyVecRule::validate(vec![1, 2, 3]).is_ok());
+        assert!(NonEmptyVecRule::<u8>::validate(vec![]).is_err());
     }
 
     #[test]
-    fn test_add_vec() -> anyhow::Result<()> {
+    fn test_add_vec() -> Result<(), Error<Vec<i32>>> {
         let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
         let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
         let ne_vec = ne_vec_1 + ne_vec_2;
@@ -79,7 +81,7 @@ mod test {
     }
 
     #[test]
-    fn test_into_iter() -> anyhow::Result<()> {
+    fn test_into_iter() -> Result<(), Error<Vec<i32>>> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
         let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
         assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -87,7 +89,7 @@ mod test {
     }
 
     #[test]
-    fn test_iter() -> anyhow::Result<()> {
+    fn test_iter() -> Result<(), Error<Vec<i32>>> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
         let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
         assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -95,7 +97,7 @@ mod test {
     }
 
     #[test]
-    fn test_collect_to_deque() -> anyhow::Result<()> {
+    fn test_collect_to_deque() -> Result<(), Error<Vec<i32>>> {
         let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
         let ne_vec: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
         assert_eq!(ne_vec.into_value(), vec![1, 2, 3]);
@@ -103,28 +105,28 @@ mod test {
     }
 
     #[test]
-    fn test_push() -> anyhow::Result<()> {
+    fn test_push() -> Result<(), Error<Vec<i32>>> {
         let vec = NonEmptyVec::new(vec![1])?.push(2).push(3);
         assert_eq!(vec.into_value(), vec![1, 2, 3]);
         Ok(())
     }
 
     #[test]
-    fn test_get() -> anyhow::Result<()> {
+    fn test_get() -> Result<(), Error<Vec<i32>>> {
         let vec = NonEmptyVec::new(vec![1])?;
         assert_eq!(vec.get(0), Some(&1));
         Ok(())
     }
 
     #[test]
-    fn test_len() -> anyhow::Result<()> {
+    fn test_len() -> Result<(), Error<Vec<i32>>> {
         let vec = NonEmptyVec::new(vec![1])?;
         assert_eq!(vec.len(), 1);
         Ok(())
     }
 
     #[test]
-    fn test_is_empty() -> anyhow::Result<()> {
+    fn test_is_empty() -> Result<(), Error<Vec<i32>>> {
         let vec = NonEmptyVec::new(vec![1])?;
         assert!(!vec.is_empty());
         Ok(())

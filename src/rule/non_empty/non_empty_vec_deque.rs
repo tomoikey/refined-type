@@ -1,6 +1,7 @@
 use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
 use std::collections::VecDeque;
+use std::fmt::Debug;
 use std::ops::Add;
 
 /// A type that holds a value satisfying the `NonEmptyVecDequeRule`
@@ -21,7 +22,7 @@ pub type NonEmptyVecDeque<T> = Refined<NonEmptyVecDequeRule<T>>;
 /// Rule where the input `VecDeque` is not empty
 pub type NonEmptyVecDequeRule<T> = NonEmptyRule<VecDeque<T>>;
 
-impl<T> NonEmptyVecDeque<T> {
+impl<T: Debug> NonEmptyVecDeque<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::vec_deque::IntoIter<T>> {
         Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
@@ -57,7 +58,7 @@ impl<T> NonEmptyVecDeque<T> {
     }
 }
 
-impl<T> Add for NonEmptyVecDeque<T> {
+impl<T: Debug> Add for NonEmptyVecDeque<T> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -69,12 +70,13 @@ impl<T> Add for NonEmptyVecDeque<T> {
 
 #[cfg(test)]
 mod test {
+    use crate::result::Error;
     use crate::rule::non_empty::non_empty_vec_deque::NonEmptyVecDeque;
     use crate::rule::NonEmptyVec;
     use std::collections::VecDeque;
 
     #[test]
-    fn test_collect_to_vec() -> anyhow::Result<()> {
+    fn test_collect_to_vec() -> Result<(), Error<VecDeque<i32>>> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?.push_front(2).push_back(3);
@@ -84,7 +86,7 @@ mod test {
     }
 
     #[test]
-    fn test_vec_deque_push() -> anyhow::Result<()> {
+    fn test_vec_deque_push() -> Result<(), Error<VecDeque<i32>>> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?.push_front(2).push_back(3);
@@ -93,7 +95,7 @@ mod test {
     }
 
     #[test]
-    fn test_get() -> anyhow::Result<()> {
+    fn test_get() -> Result<(), Error<VecDeque<i32>>> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?;
@@ -102,7 +104,7 @@ mod test {
     }
 
     #[test]
-    fn test_len() -> anyhow::Result<()> {
+    fn test_len() -> Result<(), Error<VecDeque<i32>>> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?;
@@ -111,7 +113,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_empty() -> anyhow::Result<()> {
+    fn test_is_empty() -> Result<(), Error<VecDeque<i32>>> {
         let mut deque = VecDeque::new();
         deque.push_front(1);
         let deque = NonEmptyVecDeque::new(deque)?;

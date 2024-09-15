@@ -15,11 +15,11 @@ macro_rules! equal_rule {
             impl $crate::rule::Rule for [<EqualRule $e $t>] {
                 type Item = $t;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    if *target == $e {
-                        Ok(())
+                fn validate(target: Self::Item) -> Result<$t, $crate::result::Error<$t>> {
+                    if target == $e {
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("{} does not equal {}", target, $e)))
+                        Err($crate::result::Error::new(target, format!("{} does not equal {}", target, $e)))
                     }
                 }
             }

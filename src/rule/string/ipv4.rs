@@ -14,15 +14,13 @@ pub struct Ipv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for Ipv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let target = target.as_ref();
-        if std::net::Ipv4Addr::from_str(target).is_ok() {
-            Ok(())
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        let target_as_ref = target.as_ref();
+        if std::net::Ipv4Addr::from_str(target_as_ref).is_ok() {
+            Ok(target)
         } else {
-            Err(Error::new(format!(
-                "{} is not a valid IPv4 address",
-                target
-            )))
+            let message = format!("{} is not a valid IPv4 address", target_as_ref);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -37,15 +35,19 @@ pub struct PublicIpv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for PublicIpv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let target = target.as_ref();
-        if std::net::Ipv4Addr::from_str(target)
-            .map_err(|e| Error::new(e.to_string()))?
-            .is_private()
-        {
-            Err(Error::new(format!("{} is a private IP address", target)))
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        let target_as_ref = target.as_ref();
+        let ipv4_result = std::net::Ipv4Addr::from_str(target_as_ref);
+        if let Ok(ipv4) = ipv4_result {
+            if !ipv4.is_private() {
+                Ok(target)
+            } else {
+                let message = format!("{} is a private IP address", target_as_ref);
+                Err(Error::new(target, message))
+            }
         } else {
-            Ok(())
+            let message = format!("{} is not a valid IPv4 address", target_as_ref);
+            Err(Error::new(target, message))
         }
     }
 }
@@ -60,15 +62,18 @@ pub struct PrivateIpv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for PrivateIpv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let target = target.as_ref();
-        if std::net::Ipv4Addr::from_str(target)
-            .map_err(|e| Error::new(e.to_string()))?
-            .is_private()
-        {
-            Ok(())
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        let target_as_ref = target.as_ref();
+        if let Ok(ipv4) = std::net::Ipv4Addr::from_str(target_as_ref) {
+            if ipv4.is_private() {
+                Ok(target)
+            } else {
+                let message = format!("{} is a public IP address", target_as_ref);
+                Err(Error::new(target, message))
+            }
         } else {
-            Err(Error::new(format!("{} is a public IP address", target)))
+            let message = format!("{} is not a valid IPv4 address", target_as_ref);
+            Err(Error::new(target, message))
         }
     }
 }
