@@ -10,20 +10,21 @@ pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
 
 #[cfg(test)]
 mod tests {
+    use crate::result::Error;
     use crate::rule::{Exists, NonEmptyStringRule};
 
     #[test]
-    fn exists_1() -> anyhow::Result<()> {
+    fn exists_1() -> Result<(), Error<Vec<String>>> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
-        let exists: Exists<NonEmptyStringRule, Vec<_>> = Exists::new(value.clone())?;
+        let exists: Exists<NonEmptyStringRule, _> = Exists::new(value.clone())?;
         assert_eq!(exists.into_value(), value);
         Ok(())
     }
 
     #[test]
-    fn exists_2() -> anyhow::Result<()> {
+    fn exists_2() -> Result<(), Error<Vec<String>>> {
         let value = vec!["".to_string(), "".to_string()];
-        let exists_result = Exists::<NonEmptyStringRule, Vec<_>>::new(value.clone());
+        let exists_result = Exists::<NonEmptyStringRule, _>::new(value.clone());
         assert!(exists_result.is_err());
         Ok(())
     }

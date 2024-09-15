@@ -6,7 +6,7 @@ length_equal!(5, 10);
 length_less_than!(10);
 
 #[test]
-fn test_length() -> Result<(), refined_type::result::Error> {
+fn test_length() -> Result<(), refined_type::result::Error<String>> {
     type Password = Refined<From5To10Rule<String>>;
 
     type From5To10Rule<T> = And<
@@ -34,7 +34,7 @@ fn test_length_fail() {
 }
 
 #[test]
-fn test_length_greater_than_5() -> Result<(), refined_type::result::Error> {
+fn test_length_greater_than_5() -> Result<(), refined_type::result::Error<&'static str>> {
     let target = "123456";
     let refined = LengthGreaterThan5::new(target)?;
     assert_eq!(refined.into_value(), "123456");
@@ -49,7 +49,7 @@ fn test_length_greater_than_5_fail() {
 }
 
 #[test]
-fn test_length_equal_5() -> Result<(), refined_type::result::Error> {
+fn test_length_equal_5() -> Result<(), refined_type::result::Error<&'static str>> {
     let target = "12345";
     let refined = LengthEqual5::new(target)?;
     assert_eq!(refined.into_value(), "12345");
@@ -64,7 +64,7 @@ fn test_length_equal_5_fail() {
 }
 
 #[test]
-fn test_length_equal_10() -> Result<(), refined_type::result::Error> {
+fn test_length_equal_10() -> Result<(), refined_type::result::Error<&'static str>> {
     let target = "1234567890";
     let refined = LengthEqual10::new(target)?;
     assert_eq!(refined.into_value(), "1234567890");
@@ -79,7 +79,7 @@ fn test_length_equal_10_fail() {
 }
 
 #[test]
-fn test_length_less_than_10() -> Result<(), refined_type::result::Error> {
+fn test_length_less_than_10() -> Result<(), refined_type::result::Error<&'static str>> {
     let target = "123456789";
     let refined = LengthLessThan10::new(target)?;
     assert_eq!(refined.into_value(), "123456789");
