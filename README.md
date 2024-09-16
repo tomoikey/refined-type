@@ -142,7 +142,7 @@ It is generally effective when you want to narrow down the condition range.
 
 ```rust
 fn example_5() {
-    type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
+    type HelloAndWorldRule = And![ContainsHelloRule, ContainsWorldRule];
 
     let rule_ok = Refined::<HelloAndWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok.is_ok());
@@ -159,7 +159,7 @@ It is generally effective when you want to expand the condition range.
 
 ```rust
 fn example_6() {
-    type HelloOrWorldRule = Or<ContainsHelloRule, ContainsWorldRule>;
+    type HelloOrWorldRule = Or![ContainsHelloRule, ContainsWorldRule];
 
     let rule_ok_1 = Refined::<HelloOrWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok_1.is_ok());
@@ -237,8 +237,12 @@ impl Rule for EndsWithJohnRule {
     }
 }
 
+#[test]
 fn example_8() {
-    type GreetingRule = And<Or<StartsWithHelloRule, StartsWithByeRule>, EndsWithJohnRule>;
+    type GreetingRule = And![
+        Or![StartsWithHelloRule, StartsWithByeRule],
+        EndsWithJohnRule
+    ];
 
     assert!(GreetingRule::validate(&"Hello! Nice to meet you John".to_string()).is_ok());
     assert!(GreetingRule::validate(&"Bye! Have a good day John".to_string()).is_ok());
@@ -319,7 +323,7 @@ type TargetAge18OrMore = Or<EqualRule18u8, GreaterRule18u8>;
 type TargetAge80OrLess = Or<EqualRule80u8, LessRule80u8>;
 
 // 18 <= age <= 80
-type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
+type TargetAgeRule = And![TargetAge18OrMore, TargetAge80OrLess];
 ```
 
 # Iterator
@@ -446,10 +450,10 @@ fn example_16() -> Result<(), Error> {
 
     type Password = Refined<From5To10Rule<String>>;
 
-    type From5To10Rule<T> = And<
-        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
-        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
-    >;
+    type From5To10Rule<T> = And![
+        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
+        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>]
+    ];
 
     // length is 8. so, this is valid
     let raw_password = "password";
@@ -481,10 +485,10 @@ fn example_17() -> anyhow::Result<()> {
 
     type Friends = Refined<From5To10Rule<Vec<String>>>;
 
-    type From5To10Rule<T> = And<
-        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
-        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
-    >;
+    type From5To10Rule<T> = And![
+        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
+        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>],
+    ];
 
     // length is 6. so, this is valid
     let raw_friends = vec![
@@ -546,58 +550,6 @@ fn example_18() -> anyhow::Result<()> {
     assert_eq!(hello.into_value(), Hello);
     Ok(())
 }
-```
-
-### `A!`(And), `O!`(Or) macro
-
-`And` and `Or` should occasionally combine multiple rules.
-However, defining deeply nested types each time is not an ideal approach.  
-Therefore, I have defined the `A!` macro and the `O!` macro, so that even when combining three or more rules, the code
-can
-be written concisely.  
-The usage is as follows:
-
-```rust
-fn example_19() -> anyhow::Result<()> {
-    type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
-
-    let sample = Sample::new("Hello, World!".to_string())?;
-    assert_eq!(sample.into_value(), "Hello, World!");
-
-    let sample = Sample::new("Hello World!".to_string());
-    assert!(sample.is_err());
-    Ok(())
-}
-```
-
-```rust
-fn example_20() -> anyhow::Result<()> {
-    type Sample = Refined<O![ContainsHelloRule, ContainsCommaRule, ContainsWorldRule]>;
-
-    let sample = Sample::new("Foo! World!".to_string())?;
-    assert_eq!(sample.into_value(), "Foo! World!");
-
-    let sample = Sample::new("Hello World!".to_string())?;
-    assert_eq!(sample.into_value(), "Hello World!");
-
-    let sample = Sample::new("World!".to_string())?;
-    assert_eq!(sample.into_value(), "World!");
-
-    let sample = Sample::new("".to_string());
-    assert!(sample.is_err());
-    Ok(())
-}
-```
-
-# Tips
-
-Directly writing `And`, `Or`, `Not` or `Refined` can often lead to a decrease in readability.
-Therefore, using **type aliases** can help make your code clearer.
-
-```rust
-type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
-
-type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
 ```
 
 # License
