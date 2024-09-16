@@ -1,6 +1,5 @@
+pub use collection::*;
 pub use empty::*;
-pub use exists::*;
-pub use for_all::*;
 pub use length::*;
 pub use non_empty::*;
 pub use number::*;
@@ -8,10 +7,9 @@ pub use string::*;
 
 use crate::result::Error;
 
+mod collection;
 pub mod composer;
 mod empty;
-mod exists;
-mod for_all;
 mod length;
 mod non_empty;
 mod number;

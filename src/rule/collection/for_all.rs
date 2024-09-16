@@ -33,7 +33,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::result::Error;
-    use crate::rule::for_all::ForAll;
+    use crate::rule::ForAll;
     use crate::rule::{ForAllString, ForAllVec, NonEmptyStringRule, Rule};
 
     #[test]
