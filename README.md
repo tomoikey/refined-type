@@ -1,6 +1,6 @@
 # Refined-Type
 
-**refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
+**refined_type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
 range of guarantees your applications can statically ensure.
 
 # Installation
