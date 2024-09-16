@@ -1,30 +1,30 @@
-mod collection;
-mod string;
-
-use crate::rule::Rule;
+use crate::rule::{Index0Rule, Rule};
 use crate::Refined;
 use std::collections::VecDeque;
-use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `HeadRule`
 pub type Head<RULE, ITERABLE> = Refined<HeadRule<RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `HeadRule`
-pub type HeadVec<RULE> = Head<RULE, Vec<<RULE as Rule>::Item>>;
+pub type HeadVec<RULE> = Refined<HeadVecRule<RULE>>;
 
 /// A type that holds a VecDeque value satisfying the `HeadRule`
-pub type HeadVecDeque<RULE> = Head<RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type HeadVecDeque<RULE> = Refined<HeadVecDequeRule<RULE>>;
 
 /// A type that holds a String value satisfying the `HeadRule`
-pub type HeadString<RULE> = Head<RULE, String>;
+pub type HeadString<RULE> = Refined<HeadStringRule<RULE>>;
 
 /// Rule where the first element satisfies the condition
-pub struct HeadRule<RULE, ITERABLE>
-where
-    RULE: Rule,
-{
-    _phantom_data: PhantomData<(RULE, ITERABLE)>,
-}
+pub type HeadRule<RULE, ITERABLE> = Index0Rule<RULE, ITERABLE>;
+
+/// Rule where the first element in the `Vec` satisfies the condition
+pub type HeadVecRule<RULE> = HeadRule<RULE, Vec<<RULE as Rule>::Item>>;
+
+/// Rule where the first element in the `VecDeque` satisfies the condition
+pub type HeadVecDequeRule<RULE> = HeadRule<RULE, VecDeque<<RULE as Rule>::Item>>;
+
+/// Rule where the first element in the `String` satisfies the condition
+pub type HeadStringRule<RULE> = HeadRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
