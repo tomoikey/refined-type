@@ -4,8 +4,8 @@ use serde_json::json;
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
 use refined_type::rule::{
-    ExistsVec, ForAllVec, LengthDefinition, NonEmptyRule, NonEmptyString, NonEmptyStringRule,
-    NonEmptyVec, NonEmptyVecDeque, Rule,
+    ExistsVec, ForAllVec, HeadVec, Index1Vec, LastVec, LengthDefinition, NonEmptyRule,
+    NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule,
 };
 use refined_type::{
     equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule, And,
@@ -285,6 +285,69 @@ fn example_12() -> anyhow::Result<()> {
 
 #[test]
 fn example_13() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["good morning".to_string(), "".to_string()], true), // PASS
+        (vec!["hello".to_string(), "hello".to_string()], true),   // PASS
+        (vec![], false),                                          // FAIL
+        (vec!["".to_string()], false),                            // FAIL
+        (vec!["".to_string(), "hello".to_string()], false),       // FAIL
+    ];
+
+    for (value, ok) in table {
+        let head = HeadVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(head.is_ok(), ok);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn example_14() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["".to_string(), "hello".to_string()], true), // PASS
+        (vec!["good morning".to_string(), "hello".to_string()], true), // PASS
+        (vec![], false),                                   // FAIL
+        (vec!["".to_string()], false),                     // FAIL
+        (vec!["hello".to_string(), "".to_string()], false), // FAIL
+    ];
+
+    for (value, ok) in table {
+        let last = LastVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(last.is_ok(), ok);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn example_15() -> anyhow::Result<()> {
+    Ok(())
+}
+
+#[test]
+fn example_16() -> anyhow::Result<()> {
+    Ok(())
+}
+
+#[test]
+fn example_17() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = Index1Vec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn example_18() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -292,7 +355,7 @@ fn example_13() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_14() -> anyhow::Result<()> {
+fn example_19() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -300,7 +363,7 @@ fn example_14() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_15() -> anyhow::Result<()> {
+fn example_20() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
@@ -308,7 +371,7 @@ fn example_15() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_16() -> Result<(), Error> {
+fn example_21() -> Result<(), Error> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -339,7 +402,7 @@ fn example_16() -> Result<(), Error> {
 }
 
 #[test]
-fn example_17() -> anyhow::Result<()> {
+fn example_22() -> anyhow::Result<()> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -389,7 +452,7 @@ fn example_17() -> anyhow::Result<()> {
 }
 
 #[test]
-fn example_18() -> anyhow::Result<()> {
+fn example_23() -> anyhow::Result<()> {
     #[derive(Debug, PartialEq)]
     struct Hello;
     impl LengthDefinition for Hello {
