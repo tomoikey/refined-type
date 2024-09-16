@@ -17,11 +17,11 @@ where
     }
 }
 
-impl<RULE> Rule for HeadRule<RULE, &'static str>
+impl<'a, RULE> Rule for HeadRule<RULE, &'a str>
 where
     RULE: Rule<Item = char>,
 {
-    type Item = &'static str;
+    type Item = &'a str;
 
     fn validate(target: &Self::Item) -> Result<(), Error> {
         if let Some(head) = target.chars().next() {
