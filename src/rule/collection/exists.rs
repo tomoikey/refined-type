@@ -1,28 +1,44 @@
+use std::collections::{HashMap, HashSet, VecDeque};
+
 use crate::rule::composer::Not;
 use crate::rule::{ForAllRule, Rule};
 use crate::Refined;
-use std::collections::{HashMap, HashSet, VecDeque};
 
 /// A type that holds a value satisfying the `ExistsRule`
 pub type Exists<RULE, ITERABLE> = Refined<ExistsRule<RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `ExistsRule`
-pub type ExistsVec<RULE> = Exists<RULE, Vec<<RULE as Rule>::Item>>;
+pub type ExistsVec<RULE> = Refined<ExistsVecRule<RULE>>;
 
 /// A type that holds a VecDeque value satisfying the `ExistsRule`
-pub type ExistsVecDeque<RULE> = Exists<RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type ExistsVecDeque<RULE> = Refined<ExistsVecDequeRule<RULE>>;
 
 /// A type that holds a HashSet value satisfying the `ExistsRule`
-pub type ExistsHashSet<RULE> = Exists<RULE, HashSet<<RULE as Rule>::Item>>;
+pub type ExistsHashSet<RULE> = Refined<ExistsHashSetRule<RULE>>;
 
 /// A type that holds a HashMap value satisfying the `ExistsRule`
-pub type ExistsHashMap<K, RULE> = Exists<RULE, HashMap<K, <RULE as Rule>::Item>>;
+pub type ExistsHashMap<K, RULE> = Refined<ExistsHashMapRule<K, RULE>>;
 
 /// A type that holds a String value satisfying the `ExistsRule`
-pub type ExistsString<RULE> = Exists<RULE, String>;
+pub type ExistsString<RULE> = Refined<ExistsStringRule<RULE>>;
 
 /// Rule where at least one data in the collection satisfies the condition
 pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
+
+/// Rule where at least one data in the `Vec` satisfies the condition
+pub type ExistsVecRule<RULE> = ExistsRule<RULE, Vec<<RULE as Rule>::Item>>;
+
+/// Rule where at least one data in the `VecDeque` satisfies the condition
+pub type ExistsVecDequeRule<RULE> = ExistsRule<RULE, VecDeque<<RULE as Rule>::Item>>;
+
+/// Rule where at least one data in the `HashSet` satisfies the condition
+pub type ExistsHashSetRule<RULE> = ExistsRule<RULE, HashSet<<RULE as Rule>::Item>>;
+
+/// Rule where at least one data in the `HashMap` satisfies the condition
+pub type ExistsHashMapRule<K, RULE> = ExistsRule<RULE, HashMap<K, <RULE as Rule>::Item>>;
+
+/// Rule where at least one data in the `String` satisfies the condition
+pub type ExistsStringRule<RULE> = ExistsRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {

@@ -11,19 +11,19 @@ use crate::Refined;
 pub type ForAll<RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `ForAllRule`
-pub type ForAllVec<RULE> = ForAll<RULE, Vec<<RULE as Rule>::Item>>;
+pub type ForAllVec<RULE> = Refined<ForAllVecRule<RULE>>;
 
 /// A type that holds a VecDeque value satisfying the `ForAllRule`
-pub type ForAllVecDeque<RULE> = ForAll<RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type ForAllVecDeque<RULE> = Refined<ForAllVecDequeRule<RULE>>;
 
 /// A type that holds a HashSet value satisfying the `ForAllRule`
-pub type ForAllHashSet<RULE> = ForAll<RULE, HashSet<<RULE as Rule>::Item>>;
+pub type ForAllHashSet<RULE> = Refined<ForAllHashSetRule<RULE>>;
 
 /// A type that holds a HashMap value satisfying the `ForAllRule`
-pub type ForAllHashMap<K, RULE> = ForAll<RULE, HashMap<K, <RULE as Rule>::Item>>;
+pub type ForAllHashMap<K, RULE> = Refined<ForAllHashMapRule<K, RULE>>;
 
 /// A type that holds a String value satisfying the `ForAllRule`
-pub type ForAllString<RULE> = ForAll<RULE, String>;
+pub type ForAllString<RULE> = Refined<ForAllStringRule<RULE>>;
 
 /// Rule where all the data in the collection satisfies the condition
 pub struct ForAllRule<RULE, ITERABLE>
@@ -32,6 +32,21 @@ where
 {
     _phantom_data: PhantomData<(RULE, ITERABLE)>,
 }
+
+/// Rule where all the data in the `Vec` satisfies the condition
+pub type ForAllVecRule<RULE> = ForAllRule<RULE, Vec<<RULE as Rule>::Item>>;
+
+/// Rule where all the data in the `VecDeque` satisfies the condition
+pub type ForAllVecDequeRule<RULE> = ForAllRule<RULE, VecDeque<<RULE as Rule>::Item>>;
+
+/// Rule where all the data in the `HashSet` satisfies the condition
+pub type ForAllHashSetRule<RULE> = ForAllRule<RULE, HashSet<<RULE as Rule>::Item>>;
+
+/// Rule where all the data in the `HashMap` satisfies the condition
+pub type ForAllHashMapRule<K, RULE> = ForAllRule<RULE, HashMap<K, <RULE as Rule>::Item>>;
+
+/// Rule where all the data in the `String` satisfies the condition
+pub type ForAllStringRule<RULE> = ForAllRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
