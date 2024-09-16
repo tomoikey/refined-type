@@ -7,20 +7,20 @@ use crate::rule::Rule;
 /// # Example
 /// ```rust
 /// use refined_type::rule::{NonEmptyStringRule, Rule, EmailRule};
-/// use refined_type::A;
+/// use refined_type::And;
 ///
-/// type NonEmptyAlphabetString = A![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
+/// type NonEmptyAlphabetString = And![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
 /// let actual = NonEmptyAlphabetString::validate(&"sample@example.com".to_string());
 /// assert!(actual.is_ok());
 /// ```
 #[macro_export]
-macro_rules! A {
+macro_rules! And {
     ($rule1:ty, $rule2:ty) => {
         $crate::rule::composer::And<$rule1, $rule2>
     };
     ($rule1:ty, $($rule2: ty), +) => {
-        $crate::rule::composer::And<$rule1, A![$($rule2), +]>
+        $crate::rule::composer::And<$rule1, And![$($rule2), +]>
     }
 }
 
@@ -92,13 +92,13 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_ok() {
-        type SampleRule = A![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
+        type SampleRule = And![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"sample@example.com".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = A![AlphabetRule<String>, NonEmptyStringRule, EmailRule<String>];
+        type SampleRule = And![AlphabetRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"Hello".to_string()).is_err());
     }
 }
