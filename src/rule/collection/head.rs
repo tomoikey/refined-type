@@ -3,7 +3,7 @@ mod string;
 
 use crate::rule::Rule;
 use crate::Refined;
-use std::collections::{HashSet, VecDeque};
+use std::collections::VecDeque;
 use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `HeadRule`
@@ -14,9 +14,6 @@ pub type HeadVec<RULE> = Head<RULE, Vec<<RULE as Rule>::Item>>;
 
 /// A type that holds a VecDeque value satisfying the `HeadRule`
 pub type HeadVecDeque<RULE> = Head<RULE, VecDeque<<RULE as Rule>::Item>>;
-
-/// A type that holds a HashSet value satisfying the `HeadRule`
-pub type HeadHashSet<RULE> = Head<RULE, HashSet<<RULE as Rule>::Item>>;
 
 /// A type that holds a String value satisfying the `HeadRule`
 pub type HeadString<RULE> = Head<RULE, String>;
