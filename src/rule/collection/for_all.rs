@@ -1,7 +1,7 @@
 mod collection;
 mod string;
 
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 use std::marker::PhantomData;
 
 use crate::rule::Rule;
@@ -18,6 +18,9 @@ pub type ForAllVecDeque<RULE> = ForAll<RULE, VecDeque<<RULE as Rule>::Item>>;
 
 /// A type that holds a HashSet value satisfying the `ForAllRule`
 pub type ForAllHashSet<RULE> = ForAll<RULE, HashSet<<RULE as Rule>::Item>>;
+
+/// A type that holds a HashMap value satisfying the `ForAllRule`
+pub type ForAllHashMap<K, RULE> = ForAll<RULE, HashMap<K, <RULE as Rule>::Item>>;
 
 /// A type that holds a String value satisfying the `ForAllRule`
 pub type ForAllString<RULE> = ForAll<RULE, String>;
