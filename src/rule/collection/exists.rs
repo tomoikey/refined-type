@@ -1,7 +1,7 @@
 use crate::rule::composer::Not;
 use crate::rule::{ForAllRule, Rule};
 use crate::Refined;
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 /// A type that holds a value satisfying the `ExistsRule`
 pub type Exists<RULE, ITERABLE> = Refined<ExistsRule<RULE, ITERABLE>>;
@@ -14,6 +14,9 @@ pub type ExistsVecDeque<RULE> = Exists<RULE, VecDeque<<RULE as Rule>::Item>>;
 
 /// A type that holds a HashSet value satisfying the `ExistsRule`
 pub type ExistsHashSet<RULE> = Exists<RULE, HashSet<<RULE as Rule>::Item>>;
+
+/// A type that holds a HashMap value satisfying the `ExistsRule`
+pub type ExistsHashMap<K, RULE> = Exists<RULE, HashMap<K, <RULE as Rule>::Item>>;
 
 /// A type that holds a String value satisfying the `ExistsRule`
 pub type ExistsString<RULE> = Exists<RULE, String>;
