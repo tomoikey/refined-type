@@ -9,7 +9,7 @@ use crate::rule::Rule;
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ForAllRule`
-pub type ForAll<'a, RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
+pub type ForAll<RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
 
 pub trait Iterable<'a> {
     type Item: 'a;
