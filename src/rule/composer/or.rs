@@ -7,19 +7,19 @@ use crate::rule::Rule;
 /// # Example
 /// ```rust
 /// use refined_type::rule::{NonEmptyStringRule, Rule, EmailRule};
-/// use refined_type::O;
+/// use refined_type::Or;
 ///
-/// type NewRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
+/// type NewRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
 /// let actual = NewRule::validate(&"sample@example.com".to_string());
 /// assert!(actual.is_ok());
 #[macro_export]
-macro_rules! O {
+macro_rules! Or {
     ($rule1:ty, $rule2:ty) => {
         $crate::rule::composer::Or<$rule1, $rule2>
     };
     ($rule1:ty, $($rule2: ty), +) => {
-        $crate::rule::composer::Or<$rule1, O![$($rule2), +]>
+        $crate::rule::composer::Or<$rule1, Or![$($rule2), +]>
     }
 }
 
@@ -69,13 +69,13 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_ok() {
-        type SampleRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
+        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"hoge".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = O![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
+        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
         assert!(SampleRule::validate(&"".to_string()).is_err());
     }
 }

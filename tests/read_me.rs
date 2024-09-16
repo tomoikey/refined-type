@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use refined_type::result::Error;
-use refined_type::rule::composer::{And, Not, Or};
+use refined_type::rule::composer::Not;
 use refined_type::rule::{
     ExistsVec, ForAllVec, LengthDefinition, NonEmptyRule, NonEmptyString, NonEmptyStringRule,
     NonEmptyVec, NonEmptyVecDeque, Rule,
 };
 use refined_type::{
-    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule,
-    Refined, A, O,
+    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule, And,
+    Or, Refined,
 };
 
 // define the constraints you expect by combining 'Refined' and 'Rule'.
@@ -120,7 +120,7 @@ impl Rule for ContainsWorldRule {
 
 #[test]
 fn example_5() {
-    type HelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
+    type HelloAndWorldRule = And![ContainsHelloRule, ContainsWorldRule];
 
     let rule_ok = Refined::<HelloAndWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok.is_ok());
@@ -131,7 +131,7 @@ fn example_5() {
 
 #[test]
 fn example_6() {
-    type HelloOrWorldRule = Or<ContainsHelloRule, ContainsWorldRule>;
+    type HelloOrWorldRule = Or![ContainsHelloRule, ContainsWorldRule];
 
     let rule_ok_1 = Refined::<HelloOrWorldRule>::new("Hello! World!".to_string());
     assert!(rule_ok_1.is_ok());
@@ -199,7 +199,10 @@ impl Rule for EndsWithJohnRule {
 
 #[test]
 fn example_8() {
-    type GreetingRule = And<Or<StartsWithHelloRule, StartsWithByeRule>, EndsWithJohnRule>;
+    type GreetingRule = And![
+        Or![StartsWithHelloRule, StartsWithByeRule],
+        EndsWithJohnRule
+    ];
 
     assert!(GreetingRule::validate(&"Hello! Nice to meet you John".to_string()).is_ok());
     assert!(GreetingRule::validate(&"Bye! Have a good day John".to_string()).is_ok());
@@ -256,15 +259,15 @@ type Age = Refined<TargetAgeRule>;
 
 // 18 <= age
 #[allow(dead_code)]
-type TargetAge18OrMore = Or<EqualRule18u8, GreaterRule18u8>;
+type TargetAge18OrMore = Or![EqualRule18u8, GreaterRule18u8];
 
 // age <= 80
 #[allow(dead_code)]
-type TargetAge80OrLess = Or<EqualRule80u8, LessRule80u8>;
+type TargetAge80OrLess = Or![EqualRule80u8, LessRule80u8];
 
 // 18 <= age <= 80
 #[allow(dead_code)]
-type TargetAgeRule = And<TargetAge18OrMore, TargetAge80OrLess>;
+type TargetAgeRule = And![TargetAge18OrMore, TargetAge80OrLess];
 
 #[test]
 fn example_11() -> anyhow::Result<()> {
@@ -322,10 +325,10 @@ fn example_16() -> Result<(), Error> {
 
     type Password = Refined<From5To10Rule<String>>;
 
-    type From5To10Rule<T> = And<
-        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
-        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
-    >;
+    type From5To10Rule<T> = And![
+        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
+        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>]
+    ];
 
     // length is 8. so, this is valid
     let raw_password = "password";
@@ -353,10 +356,10 @@ fn example_17() -> anyhow::Result<()> {
 
     type Friends = Refined<From5To10Rule<Vec<String>>>;
 
-    type From5To10Rule<T> = And<
-        Or<LengthEqualRule5<T>, LengthGreaterThanRule5<T>>,
-        Or<LengthLessThanRule10<T>, LengthEqualRule10<T>>,
-    >;
+    type From5To10Rule<T> = And![
+        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
+        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>]
+    ];
 
     // length is 6. so, this is valid
     let raw_friends = vec![
@@ -408,38 +411,5 @@ fn example_18() -> anyhow::Result<()> {
     length_equal!(5);
     let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
-    Ok(())
-}
-
-type ContainsHelloAndWorldRule = And<ContainsHelloRule, ContainsWorldRule>;
-
-#[allow(dead_code)]
-type ContainsHelloAndWorld = Refined<ContainsHelloAndWorldRule>;
-
-#[test]
-fn example_19() -> anyhow::Result<()> {
-    type Sample = Refined<A![ContainsHelloRule, ContainsCommaRule, ContainsHelloRule]>;
-    let sample = Sample::new("Hello, World!".to_string())?;
-    assert_eq!(sample.into_value(), "Hello, World!");
-
-    let sample = Sample::new("Hello World!".to_string());
-    assert!(sample.is_err());
-    Ok(())
-}
-
-#[test]
-fn example_20() -> anyhow::Result<()> {
-    type Sample = Refined<O![ContainsHelloRule, ContainsCommaRule, ContainsWorldRule]>;
-    let sample = Sample::new("Foo! World!".to_string())?;
-    assert_eq!(sample.into_value(), "Foo! World!");
-
-    let sample = Sample::new("Hello World!".to_string())?;
-    assert_eq!(sample.into_value(), "Hello World!");
-
-    let sample = Sample::new("World!".to_string())?;
-    assert_eq!(sample.into_value(), "World!");
-
-    let sample = Sample::new("".to_string());
-    assert!(sample.is_err());
     Ok(())
 }
