@@ -46,7 +46,7 @@ mod tests {
     use crate::rule::{ForAllString, ForAllVec, NonEmptyStringRule, Rule};
 
     #[test]
-    fn for_all_1() -> anyhow::Result<()> {
+    fn for_all_1() -> Result<(), Error<Vec<String>>> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
         let for_all: ForAllVec<NonEmptyStringRule> = ForAll::new(value.clone())?;
         assert_eq!(for_all.into_value(), value);
@@ -62,16 +62,16 @@ mod tests {
     }
 
     #[test]
-    fn for_all_3() -> anyhow::Result<()> {
+    fn for_all_3() -> Result<(), Error<String>> {
         struct CharRule;
         impl Rule for CharRule {
             type Item = char;
 
-            fn validate(target: &Self::Item) -> Result<(), Error> {
+            fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
                 if target.is_alphabetic() {
-                    Ok(())
+                    Ok(target)
                 } else {
-                    Err(Error::new(format!("{} is not an alphabet", target)))
+                    Err(Error::new(target, format!("{} is not an alphabet", target)))
                 }
             }
         }

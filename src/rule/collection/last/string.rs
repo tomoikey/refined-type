@@ -6,17 +6,19 @@ where
 {
     type Item = String;
 
-    fn validate(target: &Self::Item) -> Result<(), crate::result::Error> {
-        let item = target
-            .chars()
-            .last()
-            .ok_or_else(|| crate::result::Error::new("the string is empty"))?;
-        if RULE::validate(&item).is_ok() {
-            Ok(())
-        } else {
-            Err(crate::result::Error::new(
-                "the last character does not satisfy the condition",
-            ))
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        match target.chars().last() {
+            Some(item) => match RULE::validate(item) {
+                Ok(_) => Ok(target),
+                Err(_) => Err(crate::result::Error::new(
+                    target,
+                    "Failed to validate the last item",
+                )),
+            },
+            None => Err(crate::result::Error::new(
+                target,
+                "Last item does not exist",
+            )),
         }
     }
 }
@@ -27,17 +29,19 @@ where
 {
     type Item = &'a str;
 
-    fn validate(target: &Self::Item) -> Result<(), crate::result::Error> {
-        let item = target
-            .chars()
-            .last()
-            .ok_or_else(|| crate::result::Error::new("the string is empty"))?;
-        if RULE::validate(&item).is_ok() {
-            Ok(())
-        } else {
-            Err(crate::result::Error::new(
-                "the last character does not satisfy the condition",
-            ))
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        match target.chars().last() {
+            Some(item) => match RULE::validate(item) {
+                Ok(_) => Ok(target),
+                Err(_) => Err(crate::result::Error::new(
+                    target,
+                    "Failed to validate the last item",
+                )),
+            },
+            None => Err(crate::result::Error::new(
+                target,
+                "Last item does not exist",
+            )),
         }
     }
 }

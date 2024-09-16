@@ -35,10 +35,11 @@ pub type LastStringRule<RULE> = LastRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
+    use crate::result::Error;
     use crate::rule::{LastVec, NonEmptyStringRule};
 
     #[test]
-    fn last_valid() -> anyhow::Result<()> {
+    fn last_valid() -> Result<(), Error<Vec<String>>> {
         let table = vec![
             vec!["".to_string(), "hello".to_string()],
             vec!["good morning".to_string(), "hello".to_string()],

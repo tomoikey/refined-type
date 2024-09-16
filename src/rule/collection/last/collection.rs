@@ -7,16 +7,27 @@ where
 {
     type Item = Vec<ITEM>;
 
-    fn validate(target: &Self::Item) -> Result<(), crate::result::Error> {
-        let item = target
-            .last()
-            .ok_or_else(|| crate::result::Error::new("the vector is empty"))?;
-        if RULE::validate(item).is_ok() {
-            Ok(())
-        } else {
-            Err(crate::result::Error::new(
-                "the last item does not satisfy the condition",
-            ))
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        let mut target = target.into_iter().collect::<VecDeque<_>>();
+        let last = target.pop_back();
+        match last {
+            Some(item) => match RULE::validate(item) {
+                Ok(validated_item) => {
+                    target.push_back(validated_item);
+                    Ok(target.into_iter().collect())
+                }
+                Err(e) => {
+                    target.push_back(e.into_value());
+                    Err(crate::result::Error::new(
+                        target.into_iter().collect(),
+                        "Failed to validate the last item",
+                    ))
+                }
+            },
+            None => Err(crate::result::Error::new(
+                target.into_iter().collect(),
+                "Last item does not exist",
+            )),
         }
     }
 }
@@ -27,16 +38,27 @@ where
 {
     type Item = VecDeque<ITEM>;
 
-    fn validate(target: &Self::Item) -> Result<(), crate::result::Error> {
-        let item = target
-            .back()
-            .ok_or_else(|| crate::result::Error::new("the deque is empty"))?;
-        if RULE::validate(item).is_ok() {
-            Ok(())
-        } else {
-            Err(crate::result::Error::new(
-                "the last item does not satisfy the condition",
-            ))
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        let mut target = target;
+        let last = target.pop_back();
+        match last {
+            Some(item) => match RULE::validate(item) {
+                Ok(validated_item) => {
+                    target.push_back(validated_item);
+                    Ok(target)
+                }
+                Err(err) => {
+                    target.push_back(err.into_value());
+                    Err(crate::result::Error::new(
+                        target,
+                        "Failed to validate the last item",
+                    ))
+                }
+            },
+            None => Err(crate::result::Error::new(
+                target,
+                "Last item does not exist",
+            )),
         }
     }
 }

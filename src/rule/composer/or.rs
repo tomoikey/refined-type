@@ -1,6 +1,5 @@
 use std::marker::PhantomData;
 
-use crate::result::Error;
 use crate::rule::Rule;
 
 /// A macro to generate a `Rule` that combines multiple rules
@@ -11,7 +10,7 @@ use crate::rule::Rule;
 ///
 /// type NewRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
-/// let actual = NewRule::validate(&"sample@example.com".to_string());
+/// let actual = NewRule::validate("sample@example.com".to_string());
 /// assert!(actual.is_ok());
 #[macro_export]
 macro_rules! Or {
@@ -31,9 +30,9 @@ macro_rules! Or {
 ///
 /// type EmptyOrAlphabetString = Or<EmptyRule<String>, AlphabetRule<String>>;
 ///
-/// assert!(EmptyOrAlphabetString::validate(&"".to_string()).is_ok());
-/// assert!(EmptyOrAlphabetString::validate(&"alphabet".to_string()).is_ok());
-/// assert!(EmptyOrAlphabetString::validate(&"1".to_string()).is_err());
+/// assert!(EmptyOrAlphabetString::validate("".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate("alphabet".to_string()).is_ok());
+/// assert!(EmptyOrAlphabetString::validate("1".to_string()).is_err());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct Or<RULE1, RULE2> {
@@ -48,8 +47,11 @@ where
 {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let bounded_rule = |t: &T| RULE1::validate(t).or_else(|_| RULE2::validate(t));
+    fn validate(target: Self::Item) -> crate::Result<T> {
+        let bounded_rule = |t: T| match RULE1::validate(t) {
+            Ok(value) => Ok(value),
+            Err(err) => RULE2::validate(err.into_value()),
+        };
         bounded_rule(target)
     }
 }
@@ -62,20 +64,20 @@ mod test {
     #[test]
     fn test_or() {
         type NonEmptyOrAlphabetString = Or<NonEmptyStringRule, AlphabetRule<String>>;
-        assert!(NonEmptyOrAlphabetString::validate(&"hello".to_string()).is_ok());
-        assert!(NonEmptyOrAlphabetString::validate(&"12345".to_string()).is_ok());
-        assert!(NonEmptyOrAlphabetString::validate(&"".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate("hello".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate("12345".to_string()).is_ok());
+        assert!(NonEmptyOrAlphabetString::validate("".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_ok() {
         type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate(&"hoge".to_string()).is_ok());
+        assert!(SampleRule::validate("hoge".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
         type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate(&"".to_string()).is_err());
+        assert!(SampleRule::validate("".to_string()).is_err());
     }
 }

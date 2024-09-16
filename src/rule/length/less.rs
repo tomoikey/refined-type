@@ -29,11 +29,11 @@ macro_rules! length_less_than {
 
             impl<ITEM> $crate::rule::Rule for [<LengthLessThanRule $length>]<ITEM> where ITEM: $crate::rule::LengthDefinition {
                 type Item = ITEM;
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if target.length() < $length {
-                        Ok(())
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("target length is not less than {}", $length)))
+                        Err($crate::result::Error::new(target, format!("target length is not less than {}", $length)))
                     }
                 }
             }
@@ -52,7 +52,7 @@ mod tests {
     length_less_than!(5, 10);
 
     #[test]
-    fn test_length_less_than_5() -> Result<(), Error> {
+    fn test_length_less_than_5() -> Result<(), Error<&'static str>> {
         let target = "1234";
         let refined = LengthLessThan5::new(target)?;
         assert_eq!(refined.into_value(), "1234");
@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn test_length_less_than_10() -> Result<(), Error> {
+    fn test_length_less_than_10() -> Result<(), Error<&'static str>> {
         let target = "123456789";
         let refined = LengthLessThan10::new(target)?;
         assert_eq!(refined.into_value(), "123456789");

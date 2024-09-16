@@ -28,10 +28,11 @@ pub type HeadStringRule<RULE> = HeadRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
+    use crate::result::Error;
     use crate::rule::{HeadVec, NonEmptyStringRule};
 
     #[test]
-    fn head_valid() -> anyhow::Result<()> {
+    fn head_valid() -> Result<(), Error<Vec<String>>> {
         let table = vec![
             vec!["good morning".to_string(), "".to_string()],
             vec!["hello".to_string(), "hello".to_string()],

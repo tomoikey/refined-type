@@ -36,12 +36,22 @@ macro_rules! define_index_rule {
             impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, Vec<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
                 type Item = Vec<ITEM>;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    let item = target.get($lit).ok_or_else(|| $crate::result::Error::new(format!("index {} is out of bounds", $lit)))?;
-                    if RULE::validate(item).is_ok() {
-                        Ok(())
-                    } else {
-                        Err($crate::result::Error::new(format!("the item at index {} does not satisfy the condition", $lit)))
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    if $lit >= target.len() {
+                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
+                    }
+                    let mut target = target;
+                    match RULE::validate(target.remove($lit)) {
+                        Ok(validated_item) => {
+                            let mut result = target;
+                            result.insert($lit, validated_item);
+                            Ok(result)
+                        }
+                        Err(err) => {
+                            let mut result = target;
+                            result.insert($lit, err.into_value());
+                            Err($crate::result::Error::new(result, format!("the item at index {} does not satisfy the condition", $lit)))
+                        }
                     }
                 }
             }
@@ -50,12 +60,20 @@ macro_rules! define_index_rule {
             impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, ::std::collections::VecDeque<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
                 type Item = ::std::collections::VecDeque<ITEM>;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    let item = target.get($lit).ok_or_else(|| $crate::result::Error::new(format!("index {} is out of bounds", $lit)))?;
-                    if RULE::validate(item).is_ok() {
-                        Ok(())
-                    } else {
-                        Err($crate::result::Error::new(format!("the item at index {} does not satisfy the condition", $lit)))
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    if $lit >= target.len() {
+                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
+                    }
+                    let mut target = target;
+                    match RULE::validate(target.remove($lit).expect("unreachable")) {
+                        Ok(validated_item) => {
+                            target.insert($lit, validated_item);
+                            Ok(target)
+                        }
+                        Err(err) => {
+                            target.insert($lit, err.into_value());
+                            Err($crate::result::Error::new(target, format!("the item at index {} does not satisfy the condition", $lit)))
+                        }
                     }
                 }
             }
@@ -64,12 +82,20 @@ macro_rules! define_index_rule {
             impl <RULE> $crate::rule::Rule for [<Index $lit Rule>]<RULE, String> where RULE: $crate::rule::Rule<Item = char> {
                 type Item = String;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    let item = target.chars().nth($lit).ok_or_else(|| $crate::result::Error::new(format!("index {} is out of bounds", $lit)))?;
-                    if RULE::validate(&item).is_ok() {
-                        Ok(())
-                    } else {
-                        Err($crate::result::Error::new(format!("the character at index {} does not satisfy the condition", $lit)))
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    if $lit >= target.len() {
+                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
+                    }
+                    let mut target = target;
+                    match RULE::validate(target.remove($lit)) {
+                        Ok(validated_item) => {
+                            target.insert($lit, validated_item);
+                            Ok(target)
+                        }
+                        Err(err) => {
+                            target.insert($lit, err.into_value());
+                            Err($crate::result::Error::new(target, format!("the character at index {} does not satisfy the condition", $lit)))
+                        }
                     }
                 }
             }
@@ -77,12 +103,12 @@ macro_rules! define_index_rule {
             impl <'a, RULE> $crate::rule::Rule for [<Index $lit Rule>]<RULE, &'a str> where RULE: $crate::rule::Rule<Item = char> {
                 type Item = &'a str;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    let item = target.chars().nth($lit).ok_or_else(|| $crate::result::Error::new(format!("index {} is out of bounds", $lit)))?;
-                    if RULE::validate(&item).is_ok() {
-                        Ok(())
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    let item = target.chars().nth($lit).ok_or_else(|| $crate::result::Error::new(target, format!("index {} is out of bounds", $lit)))?;
+                    if RULE::validate(item).is_ok() {
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("the character at index {} does not satisfy the condition", $lit)))
+                        Err($crate::result::Error::new(target, format!("the character at index {} does not satisfy the condition", $lit)))
                     }
                 }
             }

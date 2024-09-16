@@ -34,10 +34,11 @@ pub type InitStringRule<RULE> = InitRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
+    use crate::result::Error;
     use crate::rule::{InitVec, NonEmptyStringRule};
 
     #[test]
-    fn init_valid() -> anyhow::Result<()> {
+    fn init_valid() -> Result<(), Error<Vec<String>>> {
         let table = vec![
             vec![
                 "hello".to_string(),

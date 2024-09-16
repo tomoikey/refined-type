@@ -1,6 +1,5 @@
 use std::marker::PhantomData;
 
-use crate::result::Error;
 use crate::rule::Rule;
 
 /// A macro to generate a `Rule` that combines multiple rules
@@ -11,7 +10,7 @@ use crate::rule::Rule;
 ///
 /// type NonEmptyAlphabetString = And![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
 ///
-/// let actual = NonEmptyAlphabetString::validate(&"sample@example.com".to_string());
+/// let actual = NonEmptyAlphabetString::validate("sample@example.com".to_string());
 /// assert!(actual.is_ok());
 /// ```
 #[macro_export]
@@ -32,7 +31,7 @@ macro_rules! And {
 ///
 ///  type NonEmptyAlphabetString<'a> = And<NonEmptyStringRule, AlphabetRule<String>>;
 ///
-///  let actual = NonEmptyAlphabetString::validate(&"Hello".to_string());
+///  let actual = NonEmptyAlphabetString::validate("Hello".to_string());
 ///  assert!(actual.is_ok());
 /// ```
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
@@ -67,8 +66,8 @@ where
 {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let bounded_rule = |t: &T| RULE1::validate(t).and_then(|_| RULE2::validate(t));
+    fn validate(target: Self::Item) -> crate::Result<T> {
+        let bounded_rule = |t: T| RULE1::validate(t).and_then(RULE2::validate);
         bounded_rule(target)
     }
 }
@@ -82,23 +81,23 @@ mod test {
 
     #[test]
     fn test_rule_binder_ok() {
-        assert!(NonEmptyAlphabetString::validate(&"Hello".to_string()).is_ok());
+        assert!(NonEmptyAlphabetString::validate("Hello".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_err() {
-        assert!(NonEmptyAlphabetString::validate(&"Hello1".to_string()).is_err());
+        assert!(NonEmptyAlphabetString::validate("Hello1".to_string()).is_err());
     }
 
     #[test]
     fn test_rule_binder_macro_ok() {
         type SampleRule = And![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate(&"sample@example.com".to_string()).is_ok());
+        assert!(SampleRule::validate("sample@example.com".to_string()).is_ok());
     }
 
     #[test]
     fn test_rule_binder_macro_err() {
         type SampleRule = And![AlphabetRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate(&"Hello".to_string()).is_err());
+        assert!(SampleRule::validate("Hello".to_string()).is_err());
     }
 }

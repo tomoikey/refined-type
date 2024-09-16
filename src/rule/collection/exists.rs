@@ -42,10 +42,11 @@ pub type ExistsStringRule<RULE> = ExistsRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
+    use crate::result::Error;
     use crate::rule::{Exists, NonEmptyStringRule};
 
     #[test]
-    fn exists_1() -> anyhow::Result<()> {
+    fn exists_1() -> Result<(), Error<Vec<String>>> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
         let exists: Exists<NonEmptyStringRule, Vec<_>> = Exists::new(value.clone())?;
         assert_eq!(exists.into_value(), value);

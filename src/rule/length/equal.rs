@@ -29,11 +29,11 @@ macro_rules! length_equal {
 
             impl<ITEM> $crate::rule::Rule for [<LengthEqualRule $length>]<ITEM> where ITEM: $crate::rule::LengthDefinition {
                 type Item = ITEM;
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
                     if target.length() == $length {
-                        Ok(())
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("target length is not equal to {}", $length)))
+                        Err($crate::result::Error::new(target, format!("target length is not equal to {}", $length)))
                     }
                 }
             }
@@ -52,7 +52,7 @@ mod tests {
     length_equal!(5, 10);
 
     #[test]
-    fn test_length_equal_5() -> Result<(), Error> {
+    fn test_length_equal_5() -> Result<(), Error<&'static str>> {
         let target = "12345";
         let refined = LengthEqual5::new(target)?;
         assert_eq!(refined.into_value(), "12345");
@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn test_length_equal_10() -> Result<(), Error> {
+    fn test_length_equal_10() -> Result<(), Error<&'static str>> {
         let target = "1234567890";
         let refined = LengthEqual10::new(target)?;
         assert_eq!(refined.into_value(), "1234567890");
