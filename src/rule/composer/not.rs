@@ -24,7 +24,7 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<T, Error<T>> {
+    fn validate(target: Self::Item) -> crate::Result<T> {
         let bounded_rule = |t: T| match RULE::validate(t) {
             Ok(value) => Err(Error::new(value, "Target satisfies the `Not` rule")),
             Err(err) => Ok(err.into_value()),

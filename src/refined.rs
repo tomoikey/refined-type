@@ -1,8 +1,7 @@
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::fmt::{Debug, Display, Formatter};
-
 use crate::result::Error;
 use crate::rule::Rule;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+use std::fmt::{Debug, Display, Formatter};
 
 /// Refined is a versatile type in ensuring that `T` satisfies the conditions of `RULE` (predicate type)
 /// # Example

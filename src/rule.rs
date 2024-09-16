@@ -6,8 +6,6 @@ pub use non_empty::*;
 pub use number::*;
 pub use string::*;
 
-use crate::result::Error;
-
 pub mod composer;
 mod empty;
 mod exists;
@@ -20,5 +18,5 @@ mod string;
 /// This is a `trait` that specifies the conditions a type `T` should satisfy
 pub trait Rule {
     type Item;
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>>;
+    fn validate(target: Self::Item) -> crate::Result<Self::Item>;
 }

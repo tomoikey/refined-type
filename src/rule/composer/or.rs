@@ -1,6 +1,5 @@
 use std::marker::PhantomData;
 
-use crate::result::Error;
 use crate::rule::Rule;
 
 /// A macro to generate a `Rule` that combines multiple rules
@@ -48,7 +47,7 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<T, Error<T>> {
+    fn validate(target: Self::Item) -> crate::Result<T> {
         let bounded_rule = |t: T| match RULE1::validate(t) {
             Ok(value) => Ok(value),
             Err(err) => RULE2::validate(err.into_value()),

@@ -62,7 +62,7 @@ where
 {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         if target.empty() {
             Ok(target)
         } else {

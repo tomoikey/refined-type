@@ -31,7 +31,7 @@ where
 {
     type Item = ITERABLE;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         let mut remains = target.into_iterator();
         let mut result = VecDeque::new();
         let mut failed = false;

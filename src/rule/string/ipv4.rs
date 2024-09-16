@@ -14,7 +14,7 @@ pub struct Ipv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for Ipv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         let target_as_ref = target.as_ref();
         if std::net::Ipv4Addr::from_str(target_as_ref).is_ok() {
             Ok(target)
@@ -35,7 +35,7 @@ pub struct PublicIpv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for PublicIpv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         let target_as_ref = target.as_ref();
         let ipv4_result = std::net::Ipv4Addr::from_str(target_as_ref);
         if let Ok(ipv4) = ipv4_result {
@@ -62,7 +62,7 @@ pub struct PrivateIpv4AddrRule<T> {
 impl<T: AsRef<str>> Rule for PrivateIpv4AddrRule<T> {
     type Item = T;
 
-    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         let target_as_ref = target.as_ref();
         if let Ok(ipv4) = std::net::Ipv4Addr::from_str(target_as_ref) {
             if ipv4.is_private() {

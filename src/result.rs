@@ -1,5 +1,8 @@
 use std::fmt::{Debug, Display, Formatter};
 
+/// A type alias for a `Result` to use in the `Refined` module
+pub type Result<T> = std::result::Result<T, Error<T>>;
+
 /// A type indicating a failure to convert to `Refined`
 #[derive(Debug)]
 pub struct Error<T> {
