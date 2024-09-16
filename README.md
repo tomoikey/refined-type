@@ -3,6 +3,12 @@
 **refined-type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
 range of guarantees your applications can statically ensure.
 
+# Installation
+
+```shell
+cargo add refined_type
+```
+
 # Overview
 
 You can create various rules for a certain type, such as phone numbers, addresses, times, and so on.
@@ -66,31 +72,6 @@ fn example_3() -> anyhow::Result<()> {
 
     // because `friends` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
-    Ok(())
-}
-```
-
-# Installation
-
-```shell
-cargo add refined_type
-```
-
-# Custom Rule
-
-There are many situations where you may want to define custom rules.
-To define rules for a specific target type, you first need to define a struct.
-In the struct, define fields for specifying detailed conditions.
-Once the definition is complete, all you need to do is implement the Rule trait.
-Add your preferred conditions as you like.
-
-```rust
-fn example_4() -> anyhow::Result<()> {
-    let non_empty_string_result = Refined::<NonEmptyStringRule>::new("Hello World".to_string())?;
-    assert_eq!(non_empty_string_result.into_value(), "Hello World");
-
-    let empty_string_result = Refined::<NonEmptyStringRule>::new("".to_string());
-    assert!(empty_string_result.is_err());
     Ok(())
 }
 ```
