@@ -18,11 +18,11 @@ where
     }
 }
 
-impl<RULE> Rule for ForAllRule<RULE, &'static str>
+impl<'a, RULE> Rule for ForAllRule<RULE, &'a str>
 where
     RULE: Rule<Item = char>,
 {
-    type Item = &'static str;
+    type Item = &'a str;
 
     fn validate(target: &Self::Item) -> Result<(), Error> {
         if target.chars().all(|item| RULE::validate(&item).is_ok()) {
