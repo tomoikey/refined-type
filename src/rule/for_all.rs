@@ -1,6 +1,7 @@
 mod collection;
 mod string;
 
+use std::collections::{HashSet, VecDeque};
 use std::marker::PhantomData;
 
 use crate::rule::Rule;
@@ -8,6 +9,18 @@ use crate::Refined;
 
 /// A type that holds a value satisfying the `ForAllRule`
 pub type ForAll<RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
+
+/// A type that holds a Vec value satisfying the `ForAllRule`
+pub type ForAllVec<RULE> = ForAll<RULE, Vec<<RULE as Rule>::Item>>;
+
+/// A type that holds a VecDeque value satisfying the `ForAllRule`
+pub type ForAllVecDeque<RULE> = ForAll<RULE, VecDeque<<RULE as Rule>::Item>>;
+
+/// A type that holds a HashSet value satisfying the `ForAllRule`
+pub type ForAllHashSet<RULE> = ForAll<RULE, HashSet<<RULE as Rule>::Item>>;
+
+/// A type that holds a String value satisfying the `ForAllRule`
+pub type ForAllString<RULE> = ForAll<RULE, String>;
 
 /// Rule where all the data in the collection satisfies the condition
 pub struct ForAllRule<RULE, ITERABLE>
@@ -21,12 +34,12 @@ where
 mod tests {
     use crate::result::Error;
     use crate::rule::for_all::ForAll;
-    use crate::rule::{NonEmptyStringRule, Rule};
+    use crate::rule::{ForAllString, ForAllVec, NonEmptyStringRule, Rule};
 
     #[test]
     fn for_all_1() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "hello".to_string()];
-        let for_all: ForAll<NonEmptyStringRule, Vec<_>> = ForAll::new(value.clone())?;
+        let for_all: ForAllVec<NonEmptyStringRule> = ForAll::new(value.clone())?;
         assert_eq!(for_all.into_value(), value);
         Ok(())
     }
@@ -34,7 +47,7 @@ mod tests {
     #[test]
     fn for_all_2() -> anyhow::Result<()> {
         let value = vec!["good morning".to_string(), "".to_string()];
-        let for_all_result = ForAll::<NonEmptyStringRule, Vec<_>>::new(value.clone());
+        let for_all_result = ForAllVec::<NonEmptyStringRule>::new(value.clone());
         assert!(for_all_result.is_err());
         Ok(())
     }
@@ -55,7 +68,7 @@ mod tests {
         }
 
         let value = "hello".to_string();
-        let for_all: ForAll<CharRule, String> = ForAll::new(value.clone())?;
+        let for_all: ForAllString<CharRule> = ForAll::new(value.clone())?;
         assert_eq!(for_all.into_value(), value);
         Ok(())
     }

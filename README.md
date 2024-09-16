@@ -333,11 +333,11 @@ I have also prepared several useful refined types for Iterators.
 ```rust
 fn example_11() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "World".to_string()];
-    let for_all_ok = ForAll::<NonEmptyStringRule, _>::new(vec.clone())?;
+    let for_all_ok = ForAllVec::<NonEmptyStringRule>::new(vec.clone())?;
     assert_eq!(vec, for_all_ok.into_value());
 
     let vec = vec!["Hello".to_string(), "".to_string()];
-    let for_all_err = ForAll::<NonEmptyStringRule>::new(vec.clone());
+    let for_all_err = ForAllVec::<NonEmptyStringRule>::new(vec.clone());
     assert!(for_all_err.is_err());
     Ok(())
 }
@@ -350,11 +350,11 @@ fn example_11() -> anyhow::Result<()> {
 ```rust
 fn example_12() -> anyhow::Result<()> {
     let vec = vec!["Hello".to_string(), "".to_string()];
-    let exists_ok = Exists::<NonEmptyStringRule, _>::new(vec.clone())?;
+    let exists_ok = ExistsVec::<NonEmptyStringRule>::new(vec.clone())?;
     assert_eq!(vec, exists_ok.into_value());
 
     let vec = vec!["".to_string(), "".to_string()];
-    let exists_err = Exists::<NonEmptyStringRule>::new(vec.clone());
+    let exists_err = ExistsVec::<NonEmptyStringRule>::new(vec.clone());
     assert!(exists_err.is_err());
     Ok(())
 }
