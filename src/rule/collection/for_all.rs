@@ -1,11 +1,7 @@
-mod collection;
-mod string;
-
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::marker::PhantomData;
 
-use crate::rule::Rule;
-use crate::Refined;
+use crate::rule::{InitRule, LastRule, Rule};
+use crate::{And, Refined};
 
 /// A type that holds a value satisfying the `ForAllRule`
 pub type ForAll<RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
@@ -26,12 +22,7 @@ pub type ForAllHashMap<K, RULE> = Refined<ForAllHashMapRule<K, RULE>>;
 pub type ForAllString<RULE> = Refined<ForAllStringRule<RULE>>;
 
 /// Rule where all the data in the collection satisfies the condition
-pub struct ForAllRule<RULE, ITERABLE>
-where
-    RULE: Rule,
-{
-    _phantom_data: PhantomData<(RULE, ITERABLE)>,
-}
+pub type ForAllRule<RULE, ITERABLE> = And![InitRule<RULE, ITERABLE>, LastRule<RULE, ITERABLE>];
 
 /// Rule where all the data in the `Vec` satisfies the condition
 pub type ForAllVecRule<RULE> = ForAllRule<RULE, Vec<<RULE as Rule>::Item>>;
