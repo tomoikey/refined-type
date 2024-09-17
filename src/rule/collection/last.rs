@@ -1,10 +1,6 @@
-mod collection;
-mod string;
-
 use std::collections::VecDeque;
-use std::marker::PhantomData;
 
-use crate::rule::Rule;
+use crate::rule::{Index0Rule, ReverseRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `LastRule`
@@ -20,9 +16,7 @@ pub type LastVecDeque<RULE> = Refined<LastVecDequeRule<RULE>>;
 pub type LastString<RULE> = Refined<LastStringRule<RULE>>;
 
 /// Rule where the last element satisfies the condition
-pub struct LastRule<RULE, ITERABLE> {
-    _phantom_data: PhantomData<(RULE, ITERABLE)>,
-}
+pub type LastRule<RULE, ITERABLE> = ReverseRule<Index0Rule<RULE, ITERABLE>, ITERABLE>;
 
 /// Rule where the last element in the `Vec` satisfies the condition
 pub type LastVecRule<RULE> = LastRule<RULE, Vec<<RULE as Rule>::Item>>;
