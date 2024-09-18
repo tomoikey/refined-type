@@ -61,7 +61,7 @@ mod tests {
         ];
 
         for (data, expected) in table {
-            let value = SkipVec::<NonEmptyStringRule, SkipFirst<String>>::new(data)?;
+            let value = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(data)?;
             assert_eq!(value.into_value(), expected);
         }
 
@@ -78,7 +78,7 @@ mod tests {
         ];
 
         for data in table {
-            let value = SkipVec::<NonEmptyStringRule, SkipFirst<String>>::new(data);
+            let value = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(data);
             assert!(value.is_err());
         }
     }
