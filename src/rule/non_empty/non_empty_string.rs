@@ -74,7 +74,7 @@ impl NonEmptyString {
 }
 
 impl FromStr for NonEmptyString {
-    type Err = Error;
+    type Err = Error<String>;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Refined::new(s.to_string())
     }
@@ -91,17 +91,18 @@ impl Add for NonEmptyString {
 
 #[cfg(test)]
 mod test {
+    use crate::result::Error;
     use crate::rule::{NonEmptyString, NonEmptyStringRule, Rule};
     use std::str::FromStr;
 
     #[test]
     fn test_non_empty_string() {
-        assert!(NonEmptyStringRule::validate(&"hello".to_string()).is_ok());
-        assert!(NonEmptyStringRule::validate(&"".to_string()).is_err());
+        assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
+        assert!(NonEmptyStringRule::validate("".to_string()).is_err());
     }
 
     #[test]
-    fn test_add_string() -> anyhow::Result<()> {
+    fn test_add_string() -> Result<(), Error<String>> {
         let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
         let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
         let non_empty_string = non_empty_string_1 + non_empty_string_2;
@@ -111,7 +112,7 @@ mod test {
     }
 
     #[test]
-    fn test_from_str() -> anyhow::Result<()> {
+    fn test_from_str() -> Result<(), Error<String>> {
         let non_empty_string = NonEmptyString::from_str("Hello")?;
         assert_eq!(non_empty_string.into_value(), "Hello");
         Ok(())

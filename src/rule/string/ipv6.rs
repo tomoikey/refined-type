@@ -14,15 +14,13 @@ pub struct Ipv6AddrRule<T> {
 impl<T: AsRef<str>> Rule for Ipv6AddrRule<T> {
     type Item = T;
 
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        let target = target.as_ref();
-        if std::net::Ipv6Addr::from_str(target).is_ok() {
-            Ok(())
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
+        let target_as_ref = target.as_ref();
+        if std::net::Ipv6Addr::from_str(target_as_ref).is_ok() {
+            Ok(target)
         } else {
-            Err(Error::new(format!(
-                "{} is not a valid IPv6 address",
-                target
-            )))
+            let message = format!("{} is not a valid IPv6 address", target_as_ref);
+            Err(Error::new(target, message))
         }
     }
 }

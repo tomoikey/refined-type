@@ -29,12 +29,12 @@ pub type NonEmptyHashSetRule<T, S = RandomState> = NonEmptyRule<HashSet<T, S>>;
 impl<T, S> NonEmptyHashSet<T, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_set::IntoIter<T>> {
-        Refined::new(self.into_value().into_iter()).expect("This error is always unreachable")
+        Refined::new_unchecked(self.into_value().into_iter())
     }
 
     #[allow(clippy::should_implement_trait)]
     pub fn iter(&self) -> NonEmpty<std::collections::hash_set::Iter<T>> {
-        Refined::new(self.value().iter()).expect("This error is always unreachable")
+        Refined::new_unchecked(self.value().iter())
     }
 
     pub fn len(&self) -> usize {
@@ -62,7 +62,7 @@ where
     pub fn insert(self, value: T) -> Self {
         let mut result = self.into_value();
         result.insert(value);
-        Refined::new(result).expect("This error is always unreachable")
+        Refined::new_unchecked(result)
     }
 
     pub fn get<Q>(&self, value: &Q) -> Option<&T>
@@ -88,6 +88,7 @@ where
 
 #[cfg(test)]
 mod test {
+    use crate::result::Error;
     use crate::rule::NonEmptyHashSet;
     use std::collections::HashSet;
 
@@ -99,7 +100,7 @@ mod test {
     }
 
     #[test]
-    fn test_len() -> anyhow::Result<()> {
+    fn test_len() -> Result<(), Error<HashSet<i32>>> {
         let mut set = HashSet::new();
         set.insert(1);
         let set = NonEmptyHashSet::new(set)?;
@@ -108,7 +109,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_empty() -> anyhow::Result<()> {
+    fn test_is_empty() -> Result<(), Error<HashSet<i32>>> {
         let mut set = HashSet::new();
         set.insert(1);
         let set = NonEmptyHashSet::new(set)?;
@@ -117,7 +118,7 @@ mod test {
     }
 
     #[test]
-    fn test_insert() -> anyhow::Result<()> {
+    fn test_insert() -> Result<(), Error<HashSet<i32>>> {
         let mut set_origin = HashSet::new();
         set_origin.insert(1);
 
@@ -129,7 +130,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_get() -> anyhow::Result<()> {
+    fn test_is_get() -> Result<(), Error<HashSet<i32>>> {
         let mut set = HashSet::new();
         set.insert(1);
         let set = NonEmptyHashSet::new(set)?;
@@ -138,7 +139,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_contains() -> anyhow::Result<()> {
+    fn test_is_contains() -> Result<(), Error<HashSet<i32>>> {
         let mut set_origin = HashSet::new();
         set_origin.insert(1);
         let set = NonEmptyHashSet::new(set_origin.clone())?.insert(2);
@@ -147,7 +148,7 @@ mod test {
     }
 
     #[test]
-    fn test_is_difference() -> anyhow::Result<()> {
+    fn test_is_difference() -> Result<(), Error<HashSet<i32>>> {
         let mut set_origin = HashSet::new();
         set_origin.insert(1);
         let set = NonEmptyHashSet::new(set_origin.clone())?.insert(2);

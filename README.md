@@ -309,7 +309,7 @@ type TargetAgeRule = And![TargetAge18OrMore, TargetAge80OrLess];
 
 # Iterator
 
-I have also prepared several useful refined types for Iterators.
+`refined_type` has several useful refined types for Iterators.
 
 ## `ForAll`
 
@@ -345,6 +345,198 @@ fn example_12() -> anyhow::Result<()> {
 }
 ```
 
+# `Head`
+
+`Head` is a rule that applies a specific rule to the first element in the Iterator.
+
+```rust
+fn example_13() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["good morning".to_string(), "".to_string()], true), // PASS
+        (vec!["hello".to_string(), "hello".to_string()], true),   // PASS
+        (vec![], false),                                          // FAIL
+        (vec!["".to_string()], false),                            // FAIL
+        (vec!["".to_string(), "hello".to_string()], false),       // FAIL
+    ];
+
+    for (value, ok) in table {
+        let head = HeadVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(head.is_ok(), ok);
+    }
+
+    Ok(())
+}
+```
+
+# `Last`
+
+`Last` is a rule that applies a specific rule to the last element in the Iterator.
+
+```rust
+fn example_14() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["".to_string(), "hello".to_string()], true), // PASS
+        (vec!["good morning".to_string(), "hello".to_string()], true), // PASS
+        (vec![], false),                                   // FAIL
+        (vec!["".to_string()], false),                     // FAIL
+        (vec!["hello".to_string(), "".to_string()], false), // FAIL
+    ];
+
+    for (value, ok) in table {
+        let last = LastVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(last.is_ok(), ok);
+    }
+
+    Ok(())
+}
+```
+
+# `Tail`
+
+`Tail` is a rule that applies a specific rule to all elements except the first element in the Iterator.
+
+```rust
+fn example_15() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["hey".to_string(), "hello".to_string(), "world".to_string()], true),
+        (vec!["hey".to_string(), "hello".to_string(), "".to_string()], false),
+        (vec!["hey".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["hey".to_string(), "".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string(), "world".to_string()], true),
+        (vec!["".to_string(), "hello".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let tail = TailVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(tail.is_ok(), ok);
+    }
+
+    Ok(())
+}
+```
+
+# `Init`
+
+`Init` is a rule that applies a specific rule to all elements except the last element in the Iterator.
+
+```rust
+fn example_16() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["hey".to_string(), "hello".to_string(), "world".to_string()], true),
+        (vec!["hey".to_string(), "hello".to_string(), "".to_string()], true),
+        (vec!["hey".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["hey".to_string(), "".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string(), "world".to_string()], false),
+        (vec!["".to_string(), "hello".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let init = InitVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(init.is_ok(), ok);
+    }
+
+    Ok(())
+}
+```
+
+# `Index`
+
+`Index` is a rule that applies a specific rule to the element at a specific index in the Iterator.
+
+```rust
+fn example_17() -> anyhow::Result<()> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = Index1Vec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+# `Reverse`
+
+`Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.  
+`refined_type` crate has `Index0` to `Index10` by default.
+
+```rust
+fn example_18() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>, _>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+if you need more, you can define it like this.
+
+```rust
+define_index_refined!(11, 12, 13);
+define_index_rule!(11, 12, 13);
+```
+
+# `Skip`
+
+`Skip` is a rule that applies a specific rule to the elements of the Iterator while skipping the elements according
+to `SkipOption`.
+
+```rust
+fn example_19() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["hey".to_string(), "hello".to_string(), "world".to_string()], true),
+        (vec!["hey".to_string(), "hello".to_string(), "".to_string()], false),
+        (vec!["hey".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["hey".to_string(), "".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string(), "world".to_string()], true),
+        (vec!["".to_string(), "hello".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "world".to_string()], false),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let init = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(value.clone());
+        assert_eq!(init.is_ok(), ok);
+    }
+
+    Ok(())
+}
+```
+
+if you need more skip option, you can define it like this.
+
+```rust
+pub struct NoSkip<T> {
+    _phantom_data: std::marker::PhantomData<T>,
+}
+
+impl<ITEM> SkipOption for NoSkip<ITEM> {
+    type Item = ITEM;
+    fn should_skip(_: usize, _: &Self::Item) -> bool {
+        false
+    }
+}
+```
+
 ---
 
 ## `into_iter()` and `iter()`
@@ -356,7 +548,7 @@ Feel free to explore the capabilities of the Iterator you’ve been given!
 ### `into_iter()`
 
 ```rust
-fn example_11() -> anyhow::Result<()> {
+fn example_20() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -367,7 +559,7 @@ fn example_11() -> anyhow::Result<()> {
 ### `iter()`
 
 ```rust
-fn example_12() -> anyhow::Result<()> {
+fn example_21() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
     assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
@@ -378,41 +570,10 @@ fn example_12() -> anyhow::Result<()> {
 ### `NonEmptyVec` to `NonEmptyVecDeque` using `collect()`
 
 ```rust
-fn example_13() -> anyhow::Result<()> {
+fn example_22() -> anyhow::Result<()> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
-    Ok(())
-}
-```
-
-# Add Trait
-
-I have implemented the `Add` trait for a part of the `Refined` that I provided. Therefore, operations can be performed
-without downgrading the type level.
-
-### NonEmptyString
-
-```rust
-fn example_14() -> anyhow::Result<()> {
-    let non_empty_string_1 = NonEmptyString::new("Hello".to_string())?;
-    let non_empty_string_2 = NonEmptyString::new("World".to_string())?;
-    let non_empty_string = non_empty_string_1 + non_empty_string_2; // This is also `NonEmptyString` type
-
-    assert_eq!(non_empty_string.into_value(), "HelloWorld");
-    Ok(())
-}
-```
-
-### NonEmptyVec
-
-```rust
-fn example_15() -> anyhow::Result<()> {
-    let ne_vec_1 = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec_2 = NonEmptyVec::new(vec![4, 5, 6])?;
-    let ne_vec = ne_vec_1 + ne_vec_2; // This is also `NonEmptyVec` type
-
-    assert_eq!(ne_vec.into_value(), vec![1, 2, 3, 4, 5, 6]);
     Ok(())
 }
 ```
@@ -424,7 +585,7 @@ You can impose constraints on objects that have a length, such as `String` or `V
 ### String
 
 ```rust
-fn example_16() -> Result<(), Error> {
+fn example_23() -> Result<(), Error> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -459,7 +620,7 @@ fn example_16() -> Result<(), Error> {
 
 ```rust
 #[test]
-fn example_17() -> anyhow::Result<()> {
+fn example_24() -> anyhow::Result<()> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -516,7 +677,7 @@ by `refined_type`, you can easily do so using `LengthDefinition`.
 
 ```rust
 #[test]
-fn example_18() -> anyhow::Result<()> {
+fn example_25() -> anyhow::Result<()> {
     length_equal!(5);
 
     #[derive(Debug, PartialEq)]

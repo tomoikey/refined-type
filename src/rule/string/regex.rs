@@ -30,13 +30,14 @@ macro_rules! declare_regex_rule {
             impl<STRING: AsRef<str>> $crate::rule::Rule for $rule<STRING> {
                 type Item = STRING;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    let target = target.as_ref();
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    let target_as_ref = target.as_ref();
                     let regex = $crate::rule::Regex::new($regex).expect("invalid regex pattern");
-                    if regex.is_match(target) {
-                        Ok(())
+                    if regex.is_match(target_as_ref) {
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("{target} does not match the regex pattern {regex}")))
+                        let message = format!("{target_as_ref} does not match the regex pattern {regex}");
+                        Err($crate::result::Error::new(target, message))
                     }
                 }
             }

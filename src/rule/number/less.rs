@@ -15,11 +15,11 @@ macro_rules! less_rule {
             impl $crate::rule::Rule for [<LessRule $e $t>] {
                 type Item = $t;
 
-                fn validate(target: &Self::Item) -> Result<(), $crate::result::Error> {
-                    if *target < $e {
-                        Ok(())
+                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
+                    if target < $e {
+                        Ok(target)
                     } else {
-                        Err($crate::result::Error::new(format!("{} is not less than {}", target, $e)))
+                        Err($crate::result::Error::new(target, format!("{} is not less than {}", target, $e)))
                     }
                 }
             }
