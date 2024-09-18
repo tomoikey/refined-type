@@ -4,8 +4,9 @@ use serde_json::json;
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
 use refined_type::rule::{
-    ExistsVec, ForAllVec, HeadVec, Index1Vec, LastVec, LengthDefinition, NonEmptyRule,
-    NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Rule,
+    ExistsVec, ForAllVec, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec, LengthDefinition,
+    NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Reverse, Rule,
+    SkipFirst, SkipVec, TailVec,
 };
 use refined_type::{
     equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule, And,
@@ -324,11 +325,85 @@ fn example_14() -> anyhow::Result<()> {
 
 #[test]
 fn example_15() -> anyhow::Result<()> {
+    let table = vec![
+        (
+            vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
+            true,
+        ),
+        (
+            vec!["hey".to_string(), "hello".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "world".to_string()],
+            true,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let tail = TailVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(tail.is_ok(), ok);
+    }
+
     Ok(())
 }
 
 #[test]
 fn example_16() -> anyhow::Result<()> {
+    let table = vec![
+        (
+            vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
+            true,
+        ),
+        (
+            vec!["hey".to_string(), "hello".to_string(), "".to_string()],
+            true,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "world".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let init = InitVec::<NonEmptyStringRule>::new(value.clone());
+        assert_eq!(init.is_ok(), ok);
+    }
+
     Ok(())
 }
 
@@ -351,22 +426,65 @@ fn example_17() -> anyhow::Result<()> {
 
 #[test]
 fn example_18() -> Result<(), Error<Vec<i32>>> {
-    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
-    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>, _>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
     Ok(())
 }
 
 #[test]
 fn example_19() -> Result<(), Error<Vec<i32>>> {
-    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
-    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
+    let table = vec![
+        (
+            vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
+            true,
+        ),
+        (
+            vec!["hey".to_string(), "hello".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (
+            vec!["hey".to_string(), "".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "world".to_string()],
+            true,
+        ),
+        (
+            vec!["".to_string(), "hello".to_string(), "".to_string()],
+            false,
+        ),
+        (
+            vec!["".to_string(), "".to_string(), "world".to_string()],
+            false,
+        ),
+        (vec!["".to_string(), "".to_string(), "".to_string()], false),
+    ];
+
+    for (value, ok) in table {
+        let init = SkipVec::<NonEmptyStringRule, SkipFirst<_>>::new(value.clone());
+        assert_eq!(init.is_ok(), ok);
+    }
+
     Ok(())
 }
 
 #[test]
-fn example_20() -> Result<(), Error<Vec<i32>>> {
+fn example_22() -> Result<(), Error<Vec<i32>>> {
     let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
     let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
     assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
@@ -374,7 +492,7 @@ fn example_20() -> Result<(), Error<Vec<i32>>> {
 }
 
 #[test]
-fn example_21() -> Result<(), Error<String>> {
+fn example_23() -> Result<(), Error<String>> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -405,7 +523,7 @@ fn example_21() -> Result<(), Error<String>> {
 }
 
 #[test]
-fn example_22() -> Result<(), Error<Vec<String>>> {
+fn example_24() -> Result<(), Error<Vec<String>>> {
     length_greater_than!(5);
     length_equal!(5, 10);
     length_less_than!(10);
@@ -463,7 +581,7 @@ impl LengthDefinition for Hello {
 }
 
 #[test]
-fn example_23() -> Result<(), Error<Hello>> {
+fn example_25() -> Result<(), Error<Hello>> {
     length_equal!(5);
     let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
