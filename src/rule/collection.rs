@@ -6,6 +6,7 @@ mod init;
 mod last;
 mod reverse;
 mod skip;
+mod tail;
 
 pub use exists::*;
 pub use for_all::*;
@@ -15,3 +16,4 @@ pub use init::*;
 pub use last::*;
 pub use reverse::*;
 pub use skip::*;
+pub use tail::*;
