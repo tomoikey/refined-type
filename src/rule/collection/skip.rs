@@ -46,7 +46,7 @@ mod tests {
     use crate::rule::{NonEmptyStringRule, SkipFirst, SkipVec};
 
     #[test]
-    fn test_skip_first() -> Result<(), Error<Vec<String>>> {
+    fn test_skip_first_valid() -> Result<(), Error<Vec<String>>> {
         let table = vec![
             (
                 vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
@@ -66,5 +66,20 @@ mod tests {
         }
 
         Ok(())
+    }
+
+    #[test]
+    fn test_skip_first_invalid() {
+        let table = vec![
+            vec!["hey".to_string(), "".to_string(), "world".to_string()],
+            vec!["".to_string(), "".to_string(), "world".to_string()],
+            vec!["hey".to_string(), "hello".to_string(), "".to_string()],
+            vec!["".to_string(), "hello".to_string(), "".to_string()],
+        ];
+
+        for data in table {
+            let value = SkipVec::<NonEmptyStringRule, SkipFirst<String>>::new(data);
+            assert!(value.is_err());
+        }
     }
 }
