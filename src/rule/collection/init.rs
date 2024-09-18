@@ -1,13 +1,12 @@
-use crate::rule::Rule;
+use crate::rule::{ReverseRule, Rule, SkipFirst, SkipRule};
 use crate::Refined;
 use std::collections::VecDeque;
-use std::marker::PhantomData;
 
 mod collection;
 mod string;
 
 /// A type that holds a value satisfying the `InitRule`
-pub type Init<RULE, ITERABLE> = Refined<InitRule<RULE, ITERABLE>>;
+pub type Init<RULE, ITERABLE, ITEM> = Refined<InitRule<RULE, ITERABLE, ITEM>>;
 
 /// A type that holds a Vec value satisfying the `InitRule`
 pub type InitVec<RULE> = Refined<InitVecRule<RULE>>;
@@ -19,18 +18,18 @@ pub type InitVecDeque<RULE> = Refined<InitVecDequeRule<RULE>>;
 pub type InitString<RULE> = Refined<InitStringRule<RULE>>;
 
 /// Rule that applies to the initialization of a collection
-pub struct InitRule<RULE, ITERABLE> {
-    _phantom_data: PhantomData<(RULE, ITERABLE)>,
-}
+pub type InitRule<RULE, ITERABLE, ITEM> =
+    ReverseRule<SkipRule<RULE, ITERABLE, SkipFirst<ITEM>>, ITERABLE>;
 
 /// Rule that applies to the initialization of a `Vec`
-pub type InitVecRule<RULE> = InitRule<RULE, Vec<<RULE as Rule>::Item>>;
+pub type InitVecRule<RULE> = InitRule<RULE, Vec<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule that applies to the initialization of a `VecDeque`
-pub type InitVecDequeRule<RULE> = InitRule<RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type InitVecDequeRule<RULE> =
+    InitRule<RULE, VecDeque<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule that applies to the initialization of a `String`
-pub type InitStringRule<RULE> = InitRule<RULE, String>;
+pub type InitStringRule<RULE> = InitRule<RULE, String, char>;
 
 #[cfg(test)]
 mod tests {

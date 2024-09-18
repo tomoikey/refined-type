@@ -5,6 +5,7 @@ mod index;
 mod init;
 mod last;
 mod reverse;
+mod skip;
 
 pub use exists::*;
 pub use for_all::*;
@@ -13,3 +14,4 @@ pub use index::*;
 pub use init::*;
 pub use last::*;
 pub use reverse::*;
+pub use skip::*;

@@ -5,7 +5,7 @@ use crate::rule::{ForAllRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ExistsRule`
-pub type Exists<RULE, ITERABLE> = Refined<ExistsRule<RULE, ITERABLE>>;
+pub type Exists<RULE, ITERABLE> = Refined<ExistsRule<RULE, ITERABLE, <RULE as Rule>::Item>>;
 
 /// A type that holds a Vec value satisfying the `ExistsRule`
 pub type ExistsVec<RULE> = Refined<ExistsVecRule<RULE>>;
@@ -23,22 +23,25 @@ pub type ExistsHashMap<K, RULE> = Refined<ExistsHashMapRule<K, RULE>>;
 pub type ExistsString<RULE> = Refined<ExistsStringRule<RULE>>;
 
 /// Rule where at least one data in the collection satisfies the condition
-pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
+pub type ExistsRule<RULE, ITERABLE, ITEM> = Not<ForAllRule<Not<RULE>, ITERABLE, ITEM>>;
 
 /// Rule where at least one data in the `Vec` satisfies the condition
-pub type ExistsVecRule<RULE> = ExistsRule<RULE, Vec<<RULE as Rule>::Item>>;
+pub type ExistsVecRule<RULE> = ExistsRule<RULE, Vec<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule where at least one data in the `VecDeque` satisfies the condition
-pub type ExistsVecDequeRule<RULE> = ExistsRule<RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type ExistsVecDequeRule<RULE> =
+    ExistsRule<RULE, VecDeque<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule where at least one data in the `HashSet` satisfies the condition
-pub type ExistsHashSetRule<RULE> = ExistsRule<RULE, HashSet<<RULE as Rule>::Item>>;
+pub type ExistsHashSetRule<RULE> =
+    ExistsRule<RULE, HashSet<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule where at least one data in the `HashMap` satisfies the condition
-pub type ExistsHashMapRule<K, RULE> = ExistsRule<RULE, HashMap<K, <RULE as Rule>::Item>>;
+pub type ExistsHashMapRule<K, RULE> =
+    ExistsRule<RULE, HashMap<K, <RULE as Rule>::Item>, <RULE as Rule>::Item>;
 
 /// Rule where at least one data in the `String` satisfies the condition
-pub type ExistsStringRule<RULE> = ExistsRule<RULE, String>;
+pub type ExistsStringRule<RULE> = ExistsRule<RULE, String, char>;
 
 #[cfg(test)]
 mod tests {
