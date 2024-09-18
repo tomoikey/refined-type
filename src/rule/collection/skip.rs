@@ -39,3 +39,32 @@ pub type SkipVecDequeRule<RULE, OPTION> = SkipRule<RULE, VecDeque<<RULE as Rule>
 
 /// Rule where the data in the `String` satisfies the condition after skipping the first element
 pub type SkipStringRule<RULE, OPTION> = SkipRule<RULE, String, OPTION>;
+
+#[cfg(test)]
+mod tests {
+    use crate::result::Error;
+    use crate::rule::{NonEmptyStringRule, SkipFirst, SkipVec};
+
+    #[test]
+    fn test_skip_first() -> Result<(), Error<Vec<String>>> {
+        let table = vec![
+            (
+                vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
+                vec!["hey".to_string(), "hello".to_string(), "world".to_string()],
+            ),
+            (
+                vec!["".to_string(), "hello".to_string(), "world".to_string()],
+                vec!["".to_string(), "hello".to_string(), "world".to_string()],
+            ),
+            (vec!["".to_string()], vec!["".to_string()]),
+            (vec![], vec![]),
+        ];
+
+        for (data, expected) in table {
+            let value = SkipVec::<NonEmptyStringRule, SkipFirst<String>>::new(data)?;
+            assert_eq!(value.into_value(), expected);
+        }
+
+        Ok(())
+    }
+}

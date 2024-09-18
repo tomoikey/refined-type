@@ -2,9 +2,6 @@ use crate::rule::{ReverseRule, Rule, SkipFirst, SkipRule};
 use crate::Refined;
 use std::collections::VecDeque;
 
-mod collection;
-mod string;
-
 /// A type that holds a value satisfying the `InitRule`
 pub type Init<RULE, ITERABLE, ITEM> = Refined<InitRule<RULE, ITERABLE, ITEM>>;
 
