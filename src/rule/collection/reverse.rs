@@ -4,19 +4,22 @@ use crate::Refined;
 use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `ReverseRule`
-pub type Reverse<RULE, ITERABLE> = Refined<ReverseRule<RULE, ITERABLE>>;
+pub type Reverse<'a, RULE> = Refined<ReverseRule<'a, RULE>>;
 
 /// Rule where the data in the collection satisfies the condition after reversing
-pub struct ReverseRule<RULE, ITERABLE> {
-    _phantom_data: PhantomData<(RULE, ITERABLE)>,
+pub struct ReverseRule<'a, RULE>
+where
+    RULE: Rule,
+{
+    _phantom_data: PhantomData<&'a RULE>,
 }
 
-impl<'a, RULE, ITERABLE> Rule for ReverseRule<RULE, ITERABLE>
+impl<'a, RULE, ITERABLE> Rule for ReverseRule<'a, RULE>
 where
     RULE: Rule<Item = ITERABLE>,
     ITERABLE: Iterable<'a> + FromIterator<ITERABLE::Item>,
 {
-    type Item = ITERABLE;
+    type Item = RULE::Item;
 
     fn validate(target: Self::Item) -> crate::Result<Self::Item> {
         match RULE::validate(ITERABLE::from_iter(target.into_iterator().rev())) {
@@ -40,7 +43,7 @@ mod tests {
         let table = vec!["hello".to_string(), "world".to_string()];
 
         for input in table {
-            let refined = Reverse::<NonEmptyStringRule, _>::new(input.clone())?;
+            let refined = Reverse::<NonEmptyStringRule>::new(input.clone())?;
             assert_eq!(refined.into_value(), input);
         }
 
@@ -55,7 +58,7 @@ mod tests {
         ];
 
         for input in table {
-            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>, _>::new(input.clone())?;
+            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(input.clone())?;
             assert_eq!(refined.into_value(), input);
         }
 
@@ -67,7 +70,7 @@ mod tests {
         let table = vec![vec!["".to_string()], vec![]];
 
         for input in table {
-            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>, _>::new(input.clone());
+            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(input.clone());
             assert!(refined.is_err());
         }
     }

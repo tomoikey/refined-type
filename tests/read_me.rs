@@ -434,7 +434,7 @@ fn example_18() -> Result<(), Error<Vec<i32>>> {
     ];
 
     for (value, expected) in table {
-        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>, _>::new(value.clone());
+        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 

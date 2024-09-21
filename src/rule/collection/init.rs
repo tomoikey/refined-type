@@ -1,37 +1,36 @@
-use crate::rule::{ReverseRule, Rule, SkipFirst, SkipRule};
+use crate::rule::{Iterable, ReverseRule, Rule, SkipFirst, SkipRule};
 use crate::Refined;
 use std::collections::VecDeque;
 
 /// A type that holds a value satisfying the `InitRule`
-pub type Init<RULE, ITERABLE, ITEM> = Refined<InitRule<RULE, ITERABLE, ITEM>>;
+pub type Init<'a, RULE, ITERABLE> = Refined<InitRule<'a, RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `InitRule`
-pub type InitVec<RULE> = Refined<InitVecRule<RULE>>;
+pub type InitVec<'a, RULE> = Refined<InitVecRule<'a, RULE>>;
 
 /// A type that holds a VecDeque value satisfying the `InitRule`
-pub type InitVecDeque<RULE> = Refined<InitVecDequeRule<RULE>>;
+pub type InitVecDeque<'a, RULE> = Refined<InitVecDequeRule<'a, RULE>>;
 
 /// A type that holds a String value satisfying the `InitRule`
-pub type InitString<RULE> = Refined<InitStringRule<RULE>>;
+pub type InitString<'a, RULE> = Refined<InitStringRule<'a, RULE>>;
 
 /// Rule that applies to the initialization of a collection
-pub type InitRule<RULE, ITERABLE, ITEM> =
-    ReverseRule<SkipRule<RULE, ITERABLE, SkipFirst<ITEM>>, ITERABLE>;
+pub type InitRule<'a, RULE, ITERABLE> =
+    ReverseRule<'a, SkipRule<RULE, ITERABLE, SkipFirst<<ITERABLE as Iterable<'a>>::Item>>>;
 
 /// Rule that applies to the initialization of a `Vec`
-pub type InitVecRule<RULE> = InitRule<RULE, Vec<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type InitVecRule<'a, RULE> = InitRule<'a, RULE, Vec<<RULE as Rule>::Item>>;
 
 /// Rule that applies to the initialization of a `VecDeque`
-pub type InitVecDequeRule<RULE> =
-    InitRule<RULE, VecDeque<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type InitVecDequeRule<'a, RULE> = InitRule<'a, RULE, VecDeque<<RULE as Rule>::Item>>;
 
 /// Rule that applies to the initialization of a `String`
-pub type InitStringRule<RULE> = InitRule<RULE, String, char>;
+pub type InitStringRule<'a, RULE> = InitRule<'a, RULE, String>;
 
 #[cfg(test)]
 mod tests {
     use crate::result::Error;
-    use crate::rule::{InitVec, NonEmptyStringRule};
+    use crate::rule::{Init, NonEmptyStringRule};
 
     #[test]
     fn init_valid() -> Result<(), Error<Vec<String>>> {
@@ -45,7 +44,7 @@ mod tests {
         ];
 
         for value in table {
-            let init = InitVec::<NonEmptyStringRule>::new(value.clone())?;
+            let init = Init::<NonEmptyStringRule, _>::new(value.clone())?;
             assert_eq!(init.into_value(), value);
         }
 
