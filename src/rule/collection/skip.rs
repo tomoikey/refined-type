@@ -1,13 +1,11 @@
-mod collection;
 mod option;
-mod string;
 
 use std::collections::VecDeque;
 use std::marker::PhantomData;
 
 pub use option::*;
 
-use crate::rule::Rule;
+use crate::rule::{Iterable, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `SkipRule`
@@ -29,6 +27,48 @@ where
     OPTION: SkipOption,
 {
     _phantom_data: PhantomData<(RULE, ITERABLE, OPTION)>,
+}
+
+impl<'a, RULE, ITERABLE, OPTION> Rule for SkipRule<RULE, ITERABLE, OPTION>
+where
+    RULE: Rule,
+    ITERABLE: Iterable<'a, Item = RULE::Item> + FromIterator<RULE::Item>,
+    OPTION: SkipOption<Item = RULE::Item>,
+{
+    type Item = ITERABLE;
+
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
+        let mut remains = target.into_iterator();
+        let mut result = VecDeque::new();
+        let (mut is_valid, mut message) = (true, String::new());
+        for (i, item) in remains.by_ref().enumerate() {
+            if OPTION::should_skip(i, &item) {
+                result.push_back(item);
+                continue;
+            }
+            match RULE::validate(item) {
+                Ok(validated_item) => result.push_back(validated_item),
+                Err(err) => {
+                    is_valid = false;
+                    message = format!(
+                        "the item at index {} does not satisfy the condition: {}",
+                        i, err
+                    );
+                    result.push_back(err.into_value());
+                }
+            }
+        }
+
+        if is_valid {
+            Ok(result.into_iter().collect())
+        } else {
+            result.append(&mut remains.collect::<VecDeque<_>>());
+            Err(crate::result::Error::new(
+                result.into_iter().collect(),
+                message,
+            ))
+        }
+    }
 }
 
 /// Rule where the data in the `Vec` satisfies the condition after skipping the first element
