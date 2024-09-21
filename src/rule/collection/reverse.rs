@@ -1,6 +1,5 @@
-mod collection;
-mod string;
-
+use crate::result::Error;
+use crate::rule::{Iterable, Rule};
 use crate::Refined;
 use std::marker::PhantomData;
 
@@ -12,10 +11,41 @@ pub struct ReverseRule<RULE, ITERABLE> {
     _phantom_data: PhantomData<(RULE, ITERABLE)>,
 }
 
+impl<'a, RULE, ITERABLE> Rule for ReverseRule<RULE, ITERABLE>
+where
+    RULE: Rule<Item = ITERABLE>,
+    ITERABLE: Iterable<'a> + FromIterator<ITERABLE::Item>,
+{
+    type Item = ITERABLE;
+
+    fn validate(target: Self::Item) -> crate::Result<Self::Item> {
+        match RULE::validate(ITERABLE::from_iter(target.into_iterator().rev())) {
+            Ok(iterable) => Ok(ITERABLE::from_iter(iterable.into_iterator().rev())),
+            Err(e) => {
+                let message = format!("ReverseRule validation failed: {}", e);
+                let item = ITERABLE::from_iter(e.into_value().into_iterator().rev());
+                Err(Error::new(item, message))
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::result::Error;
     use crate::rule::{Index0VecRule, NonEmptyStringRule, Reverse};
+
+    #[test]
+    fn test_reverse_string_valid() -> Result<(), Error<String>> {
+        let table = vec!["hello".to_string(), "world".to_string()];
+
+        for input in table {
+            let refined = Reverse::<NonEmptyStringRule, _>::new(input.clone())?;
+            assert_eq!(refined.into_value(), input);
+        }
+
+        Ok(())
+    }
 
     #[test]
     fn test_reverse_valid() -> Result<(), Error<Vec<String>>> {

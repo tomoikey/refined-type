@@ -10,16 +10,33 @@ use std::str::FromStr;
 /// ```rust
 /// # use refined_type::rule::NonEmptyString;
 ///
-/// let non_empty_string_1 = NonEmptyString::new("Hello".to_string()).unwrap();
-/// let non_empty_string_2 = NonEmptyString::new("World".to_string()).unwrap();
-/// let non_empty_string = non_empty_string_1 + non_empty_string_2;
+/// let non_empty_string = NonEmptyString::new("Hello".to_string());
+/// assert!(non_empty_string.is_ok_and(|s| s.into_value() == "Hello"));
 ///
-/// assert_eq!(non_empty_string.into_value(), "HelloWorld");
+/// let non_empty_string = NonEmptyString::new("".to_string());
+/// assert!(non_empty_string.is_err());
 /// ```
 pub type NonEmptyString = Refined<NonEmptyStringRule>;
 
+/// A type that holds a value satisfying the `NonEmptyStrRule`
+///
+/// # Example
+/// ```rust
+/// # use refined_type::rule::NonEmptyStr;
+///
+/// let non_empty_str = NonEmptyStr::new("Hello");
+/// assert!(non_empty_str.is_ok_and(|s| s.into_value() == "Hello"));
+///
+/// let non_empty_str = NonEmptyStr::new("");
+/// assert!(non_empty_str.is_err());
+/// ```
+pub type NonEmptyStr<'a> = Refined<NonEmptyStrRule<'a>>;
+
 /// Rule where the input `String` is not empty
 pub type NonEmptyStringRule = NonEmptyRule<String>;
+
+/// Rule where the input `&'a str` is not empty
+pub type NonEmptyStrRule<'a> = NonEmptyRule<&'a str>;
 
 impl NonEmptyString {
     pub fn insert(self, idx: usize, ch: char) -> Self {
@@ -92,13 +109,19 @@ impl Add for NonEmptyString {
 #[cfg(test)]
 mod test {
     use crate::result::Error;
-    use crate::rule::{NonEmptyString, NonEmptyStringRule, Rule};
+    use crate::rule::{NonEmptyStrRule, NonEmptyString, NonEmptyStringRule, Rule};
     use std::str::FromStr;
 
     #[test]
     fn test_non_empty_string() {
         assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
         assert!(NonEmptyStringRule::validate("".to_string()).is_err());
+    }
+
+    #[test]
+    fn test_non_empty_str() {
+        assert!(NonEmptyStrRule::validate("hello").is_ok());
+        assert!(NonEmptyStrRule::validate("").is_err());
     }
 
     #[test]
