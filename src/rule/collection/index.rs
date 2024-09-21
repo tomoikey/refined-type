@@ -1,38 +1,37 @@
-use std::collections::VecDeque;
-
 use crate::rule::Rule;
 
 #[macro_export]
 macro_rules! define_index_refined {
-    ($lit:literal) => {
+    (($vis:vis, $lit:expr)) => {
         $crate::paste::item! {
-            pub type [<Index $lit>]<RULE, ITERABLE> = $crate::Refined<[<Index $lit Rule>]<RULE, ITERABLE>>;
+            $vis type [<Index $lit>]<RULE, ITERABLE> = $crate::Refined<[<Index $lit Rule>]<RULE, ITERABLE>>;
 
-            pub type [<Index $lit Vec>]<RULE> = $crate::Refined<[<Index $lit VecRule>]<RULE>>;
+            $vis type [<Index $lit Vec>]<RULE> = $crate::Refined<[<Index $lit VecRule>]<RULE>>;
 
-            pub type [<Index $lit VecDeque>]<RULE> = $crate::Refined<[<Index $lit VecDequeRule>]<RULE>>;
+            $vis type [<Index $lit VecDeque>]<RULE> = $crate::Refined<[<Index $lit VecDequeRule>]<RULE>>;
 
-            pub type [<Index $lit String>]<RULE> = $crate::Refined<[<Index $lit StringRule>]<RULE>>;
+            $vis type [<Index $lit String>]<RULE> = $crate::Refined<[<Index $lit StringRule>]<RULE>>;
         }
     };
-    ($lit:literal, $($lits:literal),*) => {
-        define_index_refined!($lit);
-        define_index_refined!($($lits),*);
-    }
+    ($(($vis:vis, $lit:expr)),*) => {
+        $(
+            $crate::define_index_refined!(($vis, $lit));
+        )*
+    };
 }
 
 #[macro_export]
 macro_rules! define_index_rule {
-    ($lit:literal) => {
+    (($vis:vis, $lit:expr)) => {
         $crate::paste::item! {
-            pub struct [<Index $lit Rule>]<RULE, ITERABLE>
+            $vis struct [<Index $lit Rule>]<RULE, ITERABLE>
             where
                 RULE: $crate::rule::Rule,
             {
                 _phantom_data: ::std::marker::PhantomData<(RULE, ITERABLE)>,
             }
 
-            pub type [<Index $lit VecRule>]<RULE> = [<Index $lit Rule>]<RULE, Vec<<RULE as Rule>::Item>>;
+            $vis type [<Index $lit VecRule>]<RULE> = [<Index $lit Rule>]<RULE, Vec<<RULE as Rule>::Item>>;
             impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, Vec<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
                 type Item = Vec<ITEM>;
 
@@ -56,7 +55,7 @@ macro_rules! define_index_rule {
                 }
             }
 
-            pub type [<Index $lit VecDequeRule>]<RULE> = [<Index $lit Rule>]<RULE, VecDeque<<RULE as Rule>::Item>>;
+            $vis type [<Index $lit VecDequeRule>]<RULE> = [<Index $lit Rule>]<RULE, ::std::collections::VecDeque<<RULE as Rule>::Item>>;
             impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, ::std::collections::VecDeque<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
                 type Item = ::std::collections::VecDeque<ITEM>;
 
@@ -78,7 +77,7 @@ macro_rules! define_index_rule {
                 }
             }
 
-            pub type [<Index $lit StringRule>]<RULE> = [<Index $lit Rule>]<RULE, String>;
+            $vis type [<Index $lit StringRule>]<RULE> = [<Index $lit Rule>]<RULE, String>;
             impl <RULE> $crate::rule::Rule for [<Index $lit Rule>]<RULE, String> where RULE: $crate::rule::Rule<Item = char> {
                 type Item = String;
 
@@ -114,19 +113,19 @@ macro_rules! define_index_rule {
             }
         }
     };
-    ($lit:literal, $($lits:literal),*) => {
-        define_index_rule!($lit);
-        define_index_rule!($($lits),*);
-    }
+    ($(($vis:vis, $lit:expr)),*) => {
+        $(
+            $crate::define_index_rule!(($vis, $lit));
+        )*
+    };
 }
 
 // define index refined type for 0 ~ 10 by default.
 // if you want to define additional refined index types, you can add more using `define_index_refined`.
-define_index_refined!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
+define_index_refined!((pub, 0), (pub, 1), (pub, 2), (pub, 3), (pub, 4), (pub, 5), (pub, 6), (pub, 7), (pub, 8), (pub, 9), (pub, 10));
 // define index rules for 0 ~ 10 by default
 // if you want to define additional index rules, you can add more using `define_index_rule`.
-define_index_rule!(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+define_index_rule!((pub, 0), (pub, 1), (pub, 2), (pub, 3), (pub, 4), (pub, 5), (pub, 6), (pub, 7), (pub, 8), (pub, 9), (pub, 10));
 
 #[cfg(test)]
 mod tests {
