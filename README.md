@@ -345,7 +345,7 @@ fn example_12() -> anyhow::Result<()> {
 }
 ```
 
-# `Head`
+## `Head`
 
 `Head` is a rule that applies a specific rule to the first element in the Iterator.
 
@@ -368,7 +368,7 @@ fn example_13() -> anyhow::Result<()> {
 }
 ```
 
-# `Last`
+## `Last`
 
 `Last` is a rule that applies a specific rule to the last element in the Iterator.
 
@@ -391,7 +391,7 @@ fn example_14() -> anyhow::Result<()> {
 }
 ```
 
-# `Tail`
+## `Tail`
 
 `Tail` is a rule that applies a specific rule to all elements except the first element in the Iterator.
 
@@ -417,7 +417,7 @@ fn example_15() -> anyhow::Result<()> {
 }
 ```
 
-# `Init`
+## `Init`
 
 `Init` is a rule that applies a specific rule to all elements except the last element in the Iterator.
 
@@ -443,7 +443,7 @@ fn example_16() -> anyhow::Result<()> {
 }
 ```
 
-# `Index`
+## `Index`
 
 `Index` is a rule that applies a specific rule to the element at a specific index in the Iterator.
 
@@ -465,7 +465,14 @@ fn example_17() -> anyhow::Result<()> {
 }
 ```
 
-# `Reverse`
+if you need more, you can define it like this.
+
+```rust
+define_index_refined!(11, 12, 13);
+define_index_rule!(11, 12, 13);
+```
+
+## `Reverse`
 
 `Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.  
 `refined_type` crate has `Index0` to `Index10` by default.
@@ -486,13 +493,6 @@ fn example_18() -> Result<(), Error<Vec<i32>>> {
 
     Ok(())
 }
-```
-
-if you need more, you can define it like this.
-
-```rust
-define_index_refined!(11, 12, 13);
-define_index_rule!(11, 12, 13);
 ```
 
 # `Skip`
