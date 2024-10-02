@@ -531,7 +531,8 @@ pub struct NoSkip<T> {
 
 impl<ITEM> SkipOption for NoSkip<ITEM> {
     type Item = ITEM;
-    fn should_skip(_: usize, _: &Self::Item) -> bool {
+    type Accumulator = ();
+    fn should_skip(_: usize, _: Option<&mut Self::Accumulator>, _: &Self::Item) -> bool {
         false
     }
 }
