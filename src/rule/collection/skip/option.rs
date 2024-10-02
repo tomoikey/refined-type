@@ -6,5 +6,10 @@ pub use skip_first::SkipFirst;
 
 pub trait SkipOption {
     type Item;
-    fn should_skip(i: usize, item: &Self::Item) -> bool;
+    type Accumulator;
+    fn should_skip(
+        i: usize,
+        item: &Self::Item,
+        accumulator: Option<&mut Self::Accumulator>,
+    ) -> bool;
 }

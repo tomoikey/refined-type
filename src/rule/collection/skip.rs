@@ -41,8 +41,9 @@ where
         let mut remains = target.into_iterator();
         let mut result = VecDeque::new();
         let (mut is_valid, mut message) = (true, String::new());
+        let mut accumlator = None;
         for (i, item) in remains.by_ref().enumerate() {
-            if OPTION::should_skip(i, &item) {
+            if OPTION::should_skip(i, &item, accumlator.as_mut()) {
                 result.push_back(item);
                 continue;
             }

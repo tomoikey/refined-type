@@ -6,7 +6,8 @@ pub struct SkipFirst<ITEM> {
 
 impl<ITEM> SkipOption for SkipFirst<ITEM> {
     type Item = ITEM;
-    fn should_skip(i: usize, _: &Self::Item) -> bool {
+    type Accumulator = ();
+    fn should_skip(i: usize, _: &Self::Item, _: Option<&mut Self::Accumulator>) -> bool {
         i == 0
     }
 }
