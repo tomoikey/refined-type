@@ -43,7 +43,7 @@ where
         let (mut is_valid, mut message) = (true, String::new());
         let mut accumlator = None;
         for (i, item) in remains.by_ref().enumerate() {
-            if OPTION::should_skip(i, &item, accumlator.as_mut()) {
+            if OPTION::should_skip(i, accumlator.as_mut(), &item) {
                 result.push_back(item);
                 continue;
             }

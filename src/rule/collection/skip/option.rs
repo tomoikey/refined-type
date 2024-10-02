@@ -9,7 +9,7 @@ pub trait SkipOption {
     type Accumulator;
     fn should_skip(
         i: usize,
-        item: &Self::Item,
         accumulator: Option<&mut Self::Accumulator>,
+        item: &Self::Item,
     ) -> bool;
 }
