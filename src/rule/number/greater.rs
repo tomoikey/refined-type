@@ -3,7 +3,7 @@ macro_rules! define_greater_rule {
         $crate::paste::item! {
             pub type [<Greater $t:camel>]<const THAN: $t> = $crate::Refined<[<GreaterRule $t:camel>]<THAN>>;
 
-            #[derive(Debug, Clone, Copy)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
             pub struct [<GreaterRule $t:camel>]<const THAN: $t>;
 
             impl<const THAN: $t> $crate::rule::Rule for [<GreaterRule $t:camel>]<THAN> {

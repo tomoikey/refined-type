@@ -7,51 +7,47 @@
 **refined_type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
 range of guarantees your applications can statically ensure.
 
-# Installation
-
-```shell
-cargo add refined_type
-```
-
-# Overview
-
 You can create various rules for a certain type, such as phone numbers, addresses, times, and so on.
 Once you have established the rules, you can easily combine them.
 Specifically, if you create rules for 'non-empty strings' and 'strings composed only of alphabets,' you do not need to
 redefine a new rule for 'non-empty strings composed only of alphabets'.
 All rules can be arbitrarily combined and extended as long as the target type matches. Enjoy a wonderful type life!
 
-# Example Usage
+# Installation
+
+```shell
+cargo add refined_type
+```
+
+# Get Started
 
 As an example, let's convert from JSON to a struct.
 
 ```rust
-// define the constraints you expect by combining 'Refined' and 'Rule'.
-type MyNonEmptyString = Refined<NonEmptyRule<String>>;
-type MyNonEmptyVec<T> = Refined<NonEmptyRule<Vec<T>>>;
-
 // define a struct for converting from JSON.
-#[derive(Debug, Eq, PartialEq, Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Human {
-    name: MyNonEmptyString,
-    friends: MyNonEmptyVec<String>,
+    name: NonEmptyString,
+    age: MinMaxU8<18, 80>,
+    friends: NonEmptyVec<String>,
 }
 
 fn example_1() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
+        "age": 20,
         "friends": ["tom", "taro"]
     }}
         .to_string();
 
-    let actual = serde_json::from_str::<Human>(&json)?;
-    let expected = Human {
-        name: MyNonEmptyString::new("john".to_string())?,
-        friends: MyNonEmptyVec::new(vec!["tom".to_string(), "taro".to_string()])?,
-    };
-    assert_eq!(actual, expected);
+    let human = serde_json::from_str::<Human>(&json)?;
+
+    assert_eq!(human.name.into_value(), "john");
+    assert_eq!(human.age.into_value(), 20);
+    assert_eq!(human.friends.into_value(), vec!["tom", "taro"]);
     Ok(())
 }
+```
 
 // In the second example, while `friends` meets the rule, `name` does not, causing the conversion from JSON to fail
 fn example_2() -> anyhow::Result<()> {

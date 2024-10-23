@@ -3,7 +3,7 @@ macro_rules! define_equal_rule {
         $crate::paste::item! {
             pub type [<Equal $t:camel>]<const EQUAL: $t> = $crate::Refined<[<EqualRule $t:camel>]<EQUAL>>;
 
-            #[derive(Debug, Clone, Copy)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
             pub struct [<EqualRule $t:camel>]<const EQUAL: $t>;
 
             impl<const EQUAL: $t> $crate::rule::Rule for [<EqualRule $t:camel>]<EQUAL> {

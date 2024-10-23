@@ -3,37 +3,35 @@ use serde_json::json;
 
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
-use refined_type::rule::{EqualU8, ExistsVec, ForAllVec, GreaterU8, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec, LengthDefinition, LessU8, MinMaxU8, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Reverse, Rule, SkipFirst, SkipVec, TailVec};
-use refined_type::{
-    length_equal, length_greater_than, length_less_than, And,
-    Or, Refined,
+use refined_type::rule::{
+    EqualU8, ExistsVec, ForAllVec, GreaterU8, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec,
+    LengthDefinition, LessU8, MinMaxU8, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
+    NonEmptyVecDeque, Reverse, Rule, SkipFirst, SkipVec, TailVec,
 };
-
-// define the constraints you expect by combining 'Refined' and 'Rule'.
-type MyNonEmptyString = Refined<NonEmptyRule<String>>;
-type MyNonEmptyVec<T> = Refined<NonEmptyRule<Vec<T>>>;
+use refined_type::{length_equal, length_greater_than, length_less_than, And, Or, Refined};
 
 // define a struct for converting from JSON.
-#[derive(Debug, Eq, PartialEq, Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Human {
-    name: MyNonEmptyString,
-    friends: MyNonEmptyVec<String>,
+    name: NonEmptyString,
+    age: MinMaxU8<18, 80>,
+    friends: NonEmptyVec<String>,
 }
 
 #[test]
 fn example_1() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
+        "age": 20,
         "friends": ["tom", "taro"]
     }}
-        .to_string();
+    .to_string();
 
-    let actual = serde_json::from_str::<Human>(&json)?;
-    let expected = Human {
-        name: MyNonEmptyString::unsafe_new("john".to_string()),
-        friends: MyNonEmptyVec::unsafe_new(vec!["tom".to_string(), "taro".to_string()]),
-    };
-    assert_eq!(actual, expected);
+    let human = serde_json::from_str::<Human>(&json)?;
+
+    assert_eq!(human.name.into_value(), "john");
+    assert_eq!(human.age.into_value(), 20);
+    assert_eq!(human.friends.into_value(), vec!["tom", "taro"]);
     Ok(())
 }
 
@@ -44,7 +42,7 @@ fn example_2() -> anyhow::Result<()> {
         "name": "",
         "friends": ["tom", "taro"]
     }}
-        .to_string();
+    .to_string();
 
     // because `name` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
@@ -58,7 +56,7 @@ fn example_3() -> anyhow::Result<()> {
         "name": "john",
         "friends": []
     }}
-        .to_string();
+    .to_string();
 
     // because `friends` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
@@ -228,7 +226,7 @@ fn example_10() -> anyhow::Result<()> {
         "name": "john",
         "age": 8
     }}
-        .to_string();
+    .to_string();
 
     let actual = serde_json::from_str::<Human2>(&json)?;
 
@@ -261,23 +259,23 @@ fn min_max_example() -> Result<(), Error<u8>> {
 #[test]
 fn less_example() -> Result<(), Error<u8>> {
     type Age = LessU8<80>;
-    
+
     let age = Age::new(79)?;
     assert_eq!(age.into_value(), 79);
-    
+
     let age = Age::new(80);
     assert!(age.is_err());
-    
+
     Ok(())
 }
 
 #[test]
 fn greater_example() -> Result<(), Error<u8>> {
     type Age = GreaterU8<18>;
-    
+
     let age = Age::new(19)?;
     assert_eq!(age.into_value(), 19);
-    
+
     let age = Age::new(18);
     assert!(age.is_err());
 
@@ -287,10 +285,10 @@ fn greater_example() -> Result<(), Error<u8>> {
 #[test]
 fn equal_example() -> Result<(), Error<u8>> {
     type Age = EqualU8<18>;
-    
+
     let age = Age::new(18)?;
     assert_eq!(age.into_value(), 18);
-    
+
     let age = Age::new(19);
     assert!(age.is_err());
 

@@ -3,7 +3,7 @@ macro_rules! define_less_rule {
         $crate::paste::item! {
             pub type [<Less $t:camel>]<const THAN: $t> = $crate::Refined<[<LessRule $t:camel>]<THAN>>;
 
-            #[derive(Debug, Clone, Copy)]
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
             pub struct [<LessRule $t:camel>]<const THAN: $t>;
 
             impl<const THAN: $t> $crate::rule::Rule for [<LessRule $t:camel>]<THAN> {
