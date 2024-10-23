@@ -3,13 +3,9 @@ use serde_json::json;
 
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
-use refined_type::rule::{
-    ExistsVec, ForAllVec, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec, LengthDefinition,
-    NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Reverse, Rule,
-    SkipFirst, SkipVec, TailVec,
-};
+use refined_type::rule::{EqualU8, ExistsVec, ForAllVec, GreaterU8, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec, LengthDefinition, LessU8, MinMaxU8, NonEmptyRule, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Reverse, Rule, SkipFirst, SkipVec, TailVec};
 use refined_type::{
-    equal_rule, greater_rule, length_equal, length_greater_than, length_less_than, less_rule, And,
+    length_equal, length_greater_than, length_less_than, And,
     Or, Refined,
 };
 
@@ -30,7 +26,7 @@ fn example_1() -> anyhow::Result<()> {
         "name": "john",
         "friends": ["tom", "taro"]
     }}
-    .to_string();
+        .to_string();
 
     let actual = serde_json::from_str::<Human>(&json)?;
     let expected = Human {
@@ -48,7 +44,7 @@ fn example_2() -> anyhow::Result<()> {
         "name": "",
         "friends": ["tom", "taro"]
     }}
-    .to_string();
+        .to_string();
 
     // because `name` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
@@ -62,7 +58,7 @@ fn example_3() -> anyhow::Result<()> {
         "name": "john",
         "friends": []
     }}
-    .to_string();
+        .to_string();
 
     // because `friends` is empty
     assert!(serde_json::from_str::<Human>(&json).is_err());
@@ -232,7 +228,7 @@ fn example_10() -> anyhow::Result<()> {
         "name": "john",
         "age": 8
     }}
-    .to_string();
+        .to_string();
 
     let actual = serde_json::from_str::<Human2>(&json)?;
 
@@ -244,24 +240,62 @@ fn example_10() -> anyhow::Result<()> {
     Ok(())
 }
 
-greater_rule!((18, u8));
-less_rule!((80, u8));
-equal_rule!((18, u8), (80, u8));
+#[test]
+fn min_max_example() -> Result<(), Error<u8>> {
+    type Age = MinMaxU8<18, 80>;
 
-#[allow(dead_code)]
-type Age = Refined<TargetAgeRule>;
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
 
-// 18 <= age
-#[allow(dead_code)]
-type TargetAge18OrMore = Or![EqualRule18u8, GreaterRule18u8];
+    let age = Age::new(80)?;
+    assert_eq!(age.into_value(), 80);
 
-// age <= 80
-#[allow(dead_code)]
-type TargetAge80OrLess = Or![EqualRule80u8, LessRule80u8];
+    let age = Age::new(17);
+    assert!(age.is_err());
 
-// 18 <= age <= 80
-#[allow(dead_code)]
-type TargetAgeRule = And![TargetAge18OrMore, TargetAge80OrLess];
+    let age = Age::new(81);
+    assert!(age.is_err());
+    Ok(())
+}
+
+#[test]
+fn less_example() -> Result<(), Error<u8>> {
+    type Age = LessU8<80>;
+    
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+    
+    let age = Age::new(80);
+    assert!(age.is_err());
+    
+    Ok(())
+}
+
+#[test]
+fn greater_example() -> Result<(), Error<u8>> {
+    type Age = GreaterU8<18>;
+    
+    let age = Age::new(19)?;
+    assert_eq!(age.into_value(), 19);
+    
+    let age = Age::new(18);
+    assert!(age.is_err());
+
+    Ok(())
+}
+
+#[test]
+fn equal_example() -> Result<(), Error<u8>> {
+    type Age = EqualU8<18>;
+    
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+    
+    let age = Age::new(19);
+    assert!(age.is_err());
+
+    Ok(())
+}
 
 #[test]
 fn example_11() -> Result<(), Error<Vec<String>>> {

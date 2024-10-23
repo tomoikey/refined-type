@@ -286,25 +286,81 @@ fn example_10() -> anyhow::Result<()> {
 
 # Number
 
-You can also represent the size of numbers as types.
-I have prepared macros that can easily define the size of numbers.
-Let’s use them to define a `Age` type that is narrowed down to ages 18 to 80.
+## `MinMax`
+
+`MinMax` is a type that signifies the target exists between a certain number and another number.
 
 ```rust
-greater_rule!((18, u8));
-less_rule!((80, u8));
-equal_rule!((18, u8), (80, u8));
+type Age = MinMaxU8<18, 80>;
 
-type Age = Refined<TargetAgeRule>;
+fn min_max_example() -> Result<(), Error<u8>> {
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
 
-// 18 <= age
-type TargetAge18OrMore = Or<EqualRule18u8, GreaterRule18u8>;
+    let age = Age::new(80)?;
+    assert_eq!(age.into_value(), 80);
 
-// age <= 80
-type TargetAge80OrLess = Or<EqualRule80u8, LessRule80u8>;
+    let age = Age::new(17);
+    assert!(age.is_err());
 
-// 18 <= age <= 80
-type TargetAgeRule = And![TargetAge18OrMore, TargetAge80OrLess];
+    let age = Age::new(81);
+    assert!(age.is_err());
+    Ok(())
+}
+```
+
+## `Less`
+
+`Less` is a type that signifies the target is less than a certain number.
+
+```rust
+type Age = LessU8<80>;
+
+fn less_example() -> Result<(), Error<u8>> {
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+
+    let age = Age::new(80);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
+## `Greater`
+
+`Greater` is a type that signifies the target is greater than a certain number.
+
+```rust
+type Age = GreaterU8<18>;
+
+fn greater_example() -> Result<(), Error<u8>> {
+    let age = Age::new(19)?;
+    assert_eq!(age.into_value(), 19);
+
+    let age = Age::new(18);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
+## `Equal`
+
+`Equal` is a type that signifies the target is equal to a certain number.
+
+```rust
+type Age = EqualU8<18>;
+
+fn equal_example() -> Result<(), Error<u8>> {
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+
+    let age = Age::new(19);
+    assert!(age.is_err());
+
+    Ok(())
+}
 ```
 
 # Iterator
