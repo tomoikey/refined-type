@@ -1,60 +1,38 @@
-/// This macro generates a rule that checks if the length of the target is equal to `N`
-/// # Example
-/// ```rust
-/// use refined_type::length_equal;
-/// length_equal!(5);
-///
-/// let target = "12345";
-/// let refined = LengthEqual5::new(target).unwrap();
-/// assert_eq!(refined.into_value(), "12345");
-///
-/// let target = "1234";
-/// let refined = LengthEqual5::new(target);
-/// assert!(refined.is_err());
-/// ```
-#[macro_export]
-macro_rules! length_equal {
-    ($length:literal) => {
-        $crate::paste::item! {
-            /// A type that holds a value satisfying the LengthEqualN rule.
-            #[allow(dead_code)]
-            pub type [<LengthEqual $length>]<ITEM> = $crate::Refined<[<LengthEqualRule $length>]<ITEM>>;
+use crate::result::Error;
+use crate::rule::{LengthDefinition, Rule};
+use crate::Refined;
 
-            /// Rule where the length of the input value is equal to N
-            #[allow(dead_code)]
-            #[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
-            pub struct [<LengthEqualRule $length>]<ITEM> {
-                _phantom: ::std::marker::PhantomData<ITEM>,
-            }
+/// A type that holds a value satisfying the `LengthEqualRule`
+pub type LengthEqual<const LENGTH: usize, ITEM> = Refined<LengthEqualRule<LENGTH, ITEM>>;
 
-            impl<ITEM> $crate::rule::Rule for [<LengthEqualRule $length>]<ITEM> where ITEM: $crate::rule::LengthDefinition {
-                type Item = ITEM;
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if target.length() == $length {
-                        Ok(target)
-                    } else {
-                        Err($crate::result::Error::new(target, format!("target length is not equal to {}", $length)))
-                    }
-                }
-            }
+/// Rule where the input `ITEM` has a length equal to `LENGTH`
+pub struct LengthEqualRule<const LENGTH: usize, ITEM> {
+    _phantom: std::marker::PhantomData<ITEM>,
+}
+
+impl<const LENGTH: usize, ITEM: LengthDefinition> Rule for LengthEqualRule<LENGTH, ITEM> {
+    type Item = ITEM;
+    fn validate(target: Self::Item) -> Result<Self::Item, Error<Self::Item>> {
+        if target.length() == LENGTH {
+            Ok(target)
+        } else {
+            Err(Error::new(
+                target,
+                format!("target length is not equal to {}", LENGTH),
+            ))
         }
-    };
-    ($length:literal, $($lengths:literal),+) => {
-        length_equal!($length);
-        length_equal!($($lengths),+);
-    };
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use crate::result::Error;
-
-    length_equal!(5, 10);
+    use crate::rule::length::equal::LengthEqual;
 
     #[test]
     fn test_length_equal_5() -> Result<(), Error<&'static str>> {
         let target = "12345";
-        let refined = LengthEqual5::new(target)?;
+        let refined = LengthEqual::<5, _>::new(target)?;
         assert_eq!(refined.into_value(), "12345");
         Ok(())
     }
@@ -62,14 +40,14 @@ mod tests {
     #[test]
     fn test_length_equal_5_fail() {
         let target = "1234";
-        let refined = LengthEqual5::new(target);
+        let refined = LengthEqual::<5, _>::new(target);
         assert!(refined.is_err());
     }
 
     #[test]
     fn test_length_equal_10() -> Result<(), Error<&'static str>> {
         let target = "1234567890";
-        let refined = LengthEqual10::new(target)?;
+        let refined = LengthEqual::<10, _>::new(target)?;
         assert_eq!(refined.into_value(), "1234567890");
         Ok(())
     }
@@ -77,7 +55,7 @@ mod tests {
     #[test]
     fn test_length_equal_10_fail() {
         let target = "123456789";
-        let refined = LengthEqual10::new(target);
+        let refined = LengthEqual::<10, _>::new(target);
         assert!(refined.is_err());
     }
 }

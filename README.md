@@ -657,113 +657,93 @@ fn example_22() -> anyhow::Result<()> {
 
 You can impose constraints on objects that have a length, such as `String` or `Vec`.
 
-### String
+## `LengthMinMax`
+`LengthMinMax` is a type that signifies the target has a length between a certain number and another number.
 
 ```rust
-fn example_23() -> Result<(), Error> {
-    length_greater_than!(5);
-    length_equal!(5, 10);
-    length_less_than!(10);
+fn length_min_max_example() -> Result<(), Error<String>> {
+    type Password = LengthMinMax<5, 10, String>;
 
-    type Password = Refined<From5To10Rule<String>>;
+    let password = Password::new("123456".to_string())?;
+    assert_eq!(password.into_value(), "123456");
 
-    type From5To10Rule<T> = And![
-        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
-        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>]
-    ];
-
-    // length is 8. so, this is valid
-    let raw_password = "password";
-    let password = Password::new(raw_password.to_string())?;
-    assert_eq!(password.into_value(), "password");
-
-    // length is 4. so, this is invalid
-    let raw_password = "pswd";
-    let password = Password::new(raw_password.to_string());
+    let password = Password::new("1234".to_string());
     assert!(password.is_err());
 
-    // length is 17. so, this is invalid
-    let raw_password = "password password";
-    let password = Password::new(raw_password.to_string());
+    let password = Password::new("12345678901".to_string());
     assert!(password.is_err());
 
     Ok(())
 }
 ```
 
-### Vec
+## `LengthGreater`
+`LengthGreater` is a type that signifies the target has a length greater than a certain number.
 
 ```rust
-#[test]
-fn example_24() -> anyhow::Result<()> {
-    length_greater_than!(5);
-    length_equal!(5, 10);
-    length_less_than!(10);
+fn length_greater_example() -> Result<(), Error<String>> {
+    type Password = LengthGreater<5, String>;
 
-    type Friends = Refined<From5To10Rule<Vec<String>>>;
+    let password = Password::new("123456".to_string())?;
+    assert_eq!(password.into_value(), "123456");
 
-    type From5To10Rule<T> = And![
-        Or![LengthEqualRule5<T>, LengthGreaterThanRule5<T>],
-        Or![LengthLessThanRule10<T>, LengthEqualRule10<T>],
-    ];
-
-    // length is 6. so, this is valid
-    let raw_friends = vec![
-        "Tom".to_string(),
-        "Taro".to_string(),
-        "Jiro".to_string(),
-        "Hanako".to_string(),
-        "Sachiko".to_string(),
-        "Yoshiko".to_string(),
-    ];
-    let friends = Friends::new(raw_friends.clone())?;
-    assert_eq!(friends.into_value(), raw_friends);
-
-    // length is 2. so, this is invalid
-    let raw_friends = vec!["Tom".to_string(), "Taro".to_string()];
-    let friends = Friends::new(raw_friends.clone());
-    assert!(friends.is_err());
-
-    // length is 11. so, this is invalid
-    let raw_friends = vec![
-        "Tom".to_string(),
-        "Taro".to_string(),
-        "Jiro".to_string(),
-        "Hanako".to_string(),
-        "Sachiko".to_string(),
-        "Yuiko".to_string(),
-        "Taiko".to_string(),
-        "John".to_string(),
-        "Jane".to_string(),
-        "Jack".to_string(),
-        "Jill".to_string(),
-    ];
-    let friends = Friends::new(raw_friends.clone());
-    assert!(friends.is_err());
+    let password = Password::new("1234".to_string());
+    assert!(password.is_err());
 
     Ok(())
 }
 ```
 
-### Custom Length
+## `LengthLess`
+`LengthLess` is a type that signifies the target has a length less than a certain number.
+
+```rust
+fn length_less_example() -> Result<(), Error<String>> {
+    type Password = LengthLess<10, String>;
+
+    let password = Password::new("123456".to_string())?;
+    assert_eq!(password.into_value(), "123456");
+
+    let password = Password::new("12345678901".to_string());
+    assert!(password.is_err());
+
+    Ok(())
+}
+```
+
+## `LengthEqual`
+`LengthEqual` is a type that signifies the target has a length equal to a certain number.
+
+```rust
+fn length_equal_example() -> Result<(), Error<String>> {
+    type Password = LengthEqual<5, String>;
+
+    let password = Password::new("12345".to_string())?;
+    assert_eq!(password.into_value(), "12345");
+
+    let password = Password::new("1234".to_string());
+    assert!(password.is_err());
+
+    Ok(())
+}
+```
+
+## Custom Length
 
 You can define a length for any type. Therefore, if you want to implement a length that is not provided
 by `refined_type`, you can easily do so using `LengthDefinition`.
 
 ```rust
-#[test]
-fn example_25() -> anyhow::Result<()> {
-    length_equal!(5);
-
-    #[derive(Debug, PartialEq)]
-    struct Hello;
-    impl LengthDefinition for Hello {
-        fn length(&self) -> usize {
-            5
-        }
+#[derive(Debug, PartialEq)]
+struct Hello;
+impl LengthDefinition for Hello {
+    fn length(&self) -> usize {
+        5
     }
+}
 
-    let hello = Refined::<LengthEqualRule5<Hello>>::new(Hello)?;
+fn custom_length_example() -> Result<(), Error<Hello>> {
+    let hello = Refined::<LengthEqualRule<5, Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
     Ok(())
 }
