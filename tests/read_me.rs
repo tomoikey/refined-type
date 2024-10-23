@@ -19,7 +19,7 @@ struct Human {
 }
 
 #[test]
-fn example_1() -> anyhow::Result<()> {
+fn get_started_simple_example() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "age": 20,

@@ -32,7 +32,8 @@ struct Human {
     friends: NonEmptyVec<String>,
 }
 
-fn example_1() -> anyhow::Result<()> {
+// In the 1st example, all fields satisfy the rule, causing the conversion from JSON to succeed.
+fn get_started_simple_example() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
         "age": 20,
@@ -90,6 +91,8 @@ fn get_started_empty_vec_example() -> anyhow::Result<()> {
     Ok(())
 }
 ```
+
+---
 
 # Compose Rules
 
