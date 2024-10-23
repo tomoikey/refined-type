@@ -37,9 +37,10 @@ fn example_1() -> anyhow::Result<()> {
 
 // In the second example, while `friends` meets the rule, `name` does not, causing the conversion from JSON to fail
 #[test]
-fn example_2() -> anyhow::Result<()> {
+fn get_started_empty_name_example() -> anyhow::Result<()> {
     let json = json! {{
         "name": "",
+        "age": 20,
         "friends": ["tom", "taro"]
     }}
     .to_string();
@@ -49,11 +50,26 @@ fn example_2() -> anyhow::Result<()> {
     Ok(())
 }
 
-// In the third example, while `name` satisfies the rule, `friends` does not, causing the conversion from JSON to fail.
 #[test]
-fn example_3() -> anyhow::Result<()> {
+fn get_started_outbound_age_example() -> anyhow::Result<()> {
     let json = json! {{
         "name": "john",
+        "age": 100,
+        "friends": ["tom", "taro"]
+    }}
+        .to_string();
+
+    // because `age` is not in the range of 18 to 80
+    assert!(serde_json::from_str::<Human>(&json).is_err());
+    Ok(())
+}
+
+// In the third example, while `name` satisfies the rule, `friends` does not, causing the conversion from JSON to fail.
+#[test]
+fn get_started_empty_vec_example() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "age": 20,
         "friends": []
     }}
     .to_string();
