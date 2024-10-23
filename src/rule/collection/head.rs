@@ -1,4 +1,4 @@
-use crate::rule::{Index0Rule, Rule};
+use crate::rule::{IndexRule, Rule};
 use crate::Refined;
 use std::collections::VecDeque;
 
@@ -15,7 +15,7 @@ pub type HeadVecDeque<RULE> = Refined<HeadVecDequeRule<RULE>>;
 pub type HeadString<RULE> = Refined<HeadStringRule<RULE>>;
 
 /// Rule where the first element satisfies the condition
-pub type HeadRule<RULE, ITERABLE> = Index0Rule<RULE, ITERABLE>;
+pub type HeadRule<RULE, ITERABLE> = IndexRule<0, RULE, ITERABLE>;
 
 /// Rule where the first element in the `Vec` satisfies the condition
 pub type HeadVecRule<RULE> = HeadRule<RULE, Vec<<RULE as Rule>::Item>>;

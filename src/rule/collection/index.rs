@@ -1,135 +1,121 @@
 use crate::rule::Rule;
+use crate::Refined;
+use std::collections::VecDeque;
 
-#[macro_export]
-macro_rules! define_index_refined {
-    (($vis:vis, $lit:expr)) => {
-        $crate::paste::item! {
-            $vis type [<Index $lit>]<RULE, ITERABLE> = $crate::Refined<[<Index $lit Rule>]<RULE, ITERABLE>>;
+pub type Index<const INDEX: usize, RULE, ITERABLE> = Refined<IndexRule<INDEX, RULE, ITERABLE>>;
+pub type IndexVec<const INDEX: usize, RULE> = Refined<IndexRuleVec<INDEX, RULE>>;
 
-            $vis type [<Index $lit Vec>]<RULE> = $crate::Refined<[<Index $lit VecRule>]<RULE>>;
-
-            $vis type [<Index $lit VecDeque>]<RULE> = $crate::Refined<[<Index $lit VecDequeRule>]<RULE>>;
-
-            $vis type [<Index $lit String>]<RULE> = $crate::Refined<[<Index $lit StringRule>]<RULE>>;
-        }
-    };
-    ($(($vis:vis, $lit:expr)),*) => {
-        $(
-            $crate::define_index_refined!(($vis, $lit));
-        )*
-    };
+pub struct IndexRule<const INDEX: usize, RULE, ITERABLE>
+where
+    RULE: Rule,
+{
+    _phantom_data: std::marker::PhantomData<(RULE, ITERABLE)>,
 }
 
-#[macro_export]
-macro_rules! define_index_rule {
-    (($vis:vis, $lit:expr)) => {
-        $crate::paste::item! {
-            $vis struct [<Index $lit Rule>]<RULE, ITERABLE>
-            where
-                RULE: $crate::rule::Rule,
-            {
-                _phantom_data: ::std::marker::PhantomData<(RULE, ITERABLE)>,
+pub type IndexRuleVec<const INDEX: usize, RULE> = IndexRule<INDEX, RULE, Vec<<RULE as Rule>::Item>>;
+
+impl<const INDEX: usize, RULE, ITEM> Rule for IndexRuleVec<INDEX, RULE>
+where
+    RULE: Rule<Item = ITEM>,
+{
+    type Item = Vec<ITEM>;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        if INDEX >= target.len() {
+            return Err(crate::result::Error::new(
+                target,
+                format!("index {} is out of bounds", INDEX),
+            ));
+        }
+        let mut target = target;
+        match RULE::validate(target.remove(INDEX)) {
+            Ok(validated_item) => {
+                target.insert(INDEX, validated_item);
+                Ok(target)
             }
-
-            $vis type [<Index $lit VecRule>]<RULE> = [<Index $lit Rule>]<RULE, Vec<<RULE as Rule>::Item>>;
-            impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, Vec<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
-                type Item = Vec<ITEM>;
-
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if $lit >= target.len() {
-                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
-                    }
-                    let mut target = target;
-                    match RULE::validate(target.remove($lit)) {
-                        Ok(validated_item) => {
-                            let mut result = target;
-                            result.insert($lit, validated_item);
-                            Ok(result)
-                        }
-                        Err(err) => {
-                            let mut result = target;
-                            result.insert($lit, err.into_value());
-                            Err($crate::result::Error::new(result, format!("the item at index {} does not satisfy the condition", $lit)))
-                        }
-                    }
-                }
-            }
-
-            $vis type [<Index $lit VecDequeRule>]<RULE> = [<Index $lit Rule>]<RULE, ::std::collections::VecDeque<<RULE as Rule>::Item>>;
-            impl <RULE, ITEM> $crate::rule::Rule for [<Index $lit Rule>]<RULE, ::std::collections::VecDeque<ITEM>> where RULE: $crate::rule::Rule<Item = ITEM> {
-                type Item = ::std::collections::VecDeque<ITEM>;
-
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if $lit >= target.len() {
-                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
-                    }
-                    let mut target = target;
-                    match RULE::validate(target.remove($lit).expect("unreachable")) {
-                        Ok(validated_item) => {
-                            target.insert($lit, validated_item);
-                            Ok(target)
-                        }
-                        Err(err) => {
-                            target.insert($lit, err.into_value());
-                            Err($crate::result::Error::new(target, format!("the item at index {} does not satisfy the condition", $lit)))
-                        }
-                    }
-                }
-            }
-
-            $vis type [<Index $lit StringRule>]<RULE> = [<Index $lit Rule>]<RULE, String>;
-            impl <RULE> $crate::rule::Rule for [<Index $lit Rule>]<RULE, String> where RULE: $crate::rule::Rule<Item = char> {
-                type Item = String;
-
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    if $lit >= target.len() {
-                        return Err($crate::result::Error::new(target, format!("index {} is out of bounds", $lit)));
-                    }
-                    let mut target = target;
-                    match RULE::validate(target.remove($lit)) {
-                        Ok(validated_item) => {
-                            target.insert($lit, validated_item);
-                            Ok(target)
-                        }
-                        Err(err) => {
-                            target.insert($lit, err.into_value());
-                            Err($crate::result::Error::new(target, format!("the character at index {} does not satisfy the condition", $lit)))
-                        }
-                    }
-                }
-            }
-
-            impl <'a, RULE> $crate::rule::Rule for [<Index $lit Rule>]<RULE, &'a str> where RULE: $crate::rule::Rule<Item = char> {
-                type Item = &'a str;
-
-                fn validate(target: Self::Item) -> Result<Self::Item, $crate::result::Error<Self::Item>> {
-                    let item = target.chars().nth($lit).ok_or_else(|| $crate::result::Error::new(target, format!("index {} is out of bounds", $lit)))?;
-                    if RULE::validate(item).is_ok() {
-                        Ok(target)
-                    } else {
-                        Err($crate::result::Error::new(target, format!("the character at index {} does not satisfy the condition", $lit)))
-                    }
-                }
+            Err(err) => {
+                target.insert(INDEX, err.into_value());
+                Err(crate::result::Error::new(
+                    target,
+                    format!("the item at index {} does not satisfy the condition", INDEX),
+                ))
             }
         }
-    };
-    ($(($vis:vis, $lit:expr)),*) => {
-        $(
-            $crate::define_index_rule!(($vis, $lit));
-        )*
-    };
+    }
 }
 
-// define index refined type for 0 ~ 10 by default.
-// if you want to define additional refined index types, you can add more using `define_index_refined`.
-define_index_refined!((pub, 0), (pub, 1), (pub, 2), (pub, 3), (pub, 4), (pub, 5), (pub, 6), (pub, 7), (pub, 8), (pub, 9), (pub, 10));
-// define index rules for 0 ~ 10 by default
-// if you want to define additional index rules, you can add more using `define_index_rule`.
-define_index_rule!((pub, 0), (pub, 1), (pub, 2), (pub, 3), (pub, 4), (pub, 5), (pub, 6), (pub, 7), (pub, 8), (pub, 9), (pub, 10));
+pub type IndexRuleVecDeque<const INDEX: usize, RULE> =
+    IndexRule<INDEX, RULE, VecDeque<<RULE as Rule>::Item>>;
+
+impl<const INDEX: usize, RULE, ITEM> Rule for IndexRuleVecDeque<INDEX, RULE>
+where
+    RULE: Rule<Item = ITEM>,
+{
+    type Item = VecDeque<ITEM>;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        if INDEX >= target.len() {
+            return Err(crate::result::Error::new(
+                target,
+                format!("index {} is out of bounds", INDEX),
+            ));
+        }
+        let mut target = target;
+        match RULE::validate(
+            target
+                .remove(INDEX)
+                .expect("This error is always unreachable"),
+        ) {
+            Ok(validated_item) => {
+                target.insert(INDEX, validated_item);
+                Ok(target)
+            }
+            Err(err) => {
+                target.insert(INDEX, err.into_value());
+                Err(crate::result::Error::new(
+                    target,
+                    format!("the item at index {} does not satisfy the condition", INDEX),
+                ))
+            }
+        }
+    }
+}
+
+pub type IndexRuleString<const INDEX: usize, RULE> = IndexRule<INDEX, RULE, String>;
+
+impl<const INDEX: usize, RULE> Rule for IndexRuleString<INDEX, RULE>
+where
+    RULE: Rule<Item = char>,
+{
+    type Item = String;
+
+    fn validate(target: Self::Item) -> Result<Self::Item, crate::result::Error<Self::Item>> {
+        if INDEX >= target.len() {
+            return Err(crate::result::Error::new(
+                target,
+                format!("index {} is out of bounds", INDEX),
+            ));
+        }
+        let mut target = target;
+        match RULE::validate(target.remove(INDEX)) {
+            Ok(validated_item) => {
+                target.insert(INDEX, validated_item);
+                Ok(target)
+            }
+            Err(err) => {
+                target.insert(INDEX, err.into_value());
+                Err(crate::result::Error::new(
+                    target,
+                    format!("the item at index {} does not satisfy the condition", INDEX),
+                ))
+            }
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
-    use crate::rule::{Index0Vec, Index1Vec, Index2Vec, NonEmptyStringRule};
+    use crate::rule::{IndexVec, NonEmptyStringRule};
 
     #[test]
     fn test_index_0_non_empty_string() -> anyhow::Result<()> {
@@ -141,7 +127,7 @@ mod tests {
         ];
 
         for (value, expected) in table {
-            let refined = Index0Vec::<NonEmptyStringRule>::new(value.clone());
+            let refined = IndexVec::<0, NonEmptyStringRule>::new(value.clone());
             assert_eq!(refined.is_ok(), expected);
         }
 
@@ -158,7 +144,7 @@ mod tests {
         ];
 
         for (value, expected) in table {
-            let refined = Index1Vec::<NonEmptyStringRule>::new(value.clone());
+            let refined = IndexVec::<1, NonEmptyStringRule>::new(value.clone());
             assert_eq!(refined.is_ok(), expected);
         }
 
@@ -168,7 +154,7 @@ mod tests {
     #[test]
     fn test_index_2_non_empty_string_out_of_bounds() {
         let value = vec!["good morning".to_string(), "hello".to_string()];
-        let refined = Index2Vec::<NonEmptyStringRule>::new(value);
+        let refined = IndexVec::<2, NonEmptyStringRule>::new(value);
         assert!(refined.is_err());
     }
 }

@@ -36,7 +36,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::result::Error;
-    use crate::rule::{Index0VecRule, NonEmptyStringRule, Reverse};
+    use crate::rule::{IndexRuleVec, NonEmptyStringRule, Reverse};
 
     #[test]
     fn test_reverse_string_valid() -> Result<(), Error<String>> {
@@ -58,7 +58,7 @@ mod tests {
         ];
 
         for input in table {
-            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(input.clone())?;
+            let refined = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(input.clone())?;
             assert_eq!(refined.into_value(), input);
         }
 
@@ -70,7 +70,7 @@ mod tests {
         let table = vec![vec!["".to_string()], vec![]];
 
         for input in table {
-            let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(input.clone());
+            let refined = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(input.clone());
             assert!(refined.is_err());
         }
     }

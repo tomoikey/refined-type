@@ -4,6 +4,7 @@ pub trait Iterable<'a> {
     type Item: 'a;
 
     fn into_iterator(self) -> Box<dyn DoubleEndedIterator<Item = Self::Item> + 'a>;
+    fn length(&self) -> usize;
 }
 
 impl<'a, T> Iterable<'a> for Vec<T>
@@ -14,6 +15,10 @@ where
 
     fn into_iterator(self) -> Box<dyn DoubleEndedIterator<Item = Self::Item> + 'a> {
         Box::new(self.into_iter())
+    }
+
+    fn length(&self) -> usize {
+        self.len()
     }
 }
 
@@ -26,6 +31,10 @@ where
     fn into_iterator(self) -> Box<dyn DoubleEndedIterator<Item = Self::Item> + 'a> {
         Box::new(self.into_iter())
     }
+
+    fn length(&self) -> usize {
+        self.len()
+    }
 }
 
 impl<'a> Iterable<'a> for String {
@@ -34,6 +43,10 @@ impl<'a> Iterable<'a> for String {
     fn into_iterator(self) -> Box<dyn DoubleEndedIterator<Item = Self::Item> + 'a> {
         Box::new(self.chars().collect::<Vec<_>>().into_iter())
     }
+
+    fn length(&self) -> usize {
+        self.len()
+    }
 }
 
 impl<'a> Iterable<'a> for &'a str {
@@ -41,5 +54,9 @@ impl<'a> Iterable<'a> for &'a str {
 
     fn into_iterator(self) -> Box<dyn DoubleEndedIterator<Item = Self::Item> + 'a> {
         Box::new(self.chars())
+    }
+
+    fn length(&self) -> usize {
+        self.len()
     }
 }

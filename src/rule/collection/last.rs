@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use crate::rule::{Index0Rule, ReverseRule, Rule};
+use crate::rule::{IndexRule, ReverseRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `LastRule`
@@ -16,7 +16,7 @@ pub type LastVecDeque<'a, RULE> = Refined<LastVecDequeRule<'a, RULE>>;
 pub type LastString<'a, RULE> = Refined<LastStringRule<'a, RULE>>;
 
 /// Rule where the last element satisfies the condition
-pub type LastRule<'a, RULE, ITERABLE> = ReverseRule<'a, Index0Rule<RULE, ITERABLE>>;
+pub type LastRule<'a, RULE, ITERABLE> = ReverseRule<'a, IndexRule<0, RULE, ITERABLE>>;
 
 /// Rule where the last element in the `Vec` satisfies the condition
 pub type LastVecRule<'a, RULE> = LastRule<'a, RULE, Vec<<RULE as Rule>::Item>>;

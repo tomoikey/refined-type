@@ -531,7 +531,7 @@ fn example_17() -> anyhow::Result<()> {
     ];
 
     for (value, expected) in table {
-        let refined = Index1Vec::<NonEmptyStringRule>::new(value.clone());
+        let refined = IndexVec::<1, NonEmptyStringRule>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 
@@ -539,17 +539,9 @@ fn example_17() -> anyhow::Result<()> {
 }
 ```
 
-if you need more, you can define it like this.
-
-```rust
-define_index_refined!(11, 12, 13);
-define_index_rule!(11, 12, 13);
-```
-
 ## `Reverse`
 
 `Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.  
-`refined_type` crate has `Index0` to `Index10` by default.
 
 ```rust
 fn example_18() -> Result<(), Error<Vec<i32>>> {
@@ -561,7 +553,7 @@ fn example_18() -> Result<(), Error<Vec<i32>>> {
     ];
 
     for (value, expected) in table {
-        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(value.clone());
+        let refined = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 

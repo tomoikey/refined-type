@@ -4,7 +4,7 @@ use serde_json::json;
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
 use refined_type::rule::{
-    EqualU8, ExistsVec, ForAllVec, GreaterU8, HeadVec, Index0VecRule, Index1Vec, InitVec, LastVec,
+    EqualU8, ExistsVec, ForAllVec, GreaterU8, HeadVec, IndexRuleVec, IndexVec, InitVec, LastVec,
     LengthDefinition, LengthEqual, LengthEqualRule, LengthGreater, LengthLess, LengthMinMax,
     LessU8, MinMaxU8, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, Reverse,
     Rule, SkipFirst, SkipVec, TailVec,
@@ -466,7 +466,7 @@ fn example_17() -> anyhow::Result<()> {
     ];
 
     for (value, expected) in table {
-        let refined = Index1Vec::<NonEmptyStringRule>::new(value.clone());
+        let refined = IndexVec::<1, NonEmptyStringRule>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 
@@ -483,7 +483,7 @@ fn example_18() -> Result<(), Error<Vec<i32>>> {
     ];
 
     for (value, expected) in table {
-        let refined = Reverse::<Index0VecRule<NonEmptyStringRule>>::new(value.clone());
+        let refined = Reverse::<IndexRuleVec<0, NonEmptyStringRule>>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 
