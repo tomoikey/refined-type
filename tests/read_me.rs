@@ -57,7 +57,7 @@ fn get_started_outbound_age_example() -> anyhow::Result<()> {
         "age": 100,
         "friends": ["tom", "taro"]
     }}
-        .to_string();
+    .to_string();
 
     // because `age` is not in the range of 18 to 80
     assert!(serde_json::from_str::<Human>(&json).is_err());
