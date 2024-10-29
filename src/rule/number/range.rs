@@ -1,10 +1,10 @@
 macro_rules! define_range_rule {
     ($t: ty) => {
         $crate::paste::item! {
-            /// A type that holds a value satisfying the `MinMaxRule`
+            /// A type that holds a value satisfying the `RangeRule`
             pub type [<Range $t:camel>]<const FROM: $t, const UNTIL: $t> = $crate::Refined<[<RangeRule $t:camel>]<FROM, UNTIL>>;
 
-            /// Rule where the target value must be greater than or equal to `MIN` and less than `MAX`
+            /// Rule where the target value must be greater than or equal to `FROM` and less than `UNTIL`
             pub type [<RangeRule $t:camel>]<const FROM: $t, const UNTIL: $t> = $crate::And![
                 $crate::rule::[<GreaterEqualRule $t:camel>]<FROM>,
                 $crate::rule::[<LessRule $t:camel>]<UNTIL>
