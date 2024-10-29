@@ -1,11 +1,13 @@
 macro_rules! define_min_max_rule {
     ($t: ty) => {
         $crate::paste::item! {
+            /// A type that holds a value satisfying the `MinMaxRule`
             pub type [<MinMax $t:camel>]<const MIN: $t, const MAX: $t> = $crate::Refined<[<MinMaxRule $t:camel>]<MIN, MAX>>;
 
-            pub type [<MinMaxRule $t:camel>]<const MIN: $t, const MAX: $t> = $crate::And![
-                $crate::Or![$crate::rule::[<EqualRule $t:camel>]<MIN>, $crate::rule::[<GreaterRule $t:camel>]<MIN>],
-                $crate::Or![$crate::rule::[<EqualRule $t:camel>]<MAX>, $crate::rule::[<LessRule $t:camel>]<MAX>]
+            /// Rule where the target value must be greater than or equal to `MIN` and less than or equal to `MAX`
+            pub type [<MinMaxRule $t:camel>]<const MIN: $t, const MAX: $t> = $crate::Or![
+                $crate::rule::[<RangeRule $t:camel>]<MIN, MAX>,
+                $crate::rule::[<EqualRule $t:camel>]<MAX>
             ];
         }
     };

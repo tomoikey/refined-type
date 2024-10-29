@@ -381,6 +381,73 @@ fn equal_example() -> Result<(), Error<u8>> {
 }
 ```
 
+## `LessEqual`
+
+`LessEqual` is a type that signifies the target is less than or equal to a certain number.
+
+```rust
+type Age = LessEqualU8<80>;
+
+fn less_equal_example() -> Result<(), Error<u8>> {
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+
+    let age = Age::new(80)?;
+    assert_eq!(age.into_value(), 80);
+
+    let age = Age::new(81);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
+## `GreaterEqual`
+
+`GreaterEqual` is a type that signifies the target is greater than or equal to a certain number.
+
+```rust
+type Age = GreaterEqualU8<18>;
+
+fn greater_equal_example() -> Result<(), Error<u8>> {
+    let age = Age::new(19)?;
+    assert_eq!(age.into_value(), 19);
+
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+
+    let age = Age::new(17);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
+## `Range`
+
+`Range` is a type that signifies the target exists between a certain number and another number.
+
+```rust
+type Age = RangeU8<18, 80>;
+
+fn range_example() -> Result<(), Error<u8>> {
+    let age = Age::new(17);
+    assert!(age.is_err());
+
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+
+    let age = Age::new(80);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
+
 # Iterator
 
 `refined_type` has several useful refined types for Iterators.
@@ -601,36 +668,6 @@ impl<ITEM> SkipOption for NoSkip<ITEM> {
     fn should_skip(_: usize, _: Option<&mut Self::Accumulator>, _: &Self::Item) -> bool {
         false
     }
-}
-```
-
----
-
-## `into_iter()` and `iter()`
-
-The Iterator I’ve prepared has `into_iter` and `iter` implemented.
-Therefore, you can easily map or convert it to a different Iterator using `collect`.
-Feel free to explore the capabilities of the Iterator you’ve been given!
-
-### `into_iter()`
-
-```rust
-fn example_20() -> anyhow::Result<()> {
-    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec: NonEmptyVec<i32> = ne_vec.into_iter().map(|n| n * 2).map(|n| n * 3).collect();
-    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
-    Ok(())
-}
-```
-
-### `iter()`
-
-```rust
-fn example_21() -> anyhow::Result<()> {
-    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec: NonEmptyVec<i32> = ne_vec.iter().map(|n| n * 2).map(|n| n * 3).collect();
-    assert_eq!(ne_vec.into_value(), vec![6, 12, 18]);
-    Ok(())
 }
 ```
 

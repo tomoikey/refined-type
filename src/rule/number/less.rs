@@ -1,8 +1,10 @@
 macro_rules! define_less_rule {
     ($t: ty) => {
         $crate::paste::item! {
+            /// A type that holds a value satisfying the `LessRule`
             pub type [<Less $t:camel>]<const THAN: $t> = $crate::Refined<[<LessRule $t:camel>]<THAN>>;
 
+            /// Rule where the target value must be less than `THAN`
             #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
             pub struct [<LessRule $t:camel>]<const THAN: $t>;
 

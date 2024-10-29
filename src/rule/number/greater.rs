@@ -1,8 +1,10 @@
 macro_rules! define_greater_rule {
     ($t: ty) => {
         $crate::paste::item! {
+            /// A type that holds a value satisfying the `GreaterRule`
             pub type [<Greater $t:camel>]<const THAN: $t> = $crate::Refined<[<GreaterRule $t:camel>]<THAN>>;
 
+            /// Rule where the target value must be greater than `THAN`
             #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
             pub struct [<GreaterRule $t:camel>]<const THAN: $t>;
 
