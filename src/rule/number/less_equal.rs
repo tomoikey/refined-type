@@ -3,7 +3,7 @@ macro_rules! declare_less_equal_rule {
         $crate::paste::item! {
             pub type [<LessEqual $ty:camel>]<const N: $ty> = $crate::Refined<[<LessEqualRule $ty:camel>]<N>>;
 
-            pub type [<LessEqualRule $ty:camel>]<const N: $ty> = $crate::And![$crate::rule::[<EqualRule $ty:camel>]<N>, $crate::rule::[<LessRule $ty:camel>]<N>];
+            pub type [<LessEqualRule $ty:camel>]<const N: $ty> = $crate::Or![$crate::rule::[<EqualRule $ty:camel>]<N>, $crate::rule::[<LessRule $ty:camel>]<N>];
         }
     };
     ($t: ty, $($ts: ty),+) => {
