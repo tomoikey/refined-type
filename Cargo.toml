@@ -13,8 +13,8 @@ edition = "2021"
 
 [dependencies]
 paste = "1.0.15"
-regex = "1.11.0"
-serde = { version = "1.0.210", features = ["derive"] }
+regex = "1.11.1"
+serde = { version = "1.0.214", features = ["derive"] }
 
 [dev-dependencies]
 anyhow = "1.0.89"
