@@ -5,9 +5,9 @@ macro_rules! define_min_max_rule {
             pub type [<MinMax $t:camel>]<const MIN: $t, const MAX: $t> = $crate::Refined<[<MinMaxRule $t:camel>]<MIN, MAX>>;
 
             /// Rule where the target value must be greater than or equal to `MIN` and less than or equal to `MAX`
-            pub type [<MinMaxRule $t:camel>]<const MIN: $t, const MAX: $t> = $crate::And![
-                $crate::rule::[<GreaterEqualRule $t:camel>]<MIN>,
-                $crate::rule::[<LessEqualRule $t:camel>]<MAX>
+            pub type [<MinMaxRule $t:camel>]<const MIN: $t, const MAX: $t> = $crate::Or![
+                $crate::rule::[<RangeRule $t:camel>]<MIN, MAX>,
+                $crate::rule::[<EqualRule $t:camel>]<MAX>
             ];
         }
     };
