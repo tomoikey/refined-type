@@ -1,8 +1,10 @@
 macro_rules! declare_less_equal_rule {
     ($ty: ty) => {
         $crate::paste::item! {
+            /// A type that holds a value satisfying the `LessEqualRule`
             pub type [<LessEqual $ty:camel>]<const N: $ty> = $crate::Refined<[<LessEqualRule $ty:camel>]<N>>;
 
+            /// Rule where the target value must be less than or equal to `N`
             pub type [<LessEqualRule $ty:camel>]<const N: $ty> = $crate::Or![$crate::rule::[<EqualRule $ty:camel>]<N>, $crate::rule::[<LessRule $ty:camel>]<N>];
         }
     };
