@@ -1,16 +1,9 @@
-use crate::{And, Refined};
-use crate::rule::{EqualRuleU8, LessRuleU8};
-
-pub type LessEqualU8<const N: u8> = Refined<LessEqualRuleU8<N>>;
-
-pub type LessEqualRuleU8<const N: u8> = And![EqualRuleU8<N>, LessRuleU8<N>];
-
 macro_rules! declare_less_equal_rule {
     ($ty: ty) => {
         $crate::paste::item! {
-            pub type [<LessEqual $ty>]<const N: $ty> = $crate::Refined<[<LessEqualRule $ty>]<N>>;
+            pub type [<LessEqual $ty:camel>]<const N: $ty> = $crate::Refined<[<LessEqualRule $ty:camel>]<N>>;
 
-            pub type [<LessEqualRule $ty>]<const N: $ty> = $crate::And![$crate::rule::[<EqualRule $ty:camel>]<N>, $crate::rule::[<LessRule $ty:camel>]<N>];
+            pub type [<LessEqualRule $ty:camel>]<const N: $ty> = $crate::And![$crate::rule::[<EqualRule $ty:camel>]<N>, $crate::rule::[<LessRule $ty:camel>]<N>];
         }
     };
     ($t: ty, $($ts: ty),+) => {

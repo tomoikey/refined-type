@@ -5,6 +5,7 @@ mod less;
 mod less_equal;
 mod min_max;
 mod odd;
+mod greater_than;
 
 pub use equal::*;
 pub use even::*;
