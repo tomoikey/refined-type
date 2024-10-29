@@ -381,7 +381,7 @@ fn equal_example() -> Result<(), Error<u8>> {
 }
 ```
 
-## LessEqual
+## `LessEqual`
 
 `LessEqual` is a type that signifies the target is less than or equal to a certain number.
 
@@ -402,7 +402,7 @@ fn less_equal_example() -> Result<(), Error<u8>> {
 }
 ```
 
-## GreaterEqual
+## `GreaterEqual`
 
 `GreaterEqual` is a type that signifies the target is greater than or equal to a certain number.
 
@@ -422,6 +422,31 @@ fn greater_equal_example() -> Result<(), Error<u8>> {
     Ok(())
 }
 ```
+
+## `Range`
+
+`Range` is a type that signifies the target exists between a certain number and another number.
+
+```rust
+type Age = RangeU8<18, 80>;
+
+fn range_example() -> Result<(), Error<u8>> {
+    let age = Age::new(17);
+    assert!(age.is_err());
+
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+
+    let age = Age::new(80);
+    assert!(age.is_err());
+
+    Ok(())
+}
+```
+
 
 # Iterator
 

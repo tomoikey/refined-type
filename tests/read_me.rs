@@ -3,12 +3,7 @@ use serde_json::json;
 
 use refined_type::result::Error;
 use refined_type::rule::composer::Not;
-use refined_type::rule::{
-    EqualU8, ExistsVec, ForAllVec, GreaterEqualU8, GreaterU8, HeadVec, IndexRuleVec, IndexVec,
-    InitVec, LastVec, LengthDefinition, LengthEqual, LengthEqualRule, LengthGreater, LengthLess,
-    LengthMinMax, LessEqualU8, LessU8, MinMaxU8, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
-    NonEmptyVecDeque, Reverse, Rule, SkipFirst, SkipVec, TailVec,
-};
+use refined_type::rule::{EqualU8, ExistsVec, ForAllVec, GreaterEqualU8, GreaterU8, HeadVec, IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual, LengthEqualRule, LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8, NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, RangeU8, Reverse, Rule, SkipFirst, SkipVec, TailVec};
 use refined_type::{And, Or, Refined};
 
 // define a struct for converting from JSON.
@@ -339,6 +334,25 @@ fn greater_equal_example() -> Result<(), Error<u8>> {
     assert_eq!(age.into_value(), 18);
 
     let age = Age::new(17);
+    assert!(age.is_err());
+
+    Ok(())
+}
+
+#[test]
+fn range_example() -> Result<(), Error<u8>> {
+    type Age = RangeU8<18, 80>;
+
+    let age = Age::new(17);
+    assert!(age.is_err());
+
+    let age = Age::new(18)?;
+    assert_eq!(age.into_value(), 18);
+
+    let age = Age::new(79)?;
+    assert_eq!(age.into_value(), 79);
+
+    let age = Age::new(80);
     assert!(age.is_err());
 
     Ok(())
