@@ -90,7 +90,7 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate("".to_string()).is_err());
+        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule];
+        assert_eq!(SampleRule::validate("".to_string()).unwrap_err().to_string(), "[\"\" does not match the regex pattern ^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$ || \"\" does not satisfy Not<refined_type::rule::empty::EmptyRule<alloc::string::String>>]");
     }
 }

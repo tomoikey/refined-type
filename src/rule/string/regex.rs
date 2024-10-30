@@ -36,7 +36,7 @@ macro_rules! declare_regex_rule {
                     if regex.is_match(target_as_ref) {
                         Ok(target)
                     } else {
-                        let message = format!("{target_as_ref} does not match the regex pattern {regex}");
+                        let message = format!("\"{target_as_ref}\" does not match the regex pattern {regex}");
                         Err($crate::result::Error::new(target, message))
                     }
                 }

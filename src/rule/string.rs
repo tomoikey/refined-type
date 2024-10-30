@@ -7,9 +7,9 @@ mod ipv6;
 mod regex;
 
 pub use alpha_digit::*;
-pub use alphabet::{Alphabet, AlphabetRule};
+pub use alphabet::*;
 pub use digit::*;
-pub use email::{Email, EmailRule};
+pub use email::*;
 pub use ipv4::*;
 pub use ipv6::*;
 pub use regex::*;
