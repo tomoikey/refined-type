@@ -30,7 +30,8 @@ where
             Ok(value) => {
                 let type_name = std::any::type_name::<RULE>()
                     .replace("refined_type::rule::composer::or::Or", "Or")
-                    .replace("refined_type::rule::composer::and::And", "And");
+                    .replace("refined_type::rule::composer::and::And", "And")
+                    .replace("refined_type::rule::composer::not::Not", "Not");
                 let message = format!("{value:?} does not satisfy Not<{type_name}>");
                 Err(Error::new(value, message))
             }
@@ -49,6 +50,6 @@ mod test {
     fn test_not() {
         type NonNonEmptyString = Not<NonEmptyStringRule>;
         assert!(NonNonEmptyString::validate("".to_string()).is_ok());
-        assert!(NonNonEmptyString::validate("Hello".to_string()).is_err())
+        assert_eq!(NonNonEmptyString::validate("Hello".to_string()).unwrap_err().to_string(), "\"Hello\" does not satisfy Not<Not<refined_type::rule::empty::EmptyRule<alloc::string::String>>>")
     }
 }
