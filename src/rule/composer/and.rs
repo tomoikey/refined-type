@@ -1,5 +1,6 @@
 use crate::result::Error;
 use crate::rule::Rule;
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 /// A macro to generate a `Rule` that combines multiple rules
@@ -59,7 +60,7 @@ impl<RULE1, RULE2> Default for And<RULE1, RULE2> {
     }
 }
 
-impl<'a, T, RULE1, RULE2> Rule for And<RULE1, RULE2>
+impl<'a, T: Debug, RULE1, RULE2> Rule for And<RULE1, RULE2>
 where
     RULE1: Rule<Item = T> + 'a,
     RULE2: Rule<Item = T> + 'a,
@@ -71,17 +72,10 @@ where
             Ok(value) => RULE2::validate(value),
             Err(err) => {
                 let rule1_error_message = err.to_string();
-                let rule1_type_name = std::any::type_name::<RULE1>();
                 match RULE2::validate(err.into_value()) {
-                    Ok(value) => {
-                        let message = format!("{rule1_error_message} ({rule1_type_name})");
-                        Err(Error::new(value, message))
-                    }
+                    Ok(value) => Err(Error::new(value, rule1_error_message)),
                     Err(err) => {
-                        let rule2_type_name = std::any::type_name::<RULE2>();
-                        let message = format!(
-                            "{rule1_error_message} ({rule1_type_name}) & {err} ({rule2_type_name})",
-                        );
+                        let message = format!("[{rule1_error_message} && {err}]",);
                         Err(Error::new(err.into_value(), message))
                     }
                 }
@@ -105,7 +99,7 @@ mod test {
     #[test]
     fn test_rule_binder_err() {
         type Target = And![EvenRuleU8, LessRuleU8<10>];
-        assert_eq!(Target::validate(11).unwrap_err().to_string(), "the value must be even, but received 11 (refined_type::rule::number::even::EvenRuleU8) & the value must be less than 10, but received 11 (refined_type::rule::number::less::LessRuleU8<10>)");
+        assert_eq!(Target::validate(11).unwrap_err().to_string(), "[the value must be even, but received 11 && the value must be less than 10, but received 11]");
     }
 
     #[test]

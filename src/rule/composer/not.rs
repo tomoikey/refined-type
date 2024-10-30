@@ -28,7 +28,9 @@ where
     fn validate(target: Self::Item) -> crate::Result<T> {
         let bounded_rule = |t: T| match RULE::validate(t) {
             Ok(value) => {
-                let type_name = std::any::type_name::<RULE>();
+                let type_name = std::any::type_name::<RULE>()
+                    .replace("refined_type::rule::composer::or::Or", "Or")
+                    .replace("refined_type::rule::composer::and::And", "And");
                 let message = format!("{value:?} does not satisfy Not<{type_name}>");
                 Err(Error::new(value, message))
             }
