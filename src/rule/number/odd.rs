@@ -15,7 +15,7 @@ macro_rules! odd_rule {
                     if target % 2 == 1 {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(target, format!("{} is not odd number", target)))
+                        Err($crate::result::Error::new(target, format!("the value must be odd, but received {target}")))
                     }
                 }
             }

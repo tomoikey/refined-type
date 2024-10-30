@@ -1,6 +1,6 @@
-use std::marker::PhantomData;
-
+use crate::result::Error;
 use crate::rule::Rule;
+use std::marker::PhantomData;
 
 /// A macro to generate a `Rule` that combines multiple rules
 /// # Example
@@ -67,15 +67,33 @@ where
     type Item = T;
 
     fn validate(target: Self::Item) -> crate::Result<T> {
-        let bounded_rule = |t: T| RULE1::validate(t).and_then(RULE2::validate);
-        bounded_rule(target)
+        match RULE1::validate(target) {
+            Ok(value) => RULE2::validate(value),
+            Err(err) => {
+                let rule1_error_message = err.to_string();
+                let rule1_type_name = std::any::type_name::<RULE1>();
+                match RULE2::validate(err.into_value()) {
+                    Ok(value) => {
+                        let message = format!("{rule1_error_message} ({rule1_type_name})");
+                        Err(Error::new(value, message))
+                    }
+                    Err(err) => {
+                        let rule2_type_name = std::any::type_name::<RULE2>();
+                        let message = format!(
+                            "{rule1_error_message} ({rule1_type_name}) & {err} ({rule2_type_name})",
+                        );
+                        Err(Error::new(err.into_value(), message))
+                    }
+                }
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::rule::composer::And;
-    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
+    use crate::rule::{AlphabetRule, EmailRule, EvenRuleU8, LessRuleU8, NonEmptyStringRule, Rule};
 
     type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule<String>>;
 
@@ -86,7 +104,8 @@ mod test {
 
     #[test]
     fn test_rule_binder_err() {
-        assert!(NonEmptyAlphabetString::validate("Hello1".to_string()).is_err());
+        type Target = And![EvenRuleU8, LessRuleU8<10>];
+        assert_eq!(Target::validate(11).unwrap_err().to_string(), "the value must be even, but received 11 (refined_type::rule::number::even::EvenRuleU8) & the value must be less than 10, but received 11 (refined_type::rule::number::less::LessRuleU8<10>)");
     }
 
     #[test]
