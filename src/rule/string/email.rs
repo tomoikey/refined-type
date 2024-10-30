@@ -14,10 +14,18 @@ use crate::{declare_regex_rule, Refined};
 /// ```
 pub type Email<STRING> = Refined<EmailRule<STRING>>;
 
+pub type EmailString = Refined<EmailStringRule>;
+
+pub type EmailStr = Refined<EmailStrRule>;
+
 declare_regex_rule![
     pub EmailRule,
     r"^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\.)+[a-zA-Z]{2,}$"
 ];
+
+pub type EmailStringRule = EmailRule<String>;
+
+pub type EmailStrRule = EmailRule<&'static str>;
 
 #[cfg(test)]
 mod test {

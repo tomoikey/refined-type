@@ -1,6 +1,7 @@
-use std::marker::PhantomData;
-
+use crate::result::Error;
 use crate::rule::Rule;
+use std::fmt::Debug;
+use std::marker::PhantomData;
 
 /// A macro to generate a `Rule` that combines multiple rules
 /// # Example
@@ -40,7 +41,7 @@ pub struct Or<RULE1, RULE2> {
     _rule2: PhantomData<RULE2>,
 }
 
-impl<'a, T, RULE1, RULE2> Rule for Or<RULE1, RULE2>
+impl<'a, T: Debug, RULE1, RULE2> Rule for Or<RULE1, RULE2>
 where
     RULE1: Rule<Item = T> + 'a,
     RULE2: Rule<Item = T> + 'a,
@@ -50,7 +51,19 @@ where
     fn validate(target: Self::Item) -> crate::Result<T> {
         let bounded_rule = |t: T| match RULE1::validate(t) {
             Ok(value) => Ok(value),
-            Err(err) => RULE2::validate(err.into_value()),
+            Err(err) => {
+                let rule1_error_message = err.to_string();
+                match RULE2::validate(err.into_value()) {
+                    Ok(value) => Ok(value),
+                    Err(err) => {
+                        let rule2_error_message = err.to_string();
+                        Err(Error::new(
+                            err.into_value(),
+                            format!("[{rule1_error_message} || {rule2_error_message}]"),
+                        ))
+                    }
+                }
+            }
         };
         bounded_rule(target)
     }
@@ -77,7 +90,7 @@ mod test {
 
     #[test]
     fn test_rule_binder_macro_err() {
-        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule, EmailRule<String>];
-        assert!(SampleRule::validate("".to_string()).is_err());
+        type SampleRule = Or![EmailRule<String>, NonEmptyStringRule];
+        assert_eq!(SampleRule::validate("".to_string()).unwrap_err().to_string(), "[\"\" does not match the regex pattern ^[a-zA-Z0-9_.+-]+@([a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]*\\.)+[a-zA-Z]{2,}$ || \"\" does not satisfy Not<refined_type::rule::empty::EmptyRule<alloc::string::String>>]");
     }
 }

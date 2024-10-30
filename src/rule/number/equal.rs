@@ -13,7 +13,7 @@ macro_rules! define_equal_rule {
                     if target == EQUAL {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(target, format!("{} does not equal {}", target, EQUAL)))
+                        Err($crate::result::Error::new(target, format!("the value must be equal to {EQUAL}, but received {target}")))
                     }
                 }
             }

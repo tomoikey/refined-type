@@ -115,13 +115,21 @@ mod test {
     #[test]
     fn test_non_empty_string() {
         assert!(NonEmptyStringRule::validate("hello".to_string()).is_ok());
-        assert!(NonEmptyStringRule::validate("".to_string()).is_err());
+        assert_eq!(
+            NonEmptyStringRule::validate("".to_string())
+                .unwrap_err()
+                .to_string(),
+            r#""" does not satisfy Not<refined_type::rule::empty::EmptyRule<alloc::string::String>>"#
+        );
     }
 
     #[test]
     fn test_non_empty_str() {
         assert!(NonEmptyStrRule::validate("hello").is_ok());
-        assert!(NonEmptyStrRule::validate("").is_err());
+        assert_eq!(
+            NonEmptyStrRule::validate("").unwrap_err().to_string(),
+            r#""" does not satisfy Not<refined_type::rule::empty::EmptyRule<&str>>"#
+        );
     }
 
     #[test]

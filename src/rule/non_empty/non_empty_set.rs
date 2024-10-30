@@ -5,6 +5,7 @@ use std::collections::hash_set::Difference;
 
 use std::collections::hash_map::RandomState;
 use std::collections::HashSet;
+use std::fmt::Debug;
 use std::hash::{BuildHasher, Hash};
 
 /// A type that holds a value satisfying the `NonEmptyHashSetRule`
@@ -26,7 +27,7 @@ pub type NonEmptyHashSet<T, S = RandomState> = Refined<NonEmptyRule<HashSet<T, S
 /// Rule where the input `HashSet` is not empty
 pub type NonEmptyHashSetRule<T, S = RandomState> = NonEmptyRule<HashSet<T, S>>;
 
-impl<T, S> NonEmptyHashSet<T, S> {
+impl<T: Debug, S> NonEmptyHashSet<T, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_set::IntoIter<T>> {
         Refined::new_unchecked(self.into_value().into_iter())
@@ -56,7 +57,7 @@ impl<T, S> NonEmptyHashSet<T, S> {
 
 impl<T, S> NonEmptyHashSet<T, S>
 where
-    T: Eq + Hash,
+    T: Eq + Hash + Debug,
     S: BuildHasher,
 {
     pub fn insert(self, value: T) -> Self {

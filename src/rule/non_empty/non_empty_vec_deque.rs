@@ -1,6 +1,7 @@
 use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
 use std::collections::VecDeque;
+use std::fmt::Debug;
 use std::ops::Add;
 
 /// A type that holds a value satisfying the `NonEmptyVecDequeRule`
@@ -21,7 +22,7 @@ pub type NonEmptyVecDeque<T> = Refined<NonEmptyVecDequeRule<T>>;
 /// Rule where the input `VecDeque` is not empty
 pub type NonEmptyVecDequeRule<T> = NonEmptyRule<VecDeque<T>>;
 
-impl<T> NonEmptyVecDeque<T> {
+impl<T: Debug> NonEmptyVecDeque<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::vec_deque::IntoIter<T>> {
         Refined::new_unchecked(self.into_value().into_iter())
@@ -57,7 +58,7 @@ impl<T> NonEmptyVecDeque<T> {
     }
 }
 
-impl<T> Add for NonEmptyVecDeque<T> {
+impl<T: Debug> Add for NonEmptyVecDeque<T> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {

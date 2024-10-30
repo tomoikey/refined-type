@@ -1,6 +1,7 @@
-use std::marker::PhantomData;
-
+use crate::result::Error;
 use crate::rule::Rule;
+use std::fmt::Debug;
+use std::marker::PhantomData;
 
 /// A macro to generate a `Rule` that combines multiple rules
 /// # Example
@@ -59,7 +60,7 @@ impl<RULE1, RULE2> Default for And<RULE1, RULE2> {
     }
 }
 
-impl<'a, T, RULE1, RULE2> Rule for And<RULE1, RULE2>
+impl<'a, T: Debug, RULE1, RULE2> Rule for And<RULE1, RULE2>
 where
     RULE1: Rule<Item = T> + 'a,
     RULE2: Rule<Item = T> + 'a,
@@ -67,15 +68,26 @@ where
     type Item = T;
 
     fn validate(target: Self::Item) -> crate::Result<T> {
-        let bounded_rule = |t: T| RULE1::validate(t).and_then(RULE2::validate);
-        bounded_rule(target)
+        match RULE1::validate(target) {
+            Ok(value) => RULE2::validate(value),
+            Err(err) => {
+                let rule1_error_message = err.to_string();
+                match RULE2::validate(err.into_value()) {
+                    Ok(value) => Err(Error::new(value, rule1_error_message)),
+                    Err(err) => {
+                        let message = format!("[{rule1_error_message} && {err}]",);
+                        Err(Error::new(err.into_value(), message))
+                    }
+                }
+            }
+        }
     }
 }
 
 #[cfg(test)]
 mod test {
     use crate::rule::composer::And;
-    use crate::rule::{AlphabetRule, EmailRule, NonEmptyStringRule, Rule};
+    use crate::rule::{AlphabetRule, EmailRule, EvenRuleU8, LessRuleU8, NonEmptyStringRule, Rule};
 
     type NonEmptyAlphabetString = And<NonEmptyStringRule, AlphabetRule<String>>;
 
@@ -86,7 +98,8 @@ mod test {
 
     #[test]
     fn test_rule_binder_err() {
-        assert!(NonEmptyAlphabetString::validate("Hello1".to_string()).is_err());
+        type Target = And![EvenRuleU8, LessRuleU8<10>];
+        assert_eq!(Target::validate(11).unwrap_err().to_string(), "[the value must be even, but received 11 && the value must be less than 10, but received 11]");
     }
 
     #[test]

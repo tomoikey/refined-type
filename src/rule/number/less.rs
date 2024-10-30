@@ -15,7 +15,7 @@ macro_rules! define_less_rule {
                     if target < THAN {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(target, format!("{} is not less than {}", target, THAN)))
+                        Err($crate::result::Error::new(target, format!("the value must be less than {THAN}, but received {target}")))
                     }
                 }
             }

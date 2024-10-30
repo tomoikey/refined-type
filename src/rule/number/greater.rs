@@ -15,7 +15,7 @@ macro_rules! define_greater_rule {
                     if target > THAN {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(target, format!("{} is not greater than {}", target, THAN)))
+                        Err($crate::result::Error::new(target, format!("the value must be greater than {THAN}, but received {target}")))
                     }
                 }
             }

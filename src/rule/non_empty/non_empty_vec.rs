@@ -1,5 +1,6 @@
 use crate::rule::{NonEmpty, NonEmptyRule};
 use crate::Refined;
+use std::fmt::Debug;
 
 use std::ops::Add;
 
@@ -17,7 +18,7 @@ pub type NonEmptyVec<T> = Refined<NonEmptyVecRule<T>>;
 /// Rule where the input `Vec` is not empty
 pub type NonEmptyVecRule<T> = NonEmptyRule<Vec<T>>;
 
-impl<T> NonEmptyVec<T> {
+impl<T: Debug> NonEmptyVec<T> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::vec::IntoIter<T>> {
         Refined::new_unchecked(self.into_value().into_iter())
@@ -47,7 +48,7 @@ impl<T> NonEmptyVec<T> {
     }
 }
 
-impl<T> Add for NonEmptyVec<T> {
+impl<T: Debug> Add for NonEmptyVec<T> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {

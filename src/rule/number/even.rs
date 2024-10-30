@@ -17,7 +17,7 @@ macro_rules! even_rule {
                     if target % 2 == 0 {
                         Ok(target)
                     } else {
-                        Err($crate::result::Error::new(target, format!("{} is not even number", target)))
+                        Err($crate::result::Error::new(target, format!("the value must be even, but received {target}")))
                     }
                 }
             }
