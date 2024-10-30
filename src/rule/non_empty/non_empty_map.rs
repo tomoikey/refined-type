@@ -4,6 +4,7 @@ use std::borrow::Borrow;
 use std::collections::hash_map::RandomState;
 use std::collections::hash_map::{IntoKeys, IntoValues, Keys, Values};
 use std::collections::HashMap;
+use std::fmt::Debug;
 use std::hash::{BuildHasher, Hash};
 
 /// A type that holds a value satisfying the `NonEmptyHashMapRule`
@@ -29,7 +30,7 @@ pub type NonEmptyHashMap<K, V, S = RandomState> = Refined<NonEmptyHashMapRule<K,
 /// Rule where the input `HashMap` is not empty
 pub type NonEmptyHashMapRule<K, V, S = RandomState> = NonEmptyRule<HashMap<K, V, S>>;
 
-impl<K, V, S> NonEmptyHashMap<K, V, S> {
+impl<K: Debug, V: Debug, S> NonEmptyHashMap<K, V, S> {
     #[allow(clippy::should_implement_trait)]
     pub fn into_iter(self) -> NonEmpty<std::collections::hash_map::IntoIter<K, V>> {
         Refined::new_unchecked(self.into_value().into_iter())
@@ -75,7 +76,8 @@ impl<K, V, S> NonEmptyHashMap<K, V, S> {
 
 impl<K, V, S> NonEmptyHashMap<K, V, S>
 where
-    K: Eq + Hash,
+    K: Eq + Hash + Debug,
+    V: Debug,
     S: BuildHasher,
 {
     pub fn get<Q>(&self, k: &Q) -> Option<&V>

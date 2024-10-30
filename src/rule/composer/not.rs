@@ -1,5 +1,6 @@
 use crate::result::Error;
 use crate::rule::Rule;
+use std::fmt::Debug;
 use std::marker::PhantomData;
 
 /// `Not` reverses the definition of a certain `Rule`.
@@ -18,7 +19,7 @@ pub struct Not<RULE> {
     _rule: PhantomData<RULE>,
 }
 
-impl<'a, T, RULE> Rule for Not<RULE>
+impl<'a, T: Debug, RULE> Rule for Not<RULE>
 where
     RULE: Rule<Item = T> + 'a,
 {
@@ -26,7 +27,11 @@ where
 
     fn validate(target: Self::Item) -> crate::Result<T> {
         let bounded_rule = |t: T| match RULE::validate(t) {
-            Ok(value) => Err(Error::new(value, "Target satisfies the `Not` rule")),
+            Ok(value) => {
+                let type_name = std::any::type_name::<RULE>();
+                let message = format!("{value:?} does not satisfy Not<{type_name}>");
+                Err(Error::new(value, message))
+            }
             Err(err) => Ok(err.into_value()),
         };
         bounded_rule(target)
