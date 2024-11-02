@@ -171,58 +171,6 @@ fn not_example() -> Result<(), Error<u8>> {
 }
 ```
 
-# JSON
-
-`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write
-new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize`
-and `Deserialize`.
-
-### Serialize
-
-```rust
-#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
-struct Human2 {
-    name: NonEmptyString,
-    age: u8,
-}
-
-fn example_9() -> anyhow::Result<()> {
-    let john = Human2 {
-        name: NonEmptyString::new("john".to_string())?,
-        age: 8,
-    };
-
-    let actual = json!(john);
-    let expected = json! {{
-        "name": "john",
-        "age": 8
-    }};
-    assert_eq!(actual, expected);
-    Ok(())
-}
-```
-
-### Deserialize
-
-```rust
-fn example_10() -> anyhow::Result<()> {
-    let json = json! {{
-        "name": "john",
-        "age": 8
-    }}
-        .to_string();
-
-    let actual = serde_json::from_str::<Human2>(&json)?;
-
-    let expected = Human2 {
-        name: NonEmptyString::new("john".to_string())?,
-        age: 8,
-    };
-    assert_eq!(actual, expected);
-    Ok(())
-}
-```
-
 # Number
 
 ## `MinMax`
@@ -695,6 +643,58 @@ impl LengthDefinition for Hello {
 fn custom_length_example() -> Result<(), Error<Hello>> {
     let hello = Refined::<LengthEqualRule<5, Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
+    Ok(())
+}
+```
+
+# JSON
+
+`refined_type` is compatible with `serde_json`. This ensures type-safe communication and eliminates the need to write
+new validation processes. All you need to do is implement a set of rules once and implement `serde`’s `Serialize`
+and `Deserialize`.
+
+### Serialize
+
+```rust
+#[derive(Debug, Eq, PartialEq, Deserialize, Serialize)]
+struct Human2 {
+    name: NonEmptyString,
+    age: u8,
+}
+
+fn example_9() -> anyhow::Result<()> {
+    let john = Human2 {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+
+    let actual = json!(john);
+    let expected = json! {{
+        "name": "john",
+        "age": 8
+    }};
+    assert_eq!(actual, expected);
+    Ok(())
+}
+```
+
+### Deserialize
+
+```rust
+fn example_10() -> anyhow::Result<()> {
+    let json = json! {{
+        "name": "john",
+        "age": 8
+    }}
+        .to_string();
+
+    let actual = serde_json::from_str::<Human2>(&json)?;
+
+    let expected = Human2 {
+        name: NonEmptyString::new("john".to_string())?,
+        age: 8,
+    };
+    assert_eq!(actual, expected);
     Ok(())
 }
 ```
