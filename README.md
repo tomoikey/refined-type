@@ -1,8 +1,9 @@
-<p align="center">
-    <img width=700 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
-</p>
-
 # Refined Type
+![ci](https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg)
+![publish](https://github.com/tomoikey/refined_type/actions/workflows/publish.yml/badge.svg)
+<p align="center">
+    <img width=600 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
+</p>
 
 **refined_type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
 range of guarantees your applications can statically ensure.
