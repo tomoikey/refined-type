@@ -497,7 +497,7 @@ fn example_18() -> Result<(), Error<Vec<i32>>> {
 }
 ```
 
-# `Skip`
+## `Skip`
 
 `Skip` is a rule that applies a specific rule to the elements of the Iterator while skipping the elements according
 to `SkipOption`.
@@ -537,17 +537,6 @@ impl<ITEM> SkipOption for NoSkip<ITEM> {
     fn should_skip(_: usize, _: Option<&mut Self::Accumulator>, _: &Self::Item) -> bool {
         false
     }
-}
-```
-
-### `NonEmptyVec` to `NonEmptyVecDeque` using `collect()`
-
-```rust
-fn example_22() -> anyhow::Result<()> {
-    let ne_vec = NonEmptyVec::new(vec![1, 2, 3])?;
-    let ne_vec_deque: NonEmptyVecDeque<i32> = ne_vec.into_iter().collect();
-    assert_eq!(ne_vec_deque.into_value(), vec![1, 2, 3]);
-    Ok(())
 }
 ```
 
