@@ -103,52 +103,22 @@ Since their target type is String, combining them is possible.
 I have prepared something called Rule Composer (`And`, `Or`, `Not`).
 By using Rule Composer, composite rules can be easily created.
 
-### Original Rules
-
-```rust
-struct ContainsHelloRule;
-
-struct ContainsWorldRule;
-
-impl Rule for ContainsHelloRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.contains("Hello") {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{} does not contain `Hello`", target)))
-        }
-    }
-}
-
-impl Rule for ContainsWorldRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.contains("World") {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{} does not contain `World`", target)))
-        }
-    }
-}
-```
-
 ### 1: `And` Rule Composer
 
 `And` Rule Composer is a rule that satisfies both of the two rules.
 It is generally effective when you want to narrow down the condition range.
-
 ```rust
-fn example_5() {
-    type HelloAndWorldRule = And![ContainsHelloRule, ContainsWorldRule];
+type Target = Refined<And![EvenRuleU8, MinMaxRuleU8<0, 100>]>;
+```
+```rust
+fn and_example() -> Result<(), Error<u8>> {
+    let target = Target::new(50)?;
+    assert_eq!(target.into_value(), 50);
 
-    let rule_ok = Refined::<HelloAndWorldRule>::new("Hello! World!".to_string());
-    assert!(rule_ok.is_ok());
+    let target = Target::new(51);
+    assert!(target.is_err());
 
-    let rule_err = Refined::<HelloAndWorldRule>::new("Hello, world!".to_string());
-    assert!(rule_err.is_err());
+    Ok(())
 }
 ```
 
@@ -158,17 +128,23 @@ fn example_5() {
 It is generally effective when you want to expand the condition range.
 
 ```rust
-fn example_6() {
-    type HelloOrWorldRule = Or![ContainsHelloRule, ContainsWorldRule];
+type Target = Refined<Or![LessRuleU8<10>, GreaterRuleU8<50>]>;
+```
+```rust
+fn or_example() -> Result<(), Error<u8>> {
+    let target = Target::new(5)?;
+    assert_eq!(target.into_value(), 5);
 
-    let rule_ok_1 = Refined::<HelloOrWorldRule>::new("Hello! World!".to_string());
-    assert!(rule_ok_1.is_ok());
+    let target = Target::new(10);
+    assert!(target.is_err());
 
-    let rule_ok_2 = Refined::<HelloOrWorldRule>::new("hello World!".to_string());
-    assert!(rule_ok_2.is_ok());
+    let target = Target::new(50);
+    assert!(target.is_err());
 
-    let rule_err = Refined::<HelloOrWorldRule>::new("hello, world!".to_string());
-    assert!(rule_err.is_err());
+    let target = Target::new(51)?;
+    assert_eq!(target.into_value(), 51);
+
+    Ok(())
 }
 ```
 
@@ -178,76 +154,20 @@ fn example_6() {
 It is generally effective when you want to discard only certain situations.
 
 ```rust
-fn example_7() {
-    type NotHelloRule = Not<ContainsHelloRule>;
-
-    let rule_ok = Refined::<NotHelloRule>::new("hello! World!".to_string());
-    assert!(rule_ok.is_ok());
-
-    let rule_err = Refined::<NotHelloRule>::new("Hello, World!".to_string());
-    assert!(rule_err.is_err());
-}
+type Target = Refined<Not<EqualRuleU8<50>>>;
 ```
-
-### 4: Compose Rule Composer
-
-Rule Composer is also a rule.
-Therefore, it can be treated much like a composite function
-
 ```rust
-struct StartsWithHelloRule;
+fn not_example() -> Result<(), Error<u8>> {
+    let target = Target::new(49)?;
+    assert_eq!(target.into_value(), 49);
 
-struct StartsWithByeRule;
+    let target = Target::new(50);
+    assert!(target.is_err());
 
-struct EndsWithJohnRule;
+    let target = Target::new(51)?;
+    assert_eq!(target.into_value(), 51);
 
-impl Rule for StartsWithHelloRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.starts_with("Hello") {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{} does not start with `Hello`", target)))
-        }
-    }
-}
-
-impl Rule for StartsWithByeRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.starts_with("Bye") {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{} does not start with `Bye`", target)))
-        }
-    }
-}
-
-impl Rule for EndsWithJohnRule {
-    type Item = String;
-
-    fn validate(target: &Self::Item) -> Result<(), Error> {
-        if target.ends_with("John") {
-            Ok(())
-        } else {
-            Err(Error::new(format!("{} does not end with `John`", target)))
-        }
-    }
-}
-
-#[test]
-fn example_8() {
-    type GreetingRule = And![
-        Or![StartsWithHelloRule, StartsWithByeRule],
-        EndsWithJohnRule
-    ];
-
-    assert!(GreetingRule::validate(&"Hello! Nice to meet you John".to_string()).is_ok());
-    assert!(GreetingRule::validate(&"Bye! Have a good day John".to_string()).is_ok());
-    assert!(GreetingRule::validate(&"How are you? Have a good day John".to_string()).is_err());
-    assert!(GreetingRule::validate(&"Bye! Have a good day Tom".to_string()).is_err());
+    Ok(())
 }
 ```
 
