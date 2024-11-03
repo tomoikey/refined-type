@@ -23,6 +23,12 @@ impl<T> Error<T> {
     }
 }
 
+impl<T: Debug> std::error::Error for Error<T> {
+    fn description(&self) -> &str {
+        &self.message
+    }
+}
+
 impl<T> Display for Error<T> {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.message)
