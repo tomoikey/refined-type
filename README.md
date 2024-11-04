@@ -1,4 +1,4 @@
-<h1 align="center">Refined Type</h1>
+<h2 align="center">Refined Type</h2>
 
 <div align="center">
     <img src="https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg"/>
