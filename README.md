@@ -1,9 +1,34 @@
-# Refined Type
-![ci](https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg)
-![publish](https://github.com/tomoikey/refined_type/actions/workflows/publish.yml/badge.svg)
-<p align="center">
-    <img width=600 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
-</p>
+<h1 align="center">Refined Type</h1>
+
+<div align="center">
+    <img src="https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg"/>
+    <img src="https://github.com/tomoikey/refined_type/actions/workflows/publish.yml/badge.svg"/>
+    <br/>
+    <i>Code More simply, More safely, for all Rustaceans.🦀</i>
+    <br/>
+    <img width=550 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
+    <br/>
+    <a href="https://github.com/tomoikey/refined_type/stargazers">
+        <img src="https://img.shields.io/github/stars/tomoikey/refined_type" alt="Stars Badge"/>
+    </a>
+    <a href="https://github.com/tomoikey/refined_type/network/members">
+        <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
+    </a>
+    <a href="https://github.com/tomoikey/refined_type/pulls">
+        <img src="https://img.shields.io/github/issues-pr/abhisheknaiidu/awesome-github-profile-readme" alt="Pull Requests Badge"/>
+    </a>
+    <a href="https://github.com/tomoikey/refined_type/issues">
+        <img src="https://img.shields.io/github/issues/tomoikey/refined_type" alt="Issues Badge"/>
+    </a>
+    <a href="https://github.com/tomoikey/refined_type/graphs/contributors">
+        <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/tomoikey/refined_type?color=2b9348">
+    </a>
+    <a href="https://github.com/tomoikey/refined_type/blob/main/LICENSE">
+        <img src="https://img.shields.io/github/license/tomoikey/refined_type?color=2b9348" alt="License Badge"/>
+    </a>
+</div>
+
+---
 
 **refined_type** is a library developed for Rust. It enhances your types, making them more robust and expanding the
 range of guarantees your applications can statically ensure.
