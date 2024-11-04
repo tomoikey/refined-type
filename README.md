@@ -15,7 +15,7 @@
         <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
     </a>
     <a href="https://github.com/tomoikey/refined_type/pulls">
-        <img src="https://img.shields.io/github/issues-pr/abhisheknaiidu/awesome-github-profile-readme" alt="Pull Requests Badge"/>
+        <img src="https://img.shields.io/github/issues-pr/tomoikey/refined_type" alt="Pull Requests Badge"/>
     </a>
     <a href="https://github.com/tomoikey/refined_type/issues">
         <img src="https://img.shields.io/github/issues/tomoikey/refined_type" alt="Issues Badge"/>
