@@ -77,6 +77,47 @@ where
         Self { value }
     }
 
+    /// Mutates the value inside the `Refined` type using the provided function.
+    ///
+    /// This method takes ownership of the current `Refined` instance, applies the
+    /// provided function to its inner value, and attempts to create a new `Refined`
+    /// instance with the mutated value. If the mutated value does not satisfy the
+    /// rule, an error is returned.
+    ///
+    /// # Arguments
+    ///
+    /// * `f` - A function that takes the inner value and returns a new value.
+    ///
+    /// # Returns
+    ///
+    /// * `Result<Self, Error<T>>` - A new `Refined` instance with the mutated value
+    ///   if the value satisfies the rule, otherwise an error.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use refined_type::rule::NonEmptyString;
+    /// use refined_type::Refined;
+    ///
+    /// let value = NonEmptyString::new("h".to_string())
+    ///     .unwrap()
+    ///     .mutate(|n| n + "e")
+    ///     .unwrap()
+    ///     .mutate(|n| n + "l")
+    ///     .unwrap()
+    ///     .mutate(|n| n + "l")
+    ///     .unwrap()
+    ///     .mutate(|n| n + "o")
+    ///     .unwrap();
+    /// assert_eq!(value.into_value(), "hello");
+    /// ```
+    pub fn mutate<F>(self, f: F) -> Result<Self, Error<T>>
+    where
+        F: FnOnce(T) -> T,
+    {
+        Refined::new(f(self.into_value()))
+    }
+
     pub fn value(&self) -> &RULE::Item {
         &self.value
     }
@@ -399,6 +440,17 @@ mod test {
         let value: NonEmptyVec<NonEmptyString> =
             NonEmptyVec::try_from(vec!["hello".to_string().try_into()?])?;
         assert_eq!(value.into_value(), vec!["hello".to_string().try_into()?]);
+        Ok(())
+    }
+
+    #[test]
+    fn test_mutate() -> anyhow::Result<()> {
+        let value = NonEmptyString::try_from("h")?
+            .mutate(|n| n + "e")?
+            .mutate(|n| n + "l")?
+            .mutate(|n| n + "l")?
+            .mutate(|n| n + "o")?;
+        assert_eq!(value.into_value(), "hello");
         Ok(())
     }
 }
