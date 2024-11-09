@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::rule::composer::Not;
-use crate::rule::{ForAllRule, Iterable, Rule};
+use crate::rule::{ForAllRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ExistsRule`
@@ -23,8 +23,7 @@ pub type ExistsHashMap<K, RULE> = Refined<ExistsHashMapRule<K, RULE>>;
 pub type ExistsString<RULE> = Refined<ExistsStringRule<RULE>>;
 
 /// Rule where at least one data in the collection satisfies the condition
-pub type ExistsRule<RULE, ITERABLE> =
-    Not<ForAllRule<Not<RULE>, ITERABLE, <ITERABLE as Iterable>::Item>>;
+pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
 
 /// Rule where at least one data in the `Vec` satisfies the condition
 pub type ExistsVecRule<RULE> = ExistsRule<RULE, Vec<<RULE as Rule>::Item>>;

@@ -1,10 +1,10 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
-use crate::rule::{NoSkip, Rule, SkipRule};
+use crate::rule::{Iterable, NoSkip, Rule, SkipRule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ForAllRule`
-pub type ForAll<RULE, ITERABLE, ITEM> = Refined<ForAllRule<RULE, ITERABLE, ITEM>>;
+pub type ForAll<RULE, ITERABLE> = Refined<ForAllRule<RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `ForAllRule`
 pub type ForAllVec<RULE> = Refined<ForAllVecRule<RULE>>;
@@ -22,25 +22,23 @@ pub type ForAllHashMap<K, RULE> = Refined<ForAllHashMapRule<K, RULE>>;
 pub type ForAllString<RULE> = Refined<ForAllStringRule<RULE>>;
 
 /// Rule where all the data in the collection satisfies the condition
-pub type ForAllRule<RULE, ITERABLE, ITEM> = SkipRule<RULE, ITERABLE, NoSkip<ITEM>>;
+pub type ForAllRule<RULE, ITERABLE> =
+    SkipRule<RULE, ITERABLE, NoSkip<<ITERABLE as Iterable>::Item>>;
 
 /// Rule where all the data in the `Vec` satisfies the condition
-pub type ForAllVecRule<RULE> = ForAllRule<RULE, Vec<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type ForAllVecRule<RULE> = ForAllRule<RULE, Vec<<RULE as Rule>::Item>>;
 
 /// Rule where all the data in the `VecDeque` satisfies the condition
-pub type ForAllVecDequeRule<RULE> =
-    ForAllRule<RULE, VecDeque<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type ForAllVecDequeRule<RULE> = ForAllRule<RULE, VecDeque<<RULE as Rule>::Item>>;
 
 /// Rule where all the data in the `HashSet` satisfies the condition
-pub type ForAllHashSetRule<RULE> =
-    ForAllRule<RULE, HashSet<<RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type ForAllHashSetRule<RULE> = ForAllRule<RULE, HashSet<<RULE as Rule>::Item>>;
 
 /// Rule where all the data in the `HashMap` satisfies the condition
-pub type ForAllHashMapRule<K, RULE> =
-    ForAllRule<RULE, HashMap<K, <RULE as Rule>::Item>, <RULE as Rule>::Item>;
+pub type ForAllHashMapRule<K, RULE> = ForAllRule<RULE, HashMap<K, <RULE as Rule>::Item>>;
 
 /// Rule where all the data in the `String` satisfies the condition
-pub type ForAllStringRule<RULE> = ForAllRule<RULE, String, char>;
+pub type ForAllStringRule<RULE> = ForAllRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
