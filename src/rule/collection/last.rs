@@ -4,28 +4,28 @@ use crate::rule::{IndexRule, ReverseRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `LastRule`
-pub type Last<'a, RULE, ITERABLE> = Refined<LastRule<'a, RULE, ITERABLE>>;
+pub type Last<RULE, ITERABLE> = Refined<LastRule<RULE, ITERABLE>>;
 
 /// A type that holds a Vec value satisfying the `LastRule`
-pub type LastVec<'a, RULE> = Refined<LastVecRule<'a, RULE>>;
+pub type LastVec<RULE> = Refined<LastVecRule<RULE>>;
 
 /// A type that holds a VecDeque value satisfying the `LastRule`
-pub type LastVecDeque<'a, RULE> = Refined<LastVecDequeRule<'a, RULE>>;
+pub type LastVecDeque<RULE> = Refined<LastVecDequeRule<RULE>>;
 
 /// A type that holds a String value satisfying the `LastRule`
-pub type LastString<'a, RULE> = Refined<LastStringRule<'a, RULE>>;
+pub type LastString<RULE> = Refined<LastStringRule<RULE>>;
 
 /// Rule where the last element satisfies the condition
-pub type LastRule<'a, RULE, ITERABLE> = ReverseRule<'a, IndexRule<0, RULE, ITERABLE>>;
+pub type LastRule<RULE, ITERABLE> = ReverseRule<IndexRule<0, RULE, ITERABLE>>;
 
 /// Rule where the last element in the `Vec` satisfies the condition
-pub type LastVecRule<'a, RULE> = LastRule<'a, RULE, Vec<<RULE as Rule>::Item>>;
+pub type LastVecRule<RULE> = LastRule<RULE, Vec<<RULE as Rule>::Item>>;
 
 /// Rule where the last element in the `VecDeque` satisfies the condition
-pub type LastVecDequeRule<'a, RULE> = LastRule<'a, RULE, VecDeque<<RULE as Rule>::Item>>;
+pub type LastVecDequeRule<RULE> = LastRule<RULE, VecDeque<<RULE as Rule>::Item>>;
 
 /// Rule where the last element in the `String` satisfies the condition
-pub type LastStringRule<'a, RULE> = LastRule<'a, RULE, String>;
+pub type LastStringRule<RULE> = LastRule<RULE, String>;
 
 #[cfg(test)]
 mod tests {
