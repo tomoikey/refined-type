@@ -29,10 +29,10 @@ where
     _phantom_data: PhantomData<(RULE, ITERABLE, OPTION)>,
 }
 
-impl<'a, RULE, ITERABLE, OPTION> Rule for SkipRule<RULE, ITERABLE, OPTION>
+impl<RULE, ITERABLE, OPTION> Rule for SkipRule<RULE, ITERABLE, OPTION>
 where
     RULE: Rule,
-    ITERABLE: Iterable<'a, Item = RULE::Item> + FromIterator<RULE::Item>,
+    ITERABLE: Iterable<Item = RULE::Item> + FromIterator<RULE::Item>,
     OPTION: SkipOption<Item = RULE::Item>,
 {
     type Item = ITERABLE;

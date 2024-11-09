@@ -4,20 +4,20 @@ use crate::Refined;
 use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `ReverseRule`
-pub type Reverse<'a, RULE> = Refined<ReverseRule<'a, RULE>>;
+pub type Reverse<'a, RULE> = Refined<ReverseRule<RULE>>;
 
 /// Rule where the data in the collection satisfies the condition after reversing
-pub struct ReverseRule<'a, RULE>
+pub struct ReverseRule<RULE>
 where
     RULE: Rule,
 {
-    _phantom_data: PhantomData<&'a RULE>,
+    _phantom_data: PhantomData<RULE>,
 }
 
-impl<'a, RULE, ITERABLE> Rule for ReverseRule<'a, RULE>
+impl<RULE, ITERABLE> Rule for ReverseRule<RULE>
 where
     RULE: Rule<Item = ITERABLE>,
-    ITERABLE: Iterable<'a> + FromIterator<ITERABLE::Item>,
+    ITERABLE: Iterable + FromIterator<ITERABLE::Item>,
 {
     type Item = RULE::Item;
 
