@@ -4,7 +4,7 @@ use crate::Refined;
 use std::marker::PhantomData;
 
 /// A type that holds a value satisfying the `ReverseRule`
-pub type Reverse<'a, RULE> = Refined<ReverseRule<RULE>>;
+pub type Reverse<RULE> = Refined<ReverseRule<RULE>>;
 
 /// Rule where the data in the collection satisfies the condition after reversing
 pub struct ReverseRule<RULE>

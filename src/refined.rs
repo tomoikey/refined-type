@@ -57,6 +57,28 @@ impl<RULE, T> Refined<RULE>
 where
     RULE: Rule<Item = T>,
 {
+    /// Creates a new `Refined` instance if the provided value satisfies the rule.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value to be refined.
+    ///
+    /// # Returns
+    ///
+    /// * `Result<Self, Error<T>>` - A `Refined` instance if the value satisfies the rule, otherwise an error.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use refined_type::rule::NonEmptyStringRule;
+    /// use refined_type::Refined;
+    ///
+    /// let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string());
+    /// assert!(non_empty_string.is_ok());
+    ///
+    /// let empty_string = Refined::<NonEmptyStringRule>::new("".to_string());
+    /// assert!(empty_string.is_err());
+    /// ```
     pub fn new(value: T) -> Result<Self, Error<T>> {
         let value = RULE::validate(value).map_err(|e| {
             let message = e.to_string();
@@ -65,6 +87,28 @@ where
         Ok(Self { value })
     }
 
+    /// Creates a new `Refined` instance if the provided value satisfies the rule.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - The value to be refined.
+    ///
+    /// # Panics
+    ///
+    /// This function will panic if the value does not satisfy the rule.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use refined_type::rule::NonEmptyStringRule;
+    /// use refined_type::Refined;
+    ///
+    /// let non_empty_string = Refined::<NonEmptyStringRule>::unsafe_new("Hello".to_string());
+    /// assert_eq!(non_empty_string.into_value(), "Hello");
+    ///
+    /// // This will panic
+    /// // let empty_string = Refined::<NonEmptyStringRule>::unsafe_new("".to_string());
+    /// ```
     pub fn unsafe_new(value: T) -> Self
     where
         T: Debug,
@@ -118,10 +162,40 @@ where
         Refined::new(f(self.into_value()))
     }
 
+    /// Returns a reference to the value inside the `Refined` type.
+    ///
+    /// # Returns
+    ///
+    /// * `&RULE::Item` - A reference to the value inside the `Refined` type.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use refined_type::rule::NonEmptyStringRule;
+    /// use refined_type::Refined;
+    ///
+    /// let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string()).unwrap();
+    /// assert_eq!(non_empty_string.value(), "Hello");
+    /// ```
     pub fn value(&self) -> &RULE::Item {
         &self.value
     }
 
+    /// Consumes the `Refined` instance and returns the inner value.
+    ///
+    /// # Returns
+    ///
+    /// * `RULE::Item` - The value inside the `Refined` type.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use refined_type::rule::NonEmptyStringRule;
+    /// use refined_type::Refined;
+    ///
+    /// let non_empty_string = Refined::<NonEmptyStringRule>::new("Hello".to_string()).unwrap();
+    /// assert_eq!(non_empty_string.into_value(), "Hello");
+    /// ```
     pub fn into_value(self) -> RULE::Item {
         self.value
     }
