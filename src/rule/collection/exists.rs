@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::rule::composer::Not;
-use crate::rule::{ForAllRule, Rule};
+use crate::rule::{NothingRule, Rule};
 use crate::Refined;
 
 /// A type that holds a value satisfying the `ExistsRule`
@@ -23,7 +23,7 @@ pub type ExistsHashMap<K, RULE> = Refined<ExistsHashMapRule<K, RULE>>;
 pub type ExistsString<RULE> = Refined<ExistsStringRule<RULE>>;
 
 /// Rule where at least one data in the collection satisfies the condition
-pub type ExistsRule<RULE, ITERABLE> = Not<ForAllRule<Not<RULE>, ITERABLE>>;
+pub type ExistsRule<RULE, ITERABLE> = Not<NothingRule<RULE, ITERABLE>>;
 
 /// Rule where at least one data in the `Vec` satisfies the condition
 pub type ExistsVecRule<RULE> = ExistsRule<RULE, Vec<<RULE as Rule>::Item>>;
@@ -56,6 +56,14 @@ mod tests {
     #[test]
     fn exists_2() -> anyhow::Result<()> {
         let value = vec!["".to_string(), "".to_string()];
+        let exists_result = Exists::<NonEmptyStringRule, Vec<_>>::new(value.clone());
+        assert!(exists_result.is_err());
+        Ok(())
+    }
+
+    #[test]
+    fn exists_3() -> anyhow::Result<()> {
+        let value = vec![];
         let exists_result = Exists::<NonEmptyStringRule, Vec<_>>::new(value.clone());
         assert!(exists_result.is_err());
         Ok(())
