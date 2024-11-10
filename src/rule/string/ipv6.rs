@@ -7,6 +7,7 @@ use std::str::FromStr;
 pub type Ipv6Addr<STRING> = Refined<Ipv6AddrRule<STRING>>;
 
 /// Rule where the target value must be a valid IPv6 address
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Ipv6AddrRule<T> {
     _phantom: std::marker::PhantomData<T>,
 }

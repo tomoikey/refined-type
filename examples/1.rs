@@ -1,7 +1,7 @@
-use refined_type::rule::composer::{If, IfElse};
+use refined_type::rule::composer::{If, IfElse, Not};
 use refined_type::rule::{
     EmailStringRule, EvenRuleU8, ExistsVecRule, ForAllVecRule, GreaterRuleU8, HeadVecRule,
-    NonEmptyString, NonEmptyStringRule, NonEmptyVecRule,
+    Ipv4AddrRule, LastVecRule, NonEmptyString, NonEmptyStringRule,
 };
 use refined_type::{And, Refined};
 use serde::Deserialize;
@@ -24,9 +24,12 @@ pub struct Data {
     age: Refined<If<GreaterRuleU8<10>, EvenRuleU8>>,
     friends: Refined<
         IfElse<
-            And![ForAllVecRule<NonEmptyStringRule>, NonEmptyVecRule<String>],
+            And![
+                ForAllVecRule<NonEmptyStringRule>,
+                ExistsVecRule<Ipv4AddrRule<String>>
+            ],
             HeadVecRule<EmailStringRule>,
-            ExistsVecRule<EmailStringRule>,
+            LastVecRule<Not<EmailStringRule>>,
         >,
     >,
 }
@@ -36,10 +39,12 @@ fn main() {
     {
         "name": "John Doe",
         "age": 20,
-        "friends": ["alice@example.com", "Bob"]
+        "friends": ["alice@example.com", "192.168.11.1"]
     }
     "#;
 
-    let data: Data = serde_json::from_str(data).unwrap();
-    println!("{}", data); // name: John Doe, age: 20, friends: Refined { value: ["alice@example.com", "Bob"] }
+    let data = serde_json::from_str::<Data>(data).map(|n| n.to_string());
+
+    // Ok("name: John Doe, age: 20, friends: Refined { value: [\"alice@example.com\", \"192.168.11.1\"] }")
+    println!("{:?}", data);
 }
