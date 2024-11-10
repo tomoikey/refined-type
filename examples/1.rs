@@ -1,7 +1,7 @@
 use refined_type::rule::composer::{If, IfElse};
 use refined_type::rule::{
-    AlphaDigitRule, AlphabetRule, DigitRule, EmailStringRule, EvenRuleU8, ExistsVecRule,
-    ForAllVecRule, GreaterRuleU8, HeadVecRule, NonEmptyString, NonEmptyStringRule, NonEmptyVecRule,
+    EmailStringRule, EvenRuleU8, ExistsVecRule, ForAllVecRule, GreaterRuleU8, HeadVecRule,
+    NonEmptyString, NonEmptyStringRule, NonEmptyVecRule,
 };
 use refined_type::{And, Refined};
 use serde::Deserialize;
