@@ -196,6 +196,58 @@ fn not_example() -> Result<(), Error<u8>> {
 }
 ```
 
+### 4: `If` Rule Composer
+
+`If` Rule Composer is a rule that applies a specific rule only when a certain condition is met.
+
+```rust
+type Target = Refined<If<GreaterEqualRuleI8<10>, EvenRuleI8>>;
+
+fn if_example() -> Result<(), Error<i8>> {
+    let target = Target::new(8)?;
+    assert_eq!(target.into_value(), 8);
+
+    let target = Target::new(9)?;
+    assert_eq!(target.into_value(), 9);
+
+    let target = Target::new(10)?;
+    assert_eq!(target.into_value(), 10);
+
+    let target = Target::new(11);
+    assert!(target.is_err());
+
+    Ok(())
+}
+```
+
+### 5: `IfElse` Rule Composer
+
+`IfElse` Rule Composer is a rule that applies a specific rule when a certain condition is met and another rule when it is not met.
+
+```rust
+type Target = Refined<IfElse<GreaterEqualRuleI8<10>, EvenRuleI8, OddRuleI8>>;
+
+fn if_else_example() -> Result<(), Error<i8>> {
+    let target = Target::new(8);
+    assert!(target.is_err());
+
+    let target = Target::new(9)?;
+    assert_eq!(target.into_value(), 9);
+
+    let target = Target::new(10)?;
+    assert_eq!(target.into_value(), 10);
+
+    let target = Target::new(11);
+    assert!(target.is_err());
+
+    Ok(())
+}
+```
+
+### 6: Other Rule Composer
+
+`Equiv`, `Nand`, `Nor` and `Xor` are also available.
+
 # Number
 
 ## `MinMax`
