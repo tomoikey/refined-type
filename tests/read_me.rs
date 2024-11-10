@@ -2,12 +2,13 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use refined_type::result::Error;
-use refined_type::rule::composer::Not;
+use refined_type::rule::composer::{If, IfElse, Not};
 use refined_type::rule::{
-    EqualU8, ExistsVec, ForAllVec, GreaterEqualU8, GreaterU8, HeadVec, IndexRuleVec, IndexVec,
-    InitVec, LastVec, LengthDefinition, LengthEqual, LengthEqualRule, LengthGreater, LengthLess,
-    LengthMinMax, LessEqualU8, LessU8, MinMaxU8, NonEmptyString, NonEmptyStringRule, NonEmptyVec,
-    NonEmptyVecDeque, RangeU8, Reverse, Rule, SkipFirst, SkipVec, TailVec,
+    EqualU8, EvenRuleI8, ExistsVec, ForAllVec, GreaterEqualRuleI8, GreaterEqualU8, GreaterU8,
+    HeadVec, IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual,
+    LengthEqualRule, LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8,
+    NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, OddRuleI8, RangeU8, Reverse,
+    Rule, SkipFirst, SkipVec, TailVec,
 };
 use refined_type::{And, Or, Refined};
 
@@ -658,5 +659,43 @@ impl LengthDefinition for Hello {
 fn custom_length_example() -> Result<(), Error<Hello>> {
     let hello = Refined::<LengthEqualRule<5, Hello>>::new(Hello)?;
     assert_eq!(hello.into_value(), Hello);
+    Ok(())
+}
+
+#[test]
+fn if_example() -> Result<(), Error<i8>> {
+    type Target = Refined<If<GreaterEqualRuleI8<10>, EvenRuleI8>>;
+
+    let target = Target::new(8)?;
+    assert_eq!(target.into_value(), 8);
+
+    let target = Target::new(9)?;
+    assert_eq!(target.into_value(), 9);
+
+    let target = Target::new(10)?;
+    assert_eq!(target.into_value(), 10);
+
+    let target = Target::new(11);
+    assert!(target.is_err());
+
+    Ok(())
+}
+
+#[test]
+fn if_else_example() -> Result<(), Error<i8>> {
+    type Target = Refined<IfElse<GreaterEqualRuleI8<10>, EvenRuleI8, OddRuleI8>>;
+
+    let target = Target::new(8);
+    assert!(target.is_err());
+
+    let target = Target::new(9)?;
+    assert_eq!(target.into_value(), 9);
+
+    let target = Target::new(10)?;
+    assert_eq!(target.into_value(), 10);
+
+    let target = Target::new(11);
+    assert!(target.is_err());
+
     Ok(())
 }
