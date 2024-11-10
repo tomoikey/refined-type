@@ -23,6 +23,7 @@ pub use regex::Regex;
 macro_rules! declare_regex_rule {
     ($vis:vis $rule:ident, $regex:literal) => {
         $crate::paste::item! {
+            #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
             $vis struct $rule<STRING> {
                 _phantom: std::marker::PhantomData<STRING>,
             }
