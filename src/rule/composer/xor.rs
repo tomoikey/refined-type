@@ -14,10 +14,10 @@ use crate::{And, Or};
 /// type Target2 = Xor![ValidI8, InvalidI8]; // 1: PASS
 /// type Target3 = Xor![InvalidI8, ValidI8]; // 1: PASS
 /// type Target4 = Xor![InvalidI8, InvalidI8]; // 0: ERR
-/// 
+///
 /// assert!(Target2::validate(0).is_ok());
 /// assert!(Target3::validate(0).is_ok());
-/// 
+///
 /// assert!(Target1::validate(0).is_err());
 /// assert!(Target4::validate(0).is_err());
 /// ```

@@ -2,14 +2,14 @@ use crate::rule::composer::imply::Imply;
 use crate::And;
 
 /// This is a type that represents logical equivalence in logic.
-/// 
+///
 /// # Example
 /// ```rust
 /// use refined_type::rule::composer::Equiv;
 /// use refined_type::rule::{EvenRuleI8, GreaterEqualRuleI8, Rule};
-/// 
+///
 /// type Target = Equiv<GreaterEqualRuleI8<10>, EvenRuleI8>;
-/// 
+///
 /// for value in vec![1, 10] {
 ///    assert!(Target::validate(value).is_ok());
 /// }

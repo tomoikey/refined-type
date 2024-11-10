@@ -1,5 +1,5 @@
-use crate::Or;
 use crate::rule::composer::Not;
+use crate::Or;
 
 /// This is a type that represents logical NOR in logic.
 pub type Nor<RULE1, RULE2> = Not<Or![RULE1, RULE2]>;

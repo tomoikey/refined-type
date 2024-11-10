@@ -1,5 +1,6 @@
 mod and;
 mod equiv;
+mod if_else;
 mod imply;
 mod nand;
 mod nor;
@@ -9,7 +10,8 @@ mod xor;
 
 pub use and::And;
 pub use equiv::Equiv;
-pub use imply::Imply;
+pub use if_else::IfElse;
+pub use imply::{If, Imply};
 pub use nand::Nand;
 pub use nor::Nor;
 pub use not::Not;

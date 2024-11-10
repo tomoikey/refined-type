@@ -55,7 +55,7 @@ mod test_3 {
     type Target6 = Nand![InvalidI8, ValidI8, InvalidI8]; // PASS
     type Target7 = Nand![InvalidI8, InvalidI8, ValidI8]; // PASS
     type Target8 = Nand![InvalidI8, InvalidI8, InvalidI8]; // PASS
-    
+
     #[test]
     fn test_rule_binder_ok() {
         assert!(Target2::validate(0).is_ok());
@@ -66,7 +66,7 @@ mod test_3 {
         assert!(Target7::validate(0).is_ok());
         assert!(Target8::validate(0).is_ok());
     }
-    
+
     #[test]
     fn test_rule_binder_err() {
         assert!(Target1::validate(0).is_err());
