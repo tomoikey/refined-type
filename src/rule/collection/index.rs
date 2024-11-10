@@ -5,6 +5,7 @@ use std::collections::VecDeque;
 pub type Index<const INDEX: usize, RULE, ITERABLE> = Refined<IndexRule<INDEX, RULE, ITERABLE>>;
 pub type IndexVec<const INDEX: usize, RULE> = Refined<IndexRuleVec<INDEX, RULE>>;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct IndexRule<const INDEX: usize, RULE, ITERABLE>
 where
     RULE: Rule,

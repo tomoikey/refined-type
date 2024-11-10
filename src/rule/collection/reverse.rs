@@ -7,6 +7,7 @@ use std::marker::PhantomData;
 pub type Reverse<RULE> = Refined<ReverseRule<RULE>>;
 
 /// Rule where the data in the collection satisfies the condition after reversing
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct ReverseRule<RULE>
 where
     RULE: Rule,

@@ -1,5 +1,6 @@
 use crate::rule::SkipOption;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SkipEvenIndex<ITEM> {
     _phantom_data: std::marker::PhantomData<ITEM>,
 }

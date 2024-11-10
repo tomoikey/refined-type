@@ -21,6 +21,7 @@ pub type SkipVecDeque<RULE, OPTION> = Refined<SkipVecDequeRule<RULE, OPTION>>;
 pub type SkipString<RULE, OPTION> = Refined<SkipStringRule<RULE, OPTION>>;
 
 /// Rule where the data in the collection satisfies the condition after skipping the first element
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct SkipRule<RULE, ITERABLE, OPTION>
 where
     RULE: Rule,
