@@ -1,19 +1,22 @@
 <h2 align="center">Refined Type</h2>
 
 <div align="center">
-    <img src="https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg"/>
-    <img src="https://github.com/tomoikey/refined_type/actions/workflows/publish.yml/badge.svg"/>
-    <br/>
+    <div>
+        <img src="https://img.shields.io/crates/v/refined_type.svg"/>
+        <img src="https://img.shields.io/crates/d/refined_type"/>
+    </div>
     <i>Code More simply, More safely, for all Rustaceans.🦀</i>
     <br/>
     <img width=550 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
     <br/>
-    <a href="https://github.com/tomoikey/refined_type/stargazers">
-        <img src="https://img.shields.io/github/stars/tomoikey/refined_type" alt="Stars Badge"/>
-    </a>
-    <a href="https://github.com/tomoikey/refined_type/network/members">
-        <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
-    </a>
+    <div>
+        <a href="https://github.com/tomoikey/refined_type/stargazers">
+            <img src="https://img.shields.io/github/stars/tomoikey/refined_type" alt="Stars Badge"/>
+        </a>
+        <a href="https://github.com/tomoikey/refined_type/network/members">
+            <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
+        </a>
+    </div>
     <a href="https://github.com/tomoikey/refined_type/pulls">
         <img src="https://img.shields.io/github/issues-pr/tomoikey/refined_type" alt="Pull Requests Badge"/>
     </a>
@@ -132,9 +135,11 @@ By using Rule Composer, composite rules can be easily created.
 
 `And` Rule Composer is a rule that satisfies both of the two rules.
 It is generally effective when you want to narrow down the condition range.
+
 ```rust
 type Target = Refined<And![EvenRuleU8, MinMaxRuleU8<0, 100>]>;
 ```
+
 ```rust
 fn and_example() -> Result<(), Error<u8>> {
     let target = Target::new(50)?;
@@ -155,6 +160,7 @@ It is generally effective when you want to expand the condition range.
 ```rust
 type Target = Refined<Or![LessRuleU8<10>, GreaterRuleU8<50>]>;
 ```
+
 ```rust
 fn or_example() -> Result<(), Error<u8>> {
     let target = Target::new(5)?;
@@ -181,6 +187,7 @@ It is generally effective when you want to discard only certain situations.
 ```rust
 type Target = Refined<Not<EqualRuleU8<50>>>;
 ```
+
 ```rust
 fn not_example() -> Result<(), Error<u8>> {
     let target = Target::new(49)?;
@@ -222,7 +229,8 @@ fn if_example() -> Result<(), Error<i8>> {
 
 ### 5: `IfElse` Rule Composer
 
-`IfElse` Rule Composer is a rule that applies a specific rule when a certain condition is met and another rule when it is not met.
+`IfElse` Rule Composer is a rule that applies a specific rule when a certain condition is met and another rule when it
+is not met.
 
 ```rust
 type Target = Refined<IfElse<GreaterEqualRuleI8<10>, EvenRuleI8, OddRuleI8>>;
@@ -393,7 +401,6 @@ fn range_example() -> Result<(), Error<u8>> {
 }
 ```
 
-
 # Iterator
 
 `refined_type` has several useful refined types for Iterators.
@@ -552,9 +559,121 @@ fn example_17() -> anyhow::Result<()> {
 }
 ```
 
+## `CountEqual`
+
+`CountEqual` is a type that signifies the number of elements that satisfy the rule is a specific number.
+
+```rust
+fn count_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], false),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountEqualVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+## `CountLess`
+
+`CountLess` is a type that signifies the number of elements that satisfy the rule is less than a specific number.
+
+```rust
+fn count_less_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], false),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], true),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountLessVec::<2, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+## `CountGreater`
+
+`CountGreater` is a type that signifies the number of elements that satisfy the rule is greater than a specific number.
+
+```rust
+fn count_greater_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], false),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountGreaterVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+## `CountLessEqual`
+
+`CountLessEqual` is a type that signifies the number of elements that satisfy the rule is less than or equal to a
+specific number.
+
+```rust
+fn count_less_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], true),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountLessEqualVec::<2, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
+## `CountGreaterEqual`
+
+`CountGreaterEqual` is a type that signifies the number of elements that satisfy the rule is greater than or equal to a
+specific number.
+
+```rust
+fn count_greater_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountGreaterEqualVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+```
+
 ## `Reverse`
 
-`Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.  
+`Reverse` is a rule that applies a specific rule to all elements in the Iterator in reverse order.
 
 ```rust
 fn example_18() -> Result<(), Error<Vec<i32>>> {
@@ -622,6 +741,7 @@ impl<ITEM> SkipOption for NoSkip<ITEM> {
 You can impose constraints on objects that have a length, such as `String` or `Vec`.
 
 ## `LengthMinMax`
+
 `LengthMinMax` is a type that signifies the target has a length between a certain number and another number.
 
 ```rust
@@ -642,6 +762,7 @@ fn length_min_max_example() -> Result<(), Error<String>> {
 ```
 
 ## `LengthGreater`
+
 `LengthGreater` is a type that signifies the target has a length greater than a certain number.
 
 ```rust
@@ -659,6 +780,7 @@ fn length_greater_example() -> Result<(), Error<String>> {
 ```
 
 ## `LengthLess`
+
 `LengthLess` is a type that signifies the target has a length less than a certain number.
 
 ```rust
@@ -676,6 +798,7 @@ fn length_less_example() -> Result<(), Error<String>> {
 ```
 
 ## `LengthEqual`
+
 `LengthEqual` is a type that signifies the target has a length equal to a certain number.
 
 ```rust

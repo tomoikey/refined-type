@@ -4,11 +4,12 @@ use serde_json::json;
 use refined_type::result::Error;
 use refined_type::rule::composer::{If, IfElse, Not};
 use refined_type::rule::{
-    EqualU8, EvenRuleI8, ExistsVec, ForAllVec, GreaterEqualRuleI8, GreaterEqualU8, GreaterU8,
-    HeadVec, IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual,
-    LengthEqualRule, LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8,
-    NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, OddRuleI8, RangeU8, Reverse,
-    Rule, SkipFirst, SkipVec, TailVec,
+    CountEqualVec, CountGreaterEqualVec, CountGreaterVec, CountLessEqualVec, CountLessVec, EqualU8,
+    EvenRuleI8, ExistsVec, ForAllVec, GreaterEqualRuleI8, GreaterEqualU8, GreaterU8, HeadVec,
+    IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual, LengthEqualRule,
+    LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8, NonEmptyString,
+    NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, OddRuleI8, RangeU8, Reverse, Rule,
+    SkipFirst, SkipVec, TailVec,
 };
 use refined_type::{And, Or, Refined};
 
@@ -519,6 +520,91 @@ fn example_17() -> anyhow::Result<()> {
 
     for (value, expected) in table {
         let refined = IndexVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn count_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], false),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountEqualVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn count_less_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], false),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], true),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountLessVec::<2, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn count_greater_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], false),
+        (vec!["".to_string(), "hello".to_string()], false),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountGreaterVec::<1, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn count_less_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], true),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountLessEqualVec::<2, NonEmptyStringRule>::new(value.clone());
+        assert_eq!(refined.is_ok(), expected);
+    }
+
+    Ok(())
+}
+
+#[test]
+fn count_greater_equal_example() -> Result<(), Error<Vec<i32>>> {
+    let table = vec![
+        (vec!["good morning".to_string(), "hello".to_string()], true),
+        (vec!["good morning".to_string(), "".to_string()], true),
+        (vec!["".to_string(), "hello".to_string()], true),
+        (vec!["".to_string(), "".to_string()], false),
+    ];
+
+    for (value, expected) in table {
+        let refined = CountGreaterEqualVec::<1, NonEmptyStringRule>::new(value.clone());
         assert_eq!(refined.is_ok(), expected);
     }
 
