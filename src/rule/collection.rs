@@ -1,3 +1,4 @@
+mod count;
 mod exists;
 mod for_all;
 mod head;
@@ -10,6 +11,7 @@ mod reverse;
 mod skip;
 mod tail;
 
+pub use count::*;
 pub use exists::*;
 pub use for_all::*;
 pub use head::*;
