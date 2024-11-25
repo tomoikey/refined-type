@@ -1,19 +1,22 @@
 <h2 align="center">Refined Type</h2>
 
 <div align="center">
-    <img src="https://github.com/tomoikey/refined_type/actions/workflows/ci.yml/badge.svg"/>
-    <img src="https://github.com/tomoikey/refined_type/actions/workflows/publish.yml/badge.svg"/>
-    <br/>
+    <div>
+        <img src="https://img.shields.io/crates/v/refined_type.svg"/>
+        <img src="https://img.shields.io/crates/d/refined_type"/>
+    </div>
     <i>Code More simply, More safely, for all Rustaceans.🦀</i>
     <br/>
     <img width=550 src="https://github.com/user-attachments/assets/2ae4bfee-1d42-4ed7-820a-b13260d359ef">
     <br/>
-    <a href="https://github.com/tomoikey/refined_type/stargazers">
-        <img src="https://img.shields.io/github/stars/tomoikey/refined_type" alt="Stars Badge"/>
-    </a>
-    <a href="https://github.com/tomoikey/refined_type/network/members">
-        <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
-    </a>
+    <div>
+        <a href="https://github.com/tomoikey/refined_type/stargazers">
+            <img src="https://img.shields.io/github/stars/tomoikey/refined_type" alt="Stars Badge"/>
+        </a>
+        <a href="https://github.com/tomoikey/refined_type/network/members">
+            <img src="https://img.shields.io/github/forks/tomoikey/refined_type" alt="Forks Badge"/>
+        </a>
+    </div>
     <a href="https://github.com/tomoikey/refined_type/pulls">
         <img src="https://img.shields.io/github/issues-pr/tomoikey/refined_type" alt="Pull Requests Badge"/>
     </a>
