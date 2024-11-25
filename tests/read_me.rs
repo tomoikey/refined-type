@@ -4,12 +4,12 @@ use serde_json::json;
 use refined_type::result::Error;
 use refined_type::rule::composer::{If, IfElse, Not};
 use refined_type::rule::{
-    CountEqualVec, CountGreaterEqualVec, CountGreaterVec, CountLessEqualVec,
-    CountLessVec, EqualU8, EvenRuleI8, ExistsVec, ForAllVec, GreaterEqualRuleI8, GreaterEqualU8,
-    GreaterU8, HeadVec, IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual,
-    LengthEqualRule, LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8,
-    NonEmptyString, NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, OddRuleI8, RangeU8, Reverse,
-    Rule, SkipFirst, SkipVec, TailVec,
+    CountEqualVec, CountGreaterEqualVec, CountGreaterVec, CountLessEqualVec, CountLessVec, EqualU8,
+    EvenRuleI8, ExistsVec, ForAllVec, GreaterEqualRuleI8, GreaterEqualU8, GreaterU8, HeadVec,
+    IndexRuleVec, IndexVec, InitVec, LastVec, LengthDefinition, LengthEqual, LengthEqualRule,
+    LengthGreater, LengthLess, LengthMinMax, LessEqualU8, LessU8, MinMaxU8, NonEmptyString,
+    NonEmptyStringRule, NonEmptyVec, NonEmptyVecDeque, OddRuleI8, RangeU8, Reverse, Rule,
+    SkipFirst, SkipVec, TailVec,
 };
 use refined_type::{And, Or, Refined};
 
